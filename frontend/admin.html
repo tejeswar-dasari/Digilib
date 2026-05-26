@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiLib Admin Panel</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 min-h-screen">
+
+    <!-- Header -->
+    <div class="bg-indigo-600 text-white p-5 shadow-lg">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-bold">
+                DigiLib Admin Panel
+            </h1>
+
+            <button onclick="logoutAdmin()"
+                class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg font-semibold">
+                Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login-section"
+        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+        <div class="bg-white p-8 rounded-2xl w-[90%] max-w-md shadow-2xl">
+
+            <h2 class="text-3xl font-bold mb-6 text-center">
+                Admin Login
+            </h2>
+
+            <input
+                type="password"
+                id="admin-password"
+                placeholder="Enter Admin Password"
+                class="w-full border p-4 rounded-xl mb-4 outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+
+            <button
+                onclick="loginAdmin()"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-bold">
+                Login
+            </button>
+
+            <p id="login-error"
+                class="text-red-500 text-sm mt-3 hidden">
+                Wrong password
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="admin-content" class="hidden max-w-7xl mx-auto p-6">
+
+        <!-- Search -->
+        <div class="mb-6">
+            <input
+                type="text"
+                id="search-input"
+                placeholder="Search resources..."
+                class="w-full p-4 rounded-xl border outline-none focus:ring-2 focus:ring-indigo-500"
+                onkeyup="filterResources()"
+            >
+        </div>
+
+        <!-- Stats -->
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <h3 class="text-slate-500 text-sm font-semibold">
+                    Total Resources
+                </h3>
+
+                <p id="total-resources"
+                    class="text-4xl font-bold mt-2 text-indigo-600">
+                    0
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <h3 class="text-slate-500 text-sm font-semibold">
+                    Total Views
+                </h3>
+
+                <p id="total-views"
+                    class="text-4xl font-bold mt-2 text-emerald-600">
+                    0
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <h3 class="text-slate-500 text-sm font-semibold">
+                    Study Materials
+                </h3>
+
+                <p id="study-count"
+                    class="text-4xl font-bold mt-2 text-amber-600">
+                    0
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Resource List -->
+        <div id="resource-list"
+            class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        </div>
+
+    </div>
+
+<script>
+
+const BACKEND_URL = "http://localhost:5000";
+
+let resources = [];
+
+const ADMIN_PASSWORD = "digilibadmin";
+
+function loginAdmin(){
+
+    const enteredPassword =
+        document.getElementById('admin-password').value;
+
+    if(enteredPassword === ADMIN_PASSWORD){
+
+        document.getElementById('login-section')
+            .classList.add('hidden');
+
+        document.getElementById('admin-content')
+            .classList.remove('hidden');
+
+        localStorage.setItem('adminLoggedIn', 'true');
+
+        fetchResources();
+
+    }else{
+
+        document.getElementById('login-error')
+            .classList.remove('hidden');
+    }
+}
+
+function logoutAdmin(){
+
+    localStorage.removeItem('adminLoggedIn');
+
+    location.reload();
+}
+
+window.onload = function(){
+
+    if(localStorage.getItem('adminLoggedIn') === 'true'){
+
+        document.getElementById('login-section')
+            .classList.add('hidden');
+
+        document.getElementById('admin-content')
+            .classList.remove('hidden');
+
+        fetchResources();
+    }
+}
+
+async function fetchResources(){
+
+    try{
+
+        const response =
+            await fetch(`${BACKEND_URL}/resources`);
+
+        resources = await response.json();
+
+        renderResources(resources);
+
+        updateStats();
+
+    }catch(error){
+
+        console.log(error);
+
+        alert("Failed to fetch resources");
+    }
+}
+
+function updateStats(){
+
+    document.getElementById('total-resources')
+        .textContent = resources.length;
+
+    let totalViews = 0;
+
+    resources.forEach(resource => {
+
+        totalViews += resource.clicks || 0;
+    });
+
+    document.getElementById('total-views')
+        .textContent = totalViews;
+
+    const studyCount =
+        resources.filter(r =>
+            r.type === "Study Materials").length;
+
+    document.getElementById('study-count')
+        .textContent = studyCount;
+}
+
+function renderResources(data){
+
+    const container =
+        document.getElementById('resource-list');
+
+    container.innerHTML = "";
+
+    if(data.length === 0){
+
+        container.innerHTML = `
+            <p class="text-center text-slate-500 col-span-full">
+                No resources found
+            </p>
+        `;
+
+        return;
+    }
+
+    data.forEach(resource => {
+
+        let openButton = "";
+
+        if(resource.type === "Websites & YouTube Links"){
+
+            openButton = `
+                <a href="${resource.url}"
+                    target="_blank"
+                    class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                    Open
+                </a>
+            `;
+
+        }else{
+
+            openButton = `
+                <a href="${BACKEND_URL}/${resource.url}"
+                    download
+                    class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                    Download
+                </a>
+            `;
+        }
+
+        container.innerHTML += `
+
+        <div class="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
+
+            <div>
+
+                <div class="flex justify-between items-start gap-3">
+
+                    <span class="bg-indigo-100 text-indigo-600 text-xs font-bold px-3 py-1 rounded-full">
+                        ${resource.type}
+                    </span>
+
+                    <span class="text-sm text-slate-500">
+                        👁 ${resource.clicks || 0}
+                    </span>
+
+                </div>
+
+                <h2 class="text-xl font-bold mt-4 break-words">
+                    ${resource.name}
+                </h2>
+
+                <div class="mt-4 text-sm text-slate-600 space-y-1">
+
+                    <p><b>Branch:</b> ${resource.branch}</p>
+
+                    <p><b>Year:</b> ${resource.year}</p>
+
+                    <p><b>Semester:</b> ${resource.semester}</p>
+
+                    <p><b>Format:</b> ${resource.format}</p>
+
+                </div>
+
+            </div>
+
+            <div class="flex gap-3 mt-6">
+
+                ${openButton}
+
+                <button
+                    onclick="deleteResource('${resource._id}')"
+                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                    Delete
+                </button>
+
+            </div>
+
+        </div>
+        `;
+    });
+}
+
+function filterResources(){
+
+    const query =
+        document.getElementById('search-input')
+        .value
+        .toLowerCase();
+
+    const filtered =
+        resources.filter(resource => {
+
+            return (
+                resource.name.toLowerCase().includes(query) ||
+                resource.branch.toLowerCase().includes(query) ||
+                resource.type.toLowerCase().includes(query)
+            );
+        });
+
+    renderResources(filtered);
+}
+
+async function deleteResource(id){
+
+    const confirmDelete =
+        confirm("Delete this resource permanently?");
+
+    if(!confirmDelete) return;
+
+    try{
+
+        const response =
+            await fetch(`${BACKEND_URL}/resources/${id}`,{
+                method: 'DELETE'
+            });
+
+        const data = await response.json();
+
+        alert(data.message);
+
+        fetchResources();
+
+    }catch(error){
+
+        console.log(error);
+
+        alert("Delete failed");
+    }
+}
+
+</script>
+
+</body>
+</html>

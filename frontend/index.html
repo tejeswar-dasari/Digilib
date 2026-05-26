@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digilib - Your Study Resources, All in One Place</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            950: '#0b0f19',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        #main{
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col relative">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- Header Navigation -->
+    <header class="fixed top-0 left-0 w-full z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-900 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                        <path d="M6 6h10M6 10h10M6 14h10"/>
+                    </svg>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                    Digi<span class="text-brand-600">lib</span>
+                </span>
+            </a>
+
+            <!-- Desktop Links -->
+            <nav class="hidden md:flex items-center gap-8">
+                <a href="#" class="text-sm font-semibold text-brand-600 dark:text-brand-400">Home</a>
+                <a href="#explore" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Services</a>
+                <a href="#faq" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">About Us</a>
+                <a href="#faq" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Contact</a>
+            </nav>
+
+            <!-- Navigation Actions -->
+            <div class="flex items-center gap-3">
+                <!-- Theme Toggle (Desktop Only) -->
+                <button id="theme-toggle" class="hidden md:block p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all" aria-label="Toggle Dark Mode">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+
+                <!-- Profile Button -->
+                <button onclick="toggleProfileDropdown()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all relative group" aria-label="User Account Profile">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                    <span class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-indigo-500 border-2 border-white dark:border-slate-950"></span>
+                </button>
+
+                <!-- Auth Buttons (Desktop Only) -->
+                <div class="hidden md:flex items-center gap-3">
+                    <button onclick="toggleAuthModal('login')" class="px-5 py-2.5 rounded-xl border border-brand-100 dark:border-slate-800 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-slate-900 text-sm font-bold transition-all">
+                        Login
+                    </button>
+                    <button onclick="toggleAuthModal('signup')" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-md shadow-brand-500/10 transition-all">
+                        Sign Up
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button (Toggle Drawer) -->
+                <button id="mobile-menu-btn" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all md:hidden">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer Menu Overlay -->
+    <div id="mobile-drawer-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0"></div>
+    <div id="mobile-drawer" class="fixed top-0 left-0 right-0 bg-white dark:bg-slate-900 z-50 rounded-b-3xl shadow-2xl p-6 border-b border-slate-150 dark:border-slate-800 transform -translate-y-full transition-transform duration-300 ease-out md:hidden">
+        
+        <!-- Header inside Mobile Drawer -->
+        <div class="flex items-center justify-between pb-8">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600 dark:text-brand-400">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                        <path d="M6 6h10M6 10h10M6 14h10"/>
+                    </svg>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                    Digilib
+                </span>
+            </div>
+
+            <!-- Header buttons -->
+            <div class="flex items-center gap-3">
+                <button id="drawer-theme-toggle" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+                <button id="drawer-close-btn" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-300 transition-all">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-6 py-4">
+            <a href="#" class="text-lg font-bold text-brand-600 dark:text-brand-400" onclick="closeDrawerMenu()">Home</a>
+            <a href="#explore" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Services</a>
+            <a href="#faq" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">About Us</a>
+            <a href="#faq" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Contact</a>
+        </div>
+
+        <div class="flex flex-col gap-4 mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+            <button onclick="toggleAuthModal('login')" class="w-full py-4 rounded-xl border border-brand-200 dark:border-slate-700 text-brand-600 dark:text-brand-400 font-bold hover:bg-brand-50 dark:hover:bg-slate-800 transition-all text-center">
+                Login
+            </button>
+            <button onclick="toggleAuthModal('signup')" class="w-full py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition-all text-center shadow-lg shadow-brand-500/15">
+                Sign Up
+            </button>
+        </div>
+    </div>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+       <section class="relative pt-24 sm:pt-28 lg:pt-20 pb-4 sm:pb-8 lg:pb-10 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+                    
+                    <!-- Left Hero Text -->
+                    <div class="lg:col-span-4 space-y-6 text-center lg:text-left z-10 pt-4 sm:pt-8">
+                        <div class="space-y-4">
+                            <h1 class="text-3xl sm:text-5xl lg:text-[52px] font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                                Your Study Resources,<br>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-500 dark:from-brand-500 dark:to-indigo-400">All in One Place</span>
+                            </h1>
+                            <p class="text-lg text-slate-600 dark:text-slate-400 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                                Access previous year papers, study materials, helpful websites, and YouTube channels – anytime, anywhere.
+                            </p>
+                        </div>
+
+                        <!-- CTA Action Buttons -->
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-4 w-full sm:w-auto">
+                            <a href="#filters" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow-lg shadow-brand-500/20 hover:shadow-xl hover:shadow-brand-500/30 transform hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
+                                Get Started
+                                <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                            </a>
+                            <a href="#contribute" class="w-full sm:w-auto px-8 py-4 rounded-xl border-2 border-brand-100 dark:border-slate-800 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-slate-900 font-semibold transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                                Contribute
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Right Hero Image -->
+                    <div class="lg:col-span-8 flex justify-center items-center w-full">
+                        <img
+                            src="hero.jpeg"
+                            onerror="this.src='https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop'"
+                            alt="Digilib Hero Image"
+                            class="w-full h-auto max-h-[500px] max-w-[280px] sm:max-w-lg md:max-w-xl lg:max-w-2xl object-contain drop-shadow-2xl rounded-t-[100px] rounded-b-[60px] mx-auto"
+                            id="main"
+                        >
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Explore Our Resources Section -->
+        <section id="explore" class="py-16 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 transition-colors duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center space-y-3 mb-16">
+                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold bg-brand-100 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 tracking-wider uppercase">
+                        Explore Resources
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                        Explore Our Resources
+                    </h2>
+                    <div class="w-16 h-1.5 bg-brand-600 dark:bg-brand-500 mx-auto rounded-full"></div>
+                </div>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Card 1: Websites & YouTube -->
+                    <div class="group relative bg-slate-50 dark:bg-slate-950 p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 hover:shadow-xl hover:shadow-brand-500/5 hover:-translate-y-1 transition-all duration-300">
+                        <div class="w-16 h-16 rounded-2xl bg-brand-100 dark:bg-brand-950/50 flex items-center justify-center text-brand-600 dark:text-brand-400 mb-6 group-hover:scale-110 transition-transform relative">
+                            <i data-lucide="globe" class="w-8 h-8"></i>
+                            <div class="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-lg bg-red-500 flex items-center justify-center text-white scale-90">
+                                <i data-lucide="play" class="w-3.5 h-3.5 fill-white"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Websites &amp; YouTube</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
+                            Explore trusted educational websites, coding platforms, and curated YouTube channels.
+                        </p>
+                        <a href="#filters" onclick="setResourceFilterType('Websites & YouTube Links')" class="inline-flex items-center gap-2 text-sm font-bold text-brand-600 dark:text-brand-400 group/link" style="padding-top: 15px;">
+                            Explore Links 
+                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover/link:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+
+                    <!-- Card 2: Previous Year Papers -->
+                    <div class="group relative bg-slate-50 dark:bg-slate-950 p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-xl hover:shadow-emerald-500/5 hover:-translate-y-1 transition-all duration-300">
+                        <div class="w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-950/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="file-text" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Previous Year Papers</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
+                            Practice with previous year question papers and understand important exam patterns and topics.
+                        </p>
+                        <a href="#filters" onclick="setResourceFilterType('Previous Year Papers')" class="inline-flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 group/link">
+                            Explore Papers 
+                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover/link:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+
+                    <!-- Card 3: Study Materials -->
+                    <div class="group relative bg-slate-50 dark:bg-slate-950 p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-500 hover:shadow-xl hover:shadow-amber-500/5 hover:-translate-y-1 transition-all duration-300">
+                        <div class="w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-950/35 flex items-center justify-center text-amber-600 dark:text-amber-500 mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="book-open" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Study Materials</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
+                            Access verified slides, topper handnotes, and textbook references for better preparation.
+                        </p>
+                        <a href="#filters" onclick="setResourceFilterType('Study Materials')" class="inline-flex items-center gap-2 text-sm font-bold text-amber-600 dark:text-amber-500 group/link" style="padding-top: 20px;">
+                            Get Materials 
+                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover/link:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Active Academic Filter Profile Section -->
+        <section id="filters" class="py-12 bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Section Heading -->
+                <div class="text-center space-y-3 mb-10">
+                    <!-- Small Badge -->
+                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold bg-brand-100 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 tracking-wider uppercase">
+                        Academic Access
+                    </span>
+                    <!-- Main Heading -->
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                        Unlock Resources
+                    </h2>
+                    <!-- Description -->
+                    <p class="text-slate-500 dark:text-slate-400 text-sm max-w-2xl mx-auto">
+                        Select your branch, academic year, and semester to access personalized study resources.
+                    </p>
+                    <!-- Bottom Line -->
+                    <div class="w-16 h-1.5 bg-brand-600 dark:bg-brand-500 mx-auto rounded-full"></div>
+                </div>
+                
+                <div class="bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-lg relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-2xl"></div>
+
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-brand-600 animate-pulse"></span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400">
+                                Active Academic Filter Profile
+                            </span>
+                        </div>
+                    </div>
+
+                    <form id="filter-form" class="grid md:grid-cols-12 gap-6 items-end">
+                        <div class="md:col-span-4 space-y-2">
+                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Your Branch</label>
+                            <div class="relative">
+                                <select id="filter-branch" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
+                                    <option value="Computer Science (CSE)">Computer Science (CSE)</option>
+                                    <option value="Electronics & Communication (ECE)">Electronics &amp; Communication (ECE)</option>
+                                    <option value="Electrical & Electronics (EEE)">Electrical &amp; Electronics (EEE)</option>
+                                    <option value="Mechanical Engineering (ME)">Mechanical Engineering (ME)</option>
+                                    <option value="Civil Engineering (CE)">Civil Engineering (CE)</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
+                                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-3 space-y-2">
+                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Academic Year</label>
+                            <div class="relative">
+                                <select id="filter-year" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
+                                    <option value="1st Year">1st Year (Common Syllabus)</option>
+                                    <option value="2nd Year">2nd Year</option>
+                                    <option value="3rd Year">3rd Year</option>
+                                    <option value="4th Year">4th Year</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
+                                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-3 space-y-2">
+                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Semester</label>
+                            <div class="relative">
+                                <select id="filter-semester" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
+                                    <option value="1st Semester">1st Semester</option>
+                                    <option value="2nd Semester">2nd Semester</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
+                                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <button type="submit" class="w-full py-4 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center justify-center gap-3 shadow-lg shadow-brand-500/10 hover:shadow-xl transition-all">
+                                <i data-lucide="lock" class="w-5 h-5"></i>
+                                <span>Access Resources</span>
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+
+                <!-- Dynamic Real-time Showcase Drawer -->
+                <div id="resources-showcase-container" class="mt-12 hidden">
+                    <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
+                        
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-6 mb-6">
+                            <div>
+                                <h3 class="text-2xl font-bold text-slate-900 dark:text-white" id="unlocked-title">
+                                    Unlocked Resources
+                                </h3>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1" id="unlocked-subtitle">
+                                    Displaying resources for CSE, 1st Year (1st Semester)
+                                </p>
+                            </div>
+                            <div class="flex flex-wrap gap-2 bg-slate-50 dark:bg-slate-950 p-1.5 rounded-xl border border-slate-100 dark:border-slate-800" id="showcase-tabs">
+                                <button onclick="filterShowcaseTab('All')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-brand-600 dark:bg-brand-500 text-white shadow-sm transition-all">
+                                    All
+                                </button>
+                                <button onclick="filterShowcaseTab('Websites & YouTube Links')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all">
+                                    Websites &amp; YT
+                                </button>
+                                <button onclick="filterShowcaseTab('Previous Year Papers')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all">
+                                    PYQ Papers
+                                </button>
+                                <button onclick="filterShowcaseTab('Study Materials')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all">
+                                    Study Materials
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="unlocked-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Crowdsourced Database / Contribute Resource Section -->
+        <section id="contribute" class="py-10 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 transition-colors duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center space-y-3 mb-12">
+                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold bg-brand-100 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 tracking-wider uppercase">
+                        verified Contributions
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                        Contribute Resource
+                    </h2>
+                    <div class="w-16 h-1.5 bg-brand-600 dark:bg-brand-500 mx-auto rounded-full"></div>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-lg relative overflow-hidden">
+                    <form id="contribute-form" class="space-y-6">
+                        
+                        <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Resource Type</label>
+                                <div class="relative">
+                                    <select id="contrib-type" class="w-full pl-4 pr-10 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
+                                        <option value="Websites & YouTube Links">Websites &amp; YouTube Links</option>
+                                        <option value="Previous Year Papers">Previous Year Papers</option>
+                                        <option value="Study Materials">Study Materials</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Branch</label>
+                                <div class="relative">
+                                    <select id="contrib-branch" class="w-full pl-4 pr-10 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
+                                        <option value="Computer Science (CSE)">Computer Science (CSE)</option>
+                                        <option value="Electronics & Communication (ECE)">Electronics &amp; Communication (ECE)</option>
+                                        <option value="Electrical & Electronics (EEE)">Electrical &amp; Electronics (EEE)</option>
+                                        <option value="Mechanical Engineering (ME)">Mechanical Engineering (ME)</option>
+                                        <option value="Civil Engineering (CE)">Civil Engineering (CE)</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Year</label>
+                                <div class="relative">
+                                    <select id="contrib-year" class="w-full pl-4 pr-10 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
+                                        <option value="1st Year">1st Year</option>
+                                        <option value="2nd Year">2nd Year</option>
+                                        <option value="3rd Year">3rd Year</option>
+                                        <option value="4th Year">4th Year</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Semester dropdown -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Semester</label>
+                                <div class="relative">
+                                    <select id="contrib-semester" class="w-full pl-4 pr-10 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
+                                        <option value="1st Semester">1st Semester</option>
+                                        <option value="2nd Semester">2nd Semester</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Format</label>
+                                <div class="relative">
+                                    <select id="contrib-format" class="w-full pl-4 pr-10 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
+                                        <option value="YouTube Playlist">YouTube Playlist</option>
+                                        <option value="PDF Document">PDF Document</option>
+                                        <option value="Drive Link">Google Drive Folder</option>
+                                        <option value="Website URL">Interactive Website</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Row For Input Fields -->
+                        <div class="grid lg:grid-cols-12 gap-6 items-end">
+                            <div class="lg:col-span-5 space-y-2">
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Resource Name / Title</label>
+                                <input id="contrib-name" type="text" placeholder="e.g., Data Structures Playlist by Abdul Bari" required class="w-full px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium transition-all" />
+                            </div>
+
+                            <!-- Dynamic Block for URL Input (Websites/YT Links) -->
+                            <div id="url-field-container" class="lg:col-span-5 space-y-2">
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Resource URL</label>
+                                <input id="contrib-url" type="url" placeholder="https://youtube.com/playlist?list=..." required class="w-full px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium transition-all" />
+                            </div>
+
+                            <!-- Dynamic Block for File Upload Input (Papers/Study Materials) -->
+                            <div id="file-field-container" class="lg:col-span-5 space-y-2 hidden animate-fade-in">
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Upload Study File (PDF/Docs/PPT)</label>
+                                <div class="relative flex items-center justify-center w-full">
+                                    <label class="flex flex-col items-center justify-center w-full h-[52px] border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 rounded-xl cursor-pointer bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-950 transition-all">
+                                        <div class="flex items-center gap-3 px-4">
+                                            <i data-lucide="upload-cloud" class="w-5 h-5 text-slate-400"></i>
+                                            <span id="file-label-text" class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]">Select study document...</span>
+                                        </div>
+                                        <input id="contrib-file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" class="hidden" />
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="lg:col-span-2">
+                                <button type="submit" class="w-full py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center justify-center gap-2 shadow-lg shadow-brand-500/10 hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                                    <span>Upload &amp; Share</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Support Section -->
+        <section id="faq" class="py-16 bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-2 gap-8">
+                    
+                    <div class="bg-gradient-to-br from-brand-50 to-indigo-100/50 dark:from-slate-900 dark:to-brand-950/25 border border-brand-100 dark:border-slate-800/80 rounded-3xl p-8 flex flex-col md:flex-row gap-6 items-start relative overflow-hidden">
+                        <div class="w-24 h-24 shrink-0 bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl flex items-center justify-center shadow-md relative">
+                            <svg class="w-14 h-14" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="8" y="18" width="48" height="32" rx="6" fill="#6366f1" />
+                                <path d="M8 22 L32 38 L56 22" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M8 46 L24 34" stroke="#a5b4fc" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M56 46 L40 34" stroke="#a5b4fc" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">
+                                    Have Questions?<br>We're Here to Help!
+                                </h3>
+                                <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">
+                                    Reach out to us for any queries, suggestions, or technical support.
+                                </p>
+                            </div>
+
+                            <div class="space-y-2.5">
+                                <a href="mailto:digilib@college.edu" class="flex items-center gap-3 text-sm font-semibold text-brand-600 dark:text-brand-400 hover:underline">
+                                    <i data-lucide="mail" class="w-4 h-4 text-brand-500"></i>
+                                    digilib@college.edu
+                                </a>
+                                <div class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400 font-medium">
+                                    <i data-lucide="map-pin" class="w-4 h-4 text-brand-500"></i>
+                                    JNTUACEP, Pulivendula
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-slate-900 dark:to-emerald-950/20 border border-emerald-100/80 dark:border-slate-800/80 rounded-3xl p-8 flex flex-col md:flex-row gap-6 items-start relative overflow-hidden">
+                        
+                        <div class="space-y-4 flex-grow">
+                            <div>
+                                <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">
+                                    Stay Updated
+                                </h3>
+                                <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">
+                                    Subscribe to get the latest updates on study materials, previous papers, and new YouTube channel releases.
+                                </p>
+                            </div>
+
+                            <form id="subscribe-form" class="flex flex-col sm:flex-row items-stretch gap-3 mt-4 w-full">
+                                <input type="email" placeholder="Enter your email" required class="w-full sm:flex-grow px-4 py-3 bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500" style="height: 50px;margin-top: 13px;">
+                                <button type="submit" class="w-full sm:w-auto px-5 py-3 bg-brand-600 hover:bg-brand-700 hover:scale-105 transition-all duration-300 text-white font-semibold rounded-xl">   Get Updates
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="w-24 h-24 shrink-0 bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl flex items-center justify-center shadow-md relative group self-start md:self-auto mt-2 md:mt-0">
+                            <svg class="w-14 h-14 group-hover:animate-bounce" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M32 8 C23 8 20 16 20 26 C20 38 14 44 14 46 H50 C50 44 44 38 44 26 C44 16 41 8 32 8 Z" fill="#fbbf24" />
+                                <path d="M26 46 C26 50 28 54 32 54 C36 54 38 50 38 46" stroke="#d97706" stroke-width="4" stroke-linecap="round"/>
+                                <circle cx="32" cy="8" r="4" fill="#f59e0b" />
+                            </svg>
+                            <span class="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500 border-2 border-white dark:border-slate-950 text-[11px] font-extrabold text-white flex items-center justify-center shadow">
+                                1
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Interactive Auth Modal -->
+    <div id="auth-modal-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl w-full max-w-md p-8 relative shadow-2xl transform scale-95 opacity-0 transition-all duration-300">
+            <button onclick="toggleAuthModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div id="auth-modal-content"></div>
+        </div>
+    </div>
+
+    <!-- User Profile Details Floating Panel -->
+    <div id="profile-dropdown-backdrop" class="fixed inset-0 z-40 hidden" onclick="toggleProfileDropdown()"></div>
+    <div id="profile-dropdown" class="fixed top-24 right-4 sm:right-8 md:right-16 lg:right-24 z-40 w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-3xl shadow-2xl p-6 hidden transform scale-95 opacity-0 transition-all duration-300">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+            <h4 class="font-extrabold text-slate-900 dark:text-white">Academic Workspace</h4>
+            <span class="text-xs font-bold text-emerald-500 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/50 rounded-full flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Online
+            </span>
+        </div>
+
+        <div class="space-y-6 pt-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600 dark:text-brand-400 font-black text-lg">
+                    S
+                </div>
+                <div>
+                    <h5 class="font-bold text-slate-900 dark:text-white" id="profile-user-name">Guest Student</h5>
+                    <p class="text-xs text-slate-500 dark:text-slate-400" id="profile-user-email">jntuacep.student@college.edu</p>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-500 dark:text-slate-400 font-medium">Core Stream:</span>
+                    <span class="font-bold text-slate-800 dark:text-slate-200">Computer Science (CSE)</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-500 dark:text-slate-400 font-medium">Academic Year:</span>
+                    <span class="font-bold text-slate-800 dark:text-slate-200">1st Year (1st Sem)</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 text-center">
+                    <span class="block text-2xl font-black text-indigo-600 dark:text-indigo-400" id="profile-stats-downloads">12</span>
+                    <span class="text-[10px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-slate-400">Total Views</span>
+                </div>
+                <div class="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 text-center">
+                    <span class="block text-2xl font-black text-emerald-500 dark:text-emerald-400" id="profile-stats-contributed">0</span>
+                    <span class="text-[10px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-slate-400">Contributed</span>
+                </div>
+            </div>
+
+            <div id="profile-actions-container" class="space-y-2.5 pt-2">
+                <!-- Action buttons dynamically rendered based on Auth status -->
+                <button onclick="handleSecureLoginClick()" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    Secure Account Login
+                </button>
+                <button onclick="toggleProfileDropdown()" class="w-full py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-all">
+                    Dismiss Panel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-brand-950 text-slate-300 pt-10 pb-8 border-t border-slate-900 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 pb-12 border-b border-slate-900">
+                
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white">
+                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                                <path d="M6 6h10M6 10h10M6 14h10"/>
+                            </svg>
+                        </div>
+                        <span class="text-2xl font-extrabold tracking-tight text-white">
+                            Digi<span class="text-brand-500">lib</span>
+                        </span>
+                    </div>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        Empowering students through shared knowledge. Explore verified textbooks, lecture files, exam notes, and links.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold text-sm tracking-widest uppercase mb-4">Quick Links</h4>
+                    <ul class="space-y-2.5 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Home</a></li>
+                        <li><a href="#explore" class="hover:text-white transition-colors">Explore Resources</a></li>
+                        <li><a href="#contribute" class="hover:text-white transition-colors">Contribute</a></li>
+                        <li><a href="#faq" class="hover:text-white transition-colors">About Us</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold text-sm tracking-widest uppercase mb-4">Support</h4>
+                    <ul class="space-y-2.5 text-sm">
+                        <li><a href="#faq" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li>
+                            <a href="guidelines.html" class="hover:text-white transition-colors">Guidelines</a>
+                        </li>
+                        <li>
+                            <a href="privacy.html" class="hover:text-white transition-colors">Privacy Policy</a>
+                        </li>
+                        <li>
+                            <a href="terms.html" class="hover:text-white transition-colors">Terms of Use</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold text-sm tracking-widest uppercase mb-4">
+                        Connect With Us
+                    </h4>
+                    <a href="https://t.me/Tejeswar09" target="_blank" class="flex items-center gap-4 bg-slate-900 hover:bg-slate-800 px-5 py-4 rounded-2xl transition-all duration-300 hover:scale-105 w-fit border border-slate-800">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram" class="w-12 h-12 object-contain">
+                        <div>
+                            <p class="text-white font-bold text-sm font-sans">Join Telegram</p>
+                            <p class="text-slate-400 text-xs">DigiLib</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-400">
+                <div>
+                    &copy; 2026 Digilib. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Full Mock/Live Database setup -->
+    <script>
+        const BACKEND_URL = "http://localhost:5000";
+        let database = [];
+        let activeTab = 'All';
+        let currentFilterBranch = 'Computer Science (CSE)';
+        let currentFilterYear = '1st Year';
+        let currentFilterSemester = '1st Semester';
+        let userStatsViews = 12;
+        let userStatsContributed = 0;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            lucide.createIcons();
+            checkLoggedInUser();
+            fetchResources();
+            setupDynamicFormInputs();
+        });
+
+        // Seed default fallback resources when server is offline
+        function getSeedResources() {
+            return [
+                {
+                    id: "seed-1",
+                    name: "Data Structures & Algorithms Complete YouTube Playlist by Abdul Bari",
+                    type: "Websites & YouTube Links",
+                    branch: "Computer Science (CSE)",
+                    year: "1st Year",
+                    semester: "1st Semester",
+                    format: "YouTube Playlist",
+                    url: "https://www.youtube.com/playlist?list=PL2_aWCzGMAwI3W_yfNzKghPQg67k6-0JD",
+                    clicks: 145,
+                    verified: true
+                },
+                {
+                    id: "seed-2",
+                    name: "Engineering Mathematics-I Previous Year Question Papers (JNTUACEP)",
+                    type: "Previous Year Papers",
+                    branch: "Computer Science (CSE)",
+                    year: "1st Year",
+                    semester: "1st Semester",
+                    format: "PDF Document",
+                    fileName: "Mathematics_I_2024_PYQ.pdf",
+                    url: "https://example.com/mock-math-pyq.pdf",
+                    clicks: 89,
+                    verified: true
+                },
+                {
+                    id: "seed-3",
+                    name: "Python Programming Handnotes - Toppers Edition (Handwritten)",
+                    type: "Study Materials",
+                    branch: "Computer Science (CSE)",
+                    year: "1st Year",
+                    semester: "1st Semester",
+                    format: "Google Drive Folder",
+                    fileName: "Python_Topper_Notes.pdf",
+                    url: "https://drive.google.com/drive/folders/mock-python",
+                    clicks: 212,
+                    verified: true
+                },
+                {
+                    id: "seed-4",
+                    name: "Digital Logic Design Lecture Slides & Reference Material",
+                    type: "Study Materials",
+                    branch: "Computer Science (CSE)",
+                    year: "2nd Year",
+                    semester: "1st Semester",
+                    format: "PDF Document",
+                    fileName: "DLD_Lectures_Complete.pdf",
+                    url: "https://example.com/mock-dld.pdf",
+                    clicks: 56,
+                    verified: true
+                },
+                {
+                    id: "seed-5",
+                    name: "Analog Electronics Circuit & Labs Study Resource",
+                    type: "Study Materials",
+                    branch: "Electronics & Communication (ECE)",
+                    year: "2nd Year",
+                    semester: "1st Semester",
+                    format: "PDF Document",
+                    fileName: "Analog_Circuits_ECE.pdf",
+                    url: "https://example.com/analog-circuits.pdf",
+                    clicks: 72,
+                    verified: true
+                }
+            ];
+        }
+
+        // Check local storage for persistent student sessions on launch
+        function checkLoggedInUser() {
+            const savedStudent = localStorage.getItem("student");
+            if (savedStudent) {
+                try {
+                    const user = JSON.parse(savedStudent);
+                    if (user && user.name && user.email) {
+                        updateProfilePanelUI(user);
+                    }
+                } catch (e) {
+                    console.error("Failed to parse saved session student data:", e);
+                }
+            }
+        }
+
+        // FETCH ALL RESOURCES FROM BACKEND OR FALL BACK TO LOCAL DATA
+        async function fetchResources() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/resources`);
+                if (!response.ok) throw new Error("Database network issues");
+                const data = await response.json();
+                database = data;
+                updateUnlockedResourcesUI();
+            } catch (error) {
+                console.warn("Using high-quality offline cache seeds. (Backend server is offline)");
+                database = getSeedResources();
+                updateUnlockedResourcesUI();
+            }
+        }
+
+        // Toggles Dynamic Inputs (URL vs File upload) based on contribution resource type selection
+        function setupDynamicFormInputs() {
+            const contribType = document.getElementById('contrib-type');
+            const urlFieldContainer = document.getElementById('url-field-container');
+            const fileFieldContainer = document.getElementById('file-field-container');
+            const contribUrl = document.getElementById('contrib-url');
+            const contribFile = document.getElementById('contrib-file');
+            const fileLabelText = document.getElementById('file-label-text');
+
+            contribType.addEventListener('change', function() {
+                if (contribType.value === "Websites & YouTube Links") {
+                    urlFieldContainer.classList.remove('hidden');
+                    fileFieldContainer.classList.add('hidden');
+                    contribUrl.setAttribute('required', 'true');
+                    contribFile.removeAttribute('required');
+                } else {
+                    urlFieldContainer.classList.add('hidden');
+                    fileFieldContainer.classList.remove('hidden');
+                    contribUrl.removeAttribute('required');
+                    contribFile.setAttribute('required', 'true');
+                }
+            });
+
+            // Handle filename text changes when a file is selected
+            contribFile.addEventListener('change', function() {
+                if (contribFile.files && contribFile.files.length > 0) {
+                    fileLabelText.textContent = contribFile.files[0].name;
+                    fileLabelText.className = "text-sm font-bold text-brand-600 dark:text-brand-400 truncate max-w-[240px]";
+                } else {
+                    fileLabelText.textContent = "Select study document...";
+                    fileLabelText.className = "text-sm font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]";
+                }
+            });
+        }
+
+        function applySavedTheme() {
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+        applySavedTheme();
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+            }
+        }
+
+        document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+        document.getElementById('drawer-theme-toggle').addEventListener('click', toggleTheme);
+
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const drawerCloseBtn = document.getElementById('drawer-close-btn');
+        const mobileDrawer = document.getElementById('mobile-drawer');
+        const mobileDrawerOverlay = document.getElementById('mobile-drawer-overlay');
+
+        function openDrawerMenu() {
+            mobileDrawerOverlay.classList.remove('hidden');
+            mobileDrawer.classList.remove('hidden');
+            setTimeout(() => {
+                mobileDrawerOverlay.classList.remove('opacity-0');
+                mobileDrawer.classList.remove('-translate-y-full');
+            }, 10);
+        }
+
+        function closeDrawerMenu() {
+            mobileDrawerOverlay.classList.add('opacity-0');
+            mobileDrawer.classList.add('-translate-y-full');
+            setTimeout(() => {
+                mobileDrawerOverlay.classList.add('hidden');
+                mobileDrawer.classList.add('hidden');
+            }, 300);
+        }
+
+        mobileMenuBtn.addEventListener('click', openDrawerMenu);
+        drawerCloseBtn.addEventListener('click', closeDrawerMenu);
+        mobileDrawerOverlay.addEventListener('click', closeDrawerMenu);
+
+        function setResourceFilterType(type) {
+            document.getElementById('filters').scrollIntoView({ behavior: 'smooth' });
+            activeTab = type;
+            updateUnlockedResourcesUI();
+        }
+
+        function filterShowcaseTab(tabName) {
+            activeTab = tabName;
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(btn => {
+                const btnText = (btn.textContent || "").trim();
+                if (btnText === tabName || 
+                    (tabName === 'Websites & YouTube Links' && btnText.includes('Websites')) ||
+                    (tabName === 'Previous Year Papers' && btnText.includes('PYQ')) ||
+                    (tabName === 'Study Materials' && btnText.includes('Study'))) {
+                    btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-brand-600 dark:bg-brand-500 text-white shadow-sm transition-all";
+                } else {
+                    btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all";
+                }
+            });
+            updateUnlockedResourcesUI(true);
+        }
+
+        const filterForm = document.getElementById('filter-form');
+        filterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            currentFilterBranch = document.getElementById('filter-branch').value;
+            currentFilterYear = document.getElementById('filter-year').value;
+            currentFilterSemester = document.getElementById('filter-semester').value;
+
+            const container = document.getElementById('resources-showcase-container');
+            container.classList.remove('hidden');
+            updateUnlockedResourcesUI();
+            showToast('Resources unlocked successfully based on your academic profile!', 'success');
+            setTimeout(() => {
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        });
+
+        function updateUnlockedResourcesUI(retainTab = false) {
+            if (!retainTab) {
+                activeTab = 'All';
+                const tabButtons = document.querySelectorAll('.tab-btn');
+                tabButtons.forEach((btn, index) => {
+                    if (index === 0) {
+                        btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-brand-600 dark:bg-brand-500 text-white shadow-sm transition-all";
+                    } else {
+                        btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all";
+                    }
+                });
+            }
+
+            const unlockedGrid = document.getElementById('unlocked-grid');
+            document.getElementById('unlocked-subtitle').textContent = `Displaying resources for ${currentFilterBranch} • ${currentFilterYear} (${currentFilterSemester})`;
+
+            let filtered = database.filter(item => {
+                const matchesBranch = item.branch === currentFilterBranch;
+                const matchesYear = item.year === currentFilterYear;
+                return matchesBranch && matchesYear;
+            });
+
+            if (activeTab !== 'All') {
+                filtered = filtered.filter(item => item.type === activeTab);
+            }
+
+            unlockedGrid.innerHTML = '';
+            if (filtered.length === 0) {
+                unlockedGrid.innerHTML = `
+                    <div class="col-span-full py-12 flex flex-col items-center justify-center text-center space-y-4">
+                        <div class="w-16 h-16 bg-slate-100 dark:bg-slate-950 text-slate-400 rounded-full flex items-center justify-center">
+                            <i data-lucide="info" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 dark:text-white">No exact resources found</h4>
+                            <p class="text-slate-500 text-xs mt-1 max-w-sm">Be the first to contribute notes or learning links for this filter profile below!</p>
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            filtered.forEach(item => {
+                let badgeColor = "bg-brand-100 text-brand-600 dark:bg-brand-950/40 dark:text-brand-400";
+                if (item.type === "Previous Year Papers") {
+                    badgeColor = "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400";
+                } else if (item.type === "Study Materials") {
+                    badgeColor = "bg-amber-100 text-amber-600 dark:bg-amber-950/30 dark:text-amber-500";
+                }
+
+                const card = document.createElement('div');
+                card.className = "bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between hover:shadow-md transition-all";
+                
+                const hasFile = item.fileName !== null && item.fileName !== undefined && item.fileName !== '';
+                const formatLabel = item.format;
+                const resourceId = item._id || item.id;
+
+                // Build a correct, fully qualified URL if it's a relative filepath from server uploads
+                let resourceUrl = item.url;
+                if (resourceUrl && !resourceUrl.startsWith('http') && !resourceUrl.startsWith('blob:')) {
+                    resourceUrl = `${BACKEND_URL}/${resourceUrl}`;
+                }
+
+                card.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold ${badgeColor}">
+                                ${item.type}
+                            </span>
+                            <span class="text-xs text-slate-400 font-medium flex items-center gap-1">
+                                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                ${item.clicks || 0} views
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 hover:text-brand-600 transition-colors">
+                            ${item.name}
+                        </h4>
+                        ${hasFile ? `
+                        <div class="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                            <i data-lucide="file-text" class="w-4 h-4 text-brand-500 shrink-0"></i>
+                            <span class="text-xs text-slate-500 dark:text-slate-400 truncate">${item.fileName}</span>
+                        </div>` : ''}
+                    </div>
+                    <div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 mt-6 pt-4">
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                            <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                            ${formatLabel}
+                        </span>
+                        <a href="${resourceUrl || '#'}" 
+                           ${item.type === 'Websites & YouTube Links' ? 'target="_blank"' : 'download="' + (item.fileName || 'study-file') + '"'} 
+                           onclick="incrementClickCount('${resourceId}')"
+                           class="inline-flex items-center gap-1 text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline">
+                            ${item.type === 'Websites & YouTube Links' ? 'Open Resource' : 'Download File'}
+                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                        </a>
+                    </div>
+                `;
+                unlockedGrid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        // Increments local views count & syncs with backend Database
+        async function incrementClickCount(id) {
+            const target = database.find(item => (item._id === id || item.id === id || String(item._id) === String(id)));
+            if (target) {
+                target.clicks = (target.clicks || 0) + 1;
+                userStatsViews += 1;
+                document.getElementById('profile-stats-downloads').textContent = userStatsViews;
+                updateUnlockedResourcesUI(true);
+            }
+
+            try {
+                await fetch(`${BACKEND_URL}/resources/${id}/click`, {
+                    method: 'PATCH'
+                });
+            } catch (err) {
+                console.warn("Could not sync view count to server:", err);
+            }
+        }
+
+        // Student Contribution submission handler
+        const contributeForm = document.getElementById('contribute-form');
+        contributeForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const nameVal = document.getElementById('contrib-name').value.trim();
+            const typeVal = document.getElementById('contrib-type').value;
+            const branchVal = document.getElementById('contrib-branch').value;
+            const yearVal = document.getElementById('contrib-year').value;
+            const semesterVal = document.getElementById('contrib-semester').value;
+            const formatVal = document.getElementById('contrib-format').value;
+           
+            let resourceUrl = "#";
+            let fileNameVal = null;
+            let isDuplicate = false;
+
+            // Handle validations & assignments based on dynamically selected type
+            if (typeVal === "Websites & YouTube Links") {
+                const urlVal = document.getElementById('contrib-url').value.trim();
+                resourceUrl = urlVal;
+
+                // DUPLICATE CHECK: Verify by URL or Name
+                isDuplicate = database.some(item => 
+                    (item.name && item.name.toLowerCase() === nameVal.toLowerCase()) || 
+                    (item.url && item.url.toLowerCase() === urlVal.toLowerCase())
+                );
+            } else {
+                const fileInput = document.getElementById('contrib-file');
+                if (fileInput.files && fileInput.files.length > 0) {
+                    const uploadedFile = fileInput.files[0];
+                    fileNameVal = uploadedFile.name;
+                    resourceUrl = URL.createObjectURL(uploadedFile);
+
+                    isDuplicate = database.some(item => 
+                        (item.name && item.name.toLowerCase() === nameVal.toLowerCase()) || 
+                        (item.fileName && fileNameVal && item.fileName.toLowerCase() === fileNameVal.toLowerCase())
+                    );
+                } else {
+                    showToast('Please select a valid study file to contribute.', 'error');
+                    return;
+                }
+            }
+
+            if (isDuplicate) {
+                showToast('This resource/file already exists in our database. Duplicate entries are blocked.', 'error');
+                return;
+            }
+
+            // Assemble FormData for Multipurpose Request
+            const formData = new FormData();
+            formData.append("name", nameVal);
+            formData.append("type", typeVal);
+            formData.append("branch", branchVal);
+            formData.append("year", yearVal);
+            formData.append("semester", semesterVal);
+            formData.append("format", formatVal);
+
+            if (typeVal === "Websites & YouTube Links") {
+                formData.append("url", resourceUrl);
+            } else {
+                formData.append("file", document.getElementById('contrib-file').files[0]);
+            }
+
+            try {
+                showToast('Publishing your resource to college database...', 'info');
+                
+                const response = await fetch(`${BACKEND_URL}/resources`, {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const savedResource = await response.json();
+                    database.unshift(savedResource);
+                    showToast('Wonderful! Your study resource was verified and published to the live stream.', 'success');
+                } else {
+                    throw new Error("Server rejected request");
+                }
+            } catch (err) {
+                console.warn("Backend post failed, adding to session cache:", err);
+                
+                // Offline Fallback capability
+                const fallbackResource = {
+                    id: `local-${Date.now()}`,
+                    name: nameVal,
+                    type: typeVal,
+                    branch: branchVal,
+                    year: yearVal,
+                    semester: semesterVal,
+                    format: formatVal,
+                    url: resourceUrl,
+                    fileName: fileNameVal,
+                    clicks: 0,
+                    verified: true
+                };
+                database.unshift(fallbackResource);
+                showToast('Server connection issues! Added to temporary session feed.', 'info');
+            }
+
+            userStatsContributed += 1;
+            document.getElementById('profile-stats-contributed').textContent = userStatsContributed;
+
+            // Instantly transition view to showcase the user's branch & year choice
+            currentFilterBranch = branchVal;
+            currentFilterYear = yearVal;
+            currentFilterSemester = semesterVal;
+
+            document.getElementById('filter-branch').value = branchVal;
+            document.getElementById('filter-year').value = yearVal;
+            document.getElementById('filter-semester').value = semesterVal;
+
+            const container = document.getElementById('resources-showcase-container');
+            container.classList.remove('hidden');
+            
+            // Re-render UI & reset form fields
+            updateUnlockedResourcesUI();
+            contributeForm.reset();
+            
+            // Reset custom styled file selector input UI
+            document.getElementById('file-label-text').textContent = "Select study document...";
+            document.getElementById('file-label-text').className = "text-sm font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]";
+            
+            // Default select UI toggle back to URL input
+            document.getElementById('url-field-container').classList.remove('hidden');
+            document.getElementById('file-field-container').classList.add('hidden');
+            document.getElementById('contrib-url').setAttribute('required', 'true');
+            document.getElementById('contrib-file').removeAttribute('required');
+
+            setTimeout(() => { 
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
+            }, 300);
+        });
+
+        const subscribeForm = document.getElementById('subscribe-form');
+        subscribeForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const emailInput = this.querySelector('input[type="email"]');
+            showToast(`Awesome! ${emailInput.value} has been subscribed to updates.`, 'success');
+            emailInput.value = '';
+        });
+
+        // Toggle Auth login and sign up Modal frames
+        function toggleAuthModal(mode = '') {
+            closeDrawerMenu();
+            const backdrop = document.getElementById('auth-modal-backdrop');
+            const container = backdrop.querySelector('.transform');
+            const content = document.getElementById('auth-modal-content');
+
+            if (!mode) {
+                container.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => { backdrop.classList.add('hidden'); }, 300);
+                return;
+            }
+
+            if (mode === 'login') {
+                content.innerHTML = `
+                    <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">Welcome Back</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Enter your credentials to access your bookmarks</p>
+                    <form onsubmit="handleAuthSubmit(event, 'login')" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Email Address</label>
+                            <input id="auth-email-input" type="email" required placeholder="Enter your email" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Password</label>
+                            <input id="auth-password-login" type="password" required placeholder="••••••••" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                        </div>
+                        <button type="submit" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm shadow-md transition-all mt-2">Log In</button>
+                    </form>
+                    <p class="text-xs text-center text-slate-500 dark:text-slate-400 mt-6">
+                        Don't have an account? <a href="#" onclick="toggleAuthModal('signup')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline">Create Account</a>
+                    </p>
+                `;
+            } else if (mode === 'signup') {
+                content.innerHTML = `
+                    <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">Create Account</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Join your college community & start tracking files</p>
+                    <form onsubmit="handleAuthSubmit(event, 'signup')" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Full Name</label>
+                            <input id="auth-name-input" type="text" required placeholder="Alex Johnson" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Email Address</label>
+                            <input id="auth-email-signup" type="email" required placeholder="Enter your email" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Create Password</label>
+                            <input id="auth-password-signup" type="password" required placeholder="••••••••" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                        </div>
+                        <button type="submit" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm shadow-md transition-all mt-2">Create Free Account</button>
+                    </form>
+                    <p class="text-xs text-center text-slate-500 dark:text-slate-400 mt-6">
+                        Already have an account? <a href="#" onclick="toggleAuthModal('login')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline">Log In</a>
+                    </p>
+                `;
+            }
+
+            backdrop.classList.remove('hidden');
+            setTimeout(() => { container.classList.remove('scale-95', 'opacity-0'); }, 10);
+            lucide.createIcons();
+        }
+
+        // Handles user authentication submits, with integrated backend connection + simulated robust fallbacks
+        async function handleAuthSubmit(event, type) {
+            event.preventDefault();
+
+            try {
+                if (type === "signup") {
+                    const name = document.getElementById("auth-name-input").value.trim();
+                    const email = document.getElementById("auth-email-signup").value.trim();
+                    const password = document.getElementById("auth-password-signup").value;
+
+                    if (!name || !email || !password) {
+                        showToast("Please enter all details.", "error");
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`${BACKEND_URL}/signup`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ name, email, password })
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok) {
+                            showToast(data.message || "Signup failed", "error");
+                            return;
+                        }
+
+                        localStorage.setItem("student", JSON.stringify(data.user));
+                        updateProfilePanelUI(data.user);
+                        toggleAuthModal();
+                        showToast("Account created successfully!", "success");
+
+                    } catch (netError) {
+                        console.warn("Server unavailable. Simulating sign up session offline.", netError);
+                        
+                        // Local fallback user storage
+                        const simulatedUser = { name, email, role: "student" };
+                        localStorage.setItem("student", JSON.stringify(simulatedUser));
+                        updateProfilePanelUI(simulatedUser);
+                        toggleAuthModal();
+                        showToast("Database server offline! Created a local session successfully.", "success");
+                    }
+                }
+
+                else if (type === "login") {
+                    const email = document.getElementById("auth-email-input").value.trim();
+                    const password = document.getElementById("auth-password-login").value;
+
+                    if (!email || !password) {
+                        showToast("Please enter your email and password.", "error");
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`${BACKEND_URL}/login`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ email, password })
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok) {
+                            showToast(data.message || "Login failed", "error");
+                            return;
+                        }
+
+                        localStorage.setItem("student", JSON.stringify(data.user));
+                        updateProfilePanelUI(data.user);
+                        toggleAuthModal();
+                        showToast(`Welcome ${data.user.name}!`, "success");
+
+                    } catch (netError) {
+                        console.warn("Server unavailable. Simulating login session offline.", netError);
+                        
+                        const simulatedUser = { 
+                            name: email.split('@')[0].toUpperCase(), 
+                            email: email, 
+                            role: "student" 
+                        };
+                        localStorage.setItem("student", JSON.stringify(simulatedUser));
+                        updateProfilePanelUI(simulatedUser);
+                        toggleAuthModal();
+                        showToast(`Database server offline! Logged in as local user: ${simulatedUser.name}`, "success");
+                    }
+                }
+
+            } catch (error) {
+                console.error("Auth error handler issue: ", error);
+                showToast("An authentication error occurred. Please try again.", "error");
+            }
+        }
+
+        // Toggles workspace side dropdown drawer
+        function toggleProfileDropdown() {
+            closeDrawerMenu();
+            const backdrop = document.getElementById('profile-dropdown-backdrop');
+            const dropdown = document.getElementById('profile-dropdown');
+
+            if (dropdown.classList.contains('hidden')) {
+                backdrop.classList.remove('hidden');
+                dropdown.classList.remove('hidden');
+                setTimeout(() => { dropdown.classList.remove('scale-95', 'opacity-0'); }, 10);
+            } else {
+                dropdown.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    backdrop.classList.add('hidden');
+                    dropdown.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        // Updates user profile panel UI based on session status
+        function updateProfilePanelUI(user) {
+            const nameEl = document.getElementById('profile-user-name');
+            const emailEl = document.getElementById('profile-user-email');
+            const initialsEl = document.querySelector('#profile-dropdown .w-12.h-12');
+            const actionContainer = document.getElementById('profile-actions-container');
+
+            if (user) {
+                nameEl.textContent = user.name;
+                emailEl.textContent = user.email;
+
+                const initials = user.name
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .substring(0, 2);
+                if (initialsEl) initialsEl.textContent = initials;
+
+                if (actionContainer) {
+                    actionContainer.innerHTML = `
+                        <button onclick="handleLogout()" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                            Log Out Account
+                        </button>
+                        <button onclick="toggleProfileDropdown()" class="w-full py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-all">
+                            Dismiss Panel
+                        </button>
+                    `;
+                }
+            } else {
+                nameEl.textContent = "Guest Student";
+                emailEl.textContent = "jntuacep.student@college.edu";
+                if (initialsEl) initialsEl.textContent = "S";
+
+                if (actionContainer) {
+                    actionContainer.innerHTML = `
+                        <button onclick="handleSecureLoginClick()" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i>
+                            Secure Account Login
+                        </button>
+                        <button onclick="toggleProfileDropdown()" class="w-full py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-all">
+                            Dismiss Panel
+                        </button>
+                    `;
+                }
+            }
+            lucide.createIcons();
+        }
+
+        // Handles user log out and session clearing
+        function handleLogout() {
+            localStorage.removeItem("student");
+            updateProfilePanelUI(null);
+            toggleProfileDropdown();
+            showToast("Successfully logged out.", "info");
+        }
+
+        function handleSecureLoginClick() {
+            const profileBackdrop = document.getElementById('profile-dropdown-backdrop');
+            const profileDropdown = document.getElementById('profile-dropdown');
+            
+            profileDropdown.classList.add('scale-95', 'opacity-0');
+            profileBackdrop.classList.add('hidden');
+            profileDropdown.classList.add('hidden');
+
+            setTimeout(() => {
+                toggleAuthModal('login');
+            }, 50);
+        }
+
+        // Generates clean toasts in replacement of standard browser alerts
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            let bgClass = "bg-white dark:bg-slate-900 border-l-4 border-indigo-500 text-slate-800 dark:text-slate-100";
+            let iconMarkup = `<i data-lucide="info" class="w-5 h-5 text-indigo-500"></i>`;
+            
+            if (type === 'success') {
+                bgClass = "bg-white dark:bg-slate-900 border-l-4 border-emerald-500 text-slate-800 dark:text-slate-100";
+                iconMarkup = `<i data-lucide="check-circle" class="w-5 h-5 text-emerald-500"></i>`;
+            } else if (type === 'error') {
+                bgClass = "bg-white dark:bg-slate-900 border-l-4 border-rose-500 text-slate-800 dark:text-slate-100";
+                iconMarkup = `<i data-lucide="alert-circle" class="w-5 h-5 text-rose-500"></i>`;
+            }
+
+            toast.className = `flex items-start gap-3 p-4 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 min-w-[300px] max-w-sm transform translate-x-10 opacity-0 transition-all duration-300 pointer-events-auto ${bgClass}`;
+            toast.innerHTML = `
+                <div class="shrink-0 mt-0.5">${iconMarkup}</div>
+                <div class="flex-grow"><p class="text-sm font-medium leading-relaxed">${message}</p></div>
+                <button class="shrink-0 text-slate-400 hover:text-slate-600" onclick="this.parentElement.remove()"><i data-lucide="x" class="w-4 h-4"></i></button>
+            `;
+            container.appendChild(toast);
+            lucide.createIcons();
+            setTimeout(() => { toast.classList.remove('translate-x-10', 'opacity-0'); }, 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-10', 'opacity-0');
+                setTimeout(() => { toast.remove(); }, 300);
+            }, 4500);
+        }
+    </script>
+</body>
+</html>
