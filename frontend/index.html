@@ -608,10 +608,10 @@
         </section>
     </main>
 
-    <!-- Interactive Auth Modal -->
-    <div id="auth-modal-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <!-- Interactive Auth Modal (Lock screen container backdrop) -->
+    <div id="auth-modal-backdrop" class="fixed inset-0 bg-slate-950/95 dark:bg-slate-950/98 backdrop-blur-2xl z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl w-full max-w-md p-8 relative shadow-2xl transform scale-95 opacity-0 transition-all duration-300">
-            <button onclick="toggleAuthModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+            <button onclick="toggleAuthModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden" id="modal-close-btn">
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
             <div id="auth-modal-content"></div>
@@ -643,11 +643,11 @@
             <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
                 <div class="flex justify-between text-xs">
                     <span class="text-slate-500 dark:text-slate-400 font-medium">Core Stream:</span>
-                    <span class="font-bold text-slate-800 dark:text-slate-200">Computer Science (CSE)</span>
+                    <span id="profile-user-branch" class="font-bold text-slate-800 dark:text-slate-200">Computer Science (CSE)</span>
                 </div>
                 <div class="flex justify-between text-xs">
-                    <span class="text-slate-500 dark:text-slate-400 font-medium">Academic Year:</span>
-                    <span class="font-bold text-slate-800 dark:text-slate-200">1st Year (1st Sem)</span>
+                    <span class="text-slate-500 dark:text-slate-400 font-medium">Roll Number:</span>
+                    <span id="profile-user-roll" class="font-bold text-slate-800 dark:text-slate-200">GUEST-001</span>
                 </div>
             </div>
 
@@ -758,7 +758,17 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             lucide.createIcons();
-            checkLoggedInUser();
+
+            const loggedInUser = localStorage.getItem("student");
+            if (!loggedInUser) {
+                // Disable background interactions and enable portal lockout blur mode
+                document.body.style.overflow = "hidden";
+                toggleAuthModal('login');
+            } else {
+                document.body.style.overflow = "auto";
+                checkLoggedInUser();
+            }
+
             fetchResources();
             setupDynamicFormInputs();
         });
@@ -1249,59 +1259,139 @@
             emailInput.value = '';
         });
 
+        // Toggle Password reveal via eye-icon
+        function togglePassword(inputId, iconId) {
+            const field = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (field && icon) {
+                if (field.type === "password") {
+                    field.type = "text";
+                    icon.setAttribute("data-lucide", "eye-off");
+                } else {
+                    field.type = "password";
+                    icon.setAttribute("data-lucide", "eye");
+                }
+                lucide.createIcons();
+            }
+        }
+
         // Toggle Auth login and sign up Modal frames
         function toggleAuthModal(mode = '') {
             closeDrawerMenu();
             const backdrop = document.getElementById('auth-modal-backdrop');
             const container = backdrop.querySelector('.transform');
             const content = document.getElementById('auth-modal-content');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
 
+            const hasSession = !!localStorage.getItem("student");
+
+            // Hard validation gate: if no active student profile is loaded in memory, do not permit dismissing modal
             if (!mode) {
+                if (!hasSession) {
+                    showToast('Access Denied. Please Login or Sign Up first to enter Digilib.', 'error');
+                    return;
+                }
                 container.classList.add('scale-95', 'opacity-0');
                 setTimeout(() => { backdrop.classList.add('hidden'); }, 300);
                 return;
             }
 
+            // Lockout view close buttons if student session isn't logged in
+            if (!hasSession) {
+                modalCloseBtn.classList.add('hidden');
+            } else {
+                modalCloseBtn.classList.remove('hidden');
+            }
+
             if (mode === 'login') {
                 content.innerHTML = `
-                    <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">Welcome Back</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Enter your credentials to access your bookmarks</p>
+                    <div class="text-center mb-6">
+                        <div class="w-12 h-12 rounded-2xl bg-brand-600 flex items-center justify-center text-white mx-auto shadow-md mb-3">
+                            <i data-lucide="lock" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Student Portal Access</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Please log in with your college credentials to browse resources</p>
+                    </div>
                     <form onsubmit="handleAuthSubmit(event, 'login')" class="space-y-4">
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Email Address</label>
-                            <input id="auth-email-input" type="email" required placeholder="Enter your email" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                            <input id="auth-email-input" type="email" required placeholder="alex@college.edu" class="w-full px-4 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Password</label>
-                            <input id="auth-password-login" type="password" required placeholder="••••••••" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                            <div class="relative flex items-center">
+                                <input id="auth-password-login" type="password" required placeholder="••••••••" class="w-full pl-4 pr-12 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                                <button type="button" onclick="togglePassword('auth-password-login', 'eye-login')" class="absolute right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none">
+                                    <i data-lucide="eye" id="eye-login" class="w-5 h-5"></i>
+                                </button>
+                            </div>
                         </div>
-                        <button type="submit" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm shadow-md transition-all mt-2">Log In</button>
+                        <button type="submit" class="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm shadow-md transition-all mt-2 flex items-center justify-center gap-2">
+                            <span>Sign In to DigiLib</span>
+                        </button>
                     </form>
                     <p class="text-xs text-center text-slate-500 dark:text-slate-400 mt-6">
-                        Don't have an account? <a href="#" onclick="toggleAuthModal('signup')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline">Create Account</a>
+                        Don't have an academic profile? <a href="#" onclick="toggleAuthModal('signup')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline">Create Account</a>
                     </p>
                 `;
             } else if (mode === 'signup') {
                 content.innerHTML = `
-                    <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">Create Account</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Join your college community & start tracking files</p>
-                    <form onsubmit="handleAuthSubmit(event, 'signup')" class="space-y-4">
+                    <div class="text-center mb-4">
+                        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Create Student Profile</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Join your college database to access syllabus streams</p>
+                    </div>
+                    <form onsubmit="handleAuthSubmit(event, 'signup')" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Full Name</label>
-                            <input id="auth-name-input" type="text" required placeholder="Alex Johnson" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Full Name</label>
+                            <input id="auth-name-input" type="text" required placeholder="Alex Johnson" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
                         </div>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Roll Number</label>
+                                <input id="auth-roll-input" type="text" required placeholder="223A1A0501" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Branch</label>
+                                <select id="auth-branch-input" required class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium cursor-pointer">
+                                    <option value="Computer Science (CSE)">CSE</option>
+                                    <option value="Electronics & Communication (ECE)">ECE</option>
+                                    <option value="Electrical & Electronics (EEE)">EEE</option>
+                                    <option value="Mechanical Engineering (ME)">ME</option>
+                                    <option value="Civil Engineering (CE)">CE</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Email Address</label>
-                            <input id="auth-email-signup" type="email" required placeholder="Enter your email" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Email Address</label>
+                            <input id="auth-email-signup" type="email" required placeholder="alex@college.edu" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
                         </div>
+
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Create Password</label>
-                            <input id="auth-password-signup" type="password" required placeholder="••••••••" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Create Password</label>
+                            <div class="relative flex items-center">
+                                <input id="auth-password-signup" type="password" required placeholder="••••••••" class="w-full pl-4 pr-12 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                                <button type="button" onclick="togglePassword('auth-password-signup', 'eye-signup-1')" class="absolute right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none">
+                                    <i data-lucide="eye" id="eye-signup-1" class="w-4 h-4"></i>
+                                </button>
+                            </div>
                         </div>
-                        <button type="submit" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm shadow-md transition-all mt-2">Create Free Account</button>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Confirm Password</label>
+                            <div class="relative flex items-center">
+                                <input id="auth-password-confirm-signup" type="password" required placeholder="••••••••" class="w-full pl-4 pr-12 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                                <button type="button" onclick="togglePassword('auth-password-confirm-signup', 'eye-signup-2')" class="absolute right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none">
+                                    <i data-lucide="eye" id="eye-signup-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-md transition-all mt-3">Register Account</button>
                     </form>
-                    <p class="text-xs text-center text-slate-500 dark:text-slate-400 mt-6">
-                        Already have an account? <a href="#" onclick="toggleAuthModal('login')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline">Log In</a>
+                    <p class="text-xs text-center text-slate-500 dark:text-slate-400 mt-4">
+                        Already have an academic profile? <a href="#" onclick="toggleAuthModal('login')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline">Log In</a>
                     </p>
                 `;
             }
@@ -1318,21 +1408,29 @@
             try {
                 if (type === "signup") {
                     const name = document.getElementById("auth-name-input").value.trim();
+                    const roll = document.getElementById("auth-roll-input").value.trim();
+                    const branch = document.getElementById("auth-branch-input").value;
                     const email = document.getElementById("auth-email-signup").value.trim();
                     const password = document.getElementById("auth-password-signup").value;
+                    const confirmPassword = document.getElementById("auth-password-confirm-signup").value;
 
-                    if (!name || !email || !password) {
+                    if (!name || !roll || !branch || !email || !password || !confirmPassword) {
                         showToast("Please enter all details.", "error");
                         return;
                     }
 
+                    if (password !== confirmPassword) {
+                        showToast("Validation Error: Confirm Password does not match original password.", "error");
+                        return;
+                    }
+
+                    const payloadUser = { name, roll, branch, email, role: "student" };
+
                     try {
                         const response = await fetch(`${BACKEND_URL}/signup`, {
                             method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({ name, email, password })
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ name, roll, branch, email, password })
                         });
 
                         const data = await response.json();
@@ -1344,18 +1442,22 @@
 
                         localStorage.setItem("student", JSON.stringify(data.user));
                         updateProfilePanelUI(data.user);
-                        toggleAuthModal();
+                        
+                        // Disable screen lockout blur
+                        document.body.style.overflow = "auto";
+                        toggleAuthModal(); // Closes screen
                         showToast("Account created successfully!", "success");
 
                     } catch (netError) {
-                        console.warn("Server unavailable. Simulating sign up session offline.", netError);
+                        console.warn("Server offline. Simulating academic registration cache offline.", netError);
                         
-                        // Local fallback user storage
-                        const simulatedUser = { name, email, role: "student" };
-                        localStorage.setItem("student", JSON.stringify(simulatedUser));
-                        updateProfilePanelUI(simulatedUser);
-                        toggleAuthModal();
-                        showToast("Database server offline! Created a local session successfully.", "success");
+                        localStorage.setItem("student", JSON.stringify(payloadUser));
+                        updateProfilePanelUI(payloadUser);
+                        
+                        // Disable screen lockout blur
+                        document.body.style.overflow = "auto";
+                        toggleAuthModal(); // Closes screen
+                        showToast("Created academic offline session profile!", "success");
                     }
                 }
 
@@ -1371,9 +1473,7 @@
                     try {
                         const response = await fetch(`${BACKEND_URL}/login`, {
                             method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
+                            headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ email, password })
                         });
 
@@ -1386,21 +1486,29 @@
 
                         localStorage.setItem("student", JSON.stringify(data.user));
                         updateProfilePanelUI(data.user);
+                        
+                        // Disable screen lockout blur
+                        document.body.style.overflow = "auto";
                         toggleAuthModal();
                         showToast(`Welcome ${data.user.name}!`, "success");
 
                     } catch (netError) {
-                        console.warn("Server unavailable. Simulating login session offline.", netError);
+                        console.warn("Server offline. Logging in as local credentials cache.", netError);
                         
                         const simulatedUser = { 
                             name: email.split('@')[0].toUpperCase(), 
                             email: email, 
+                            roll: "STU-" + Math.floor(1000 + Math.random() * 9000),
+                            branch: "Computer Science (CSE)",
                             role: "student" 
                         };
                         localStorage.setItem("student", JSON.stringify(simulatedUser));
                         updateProfilePanelUI(simulatedUser);
+                        
+                        // Disable screen lockout blur
+                        document.body.style.overflow = "auto";
                         toggleAuthModal();
-                        showToast(`Database server offline! Logged in as local user: ${simulatedUser.name}`, "success");
+                        showToast(`Logged in successfully to temporary offline session workspace.`, "success");
                     }
                 }
 
@@ -1433,12 +1541,16 @@
         function updateProfilePanelUI(user) {
             const nameEl = document.getElementById('profile-user-name');
             const emailEl = document.getElementById('profile-user-email');
+            const branchEl = document.getElementById('profile-user-branch');
+            const rollEl = document.getElementById('profile-user-roll');
             const initialsEl = document.querySelector('#profile-dropdown .w-12.h-12');
             const actionContainer = document.getElementById('profile-actions-container');
 
             if (user) {
                 nameEl.textContent = user.name;
                 emailEl.textContent = user.email;
+                if (branchEl) branchEl.textContent = user.branch || "Computer Science (CSE)";
+                if (rollEl) rollEl.textContent = user.roll || "STU-OFFLINE";
 
                 const initials = user.name
                     .split(' ')
@@ -1462,6 +1574,8 @@
             } else {
                 nameEl.textContent = "Guest Student";
                 emailEl.textContent = "jntuacep.student@college.edu";
+                if (branchEl) branchEl.textContent = "Computer Science (CSE)";
+                if (rollEl) rollEl.textContent = "GUEST-001";
                 if (initialsEl) initialsEl.textContent = "S";
 
                 if (actionContainer) {
@@ -1479,12 +1593,20 @@
             lucide.createIcons();
         }
 
-        // Handles user log out and session clearing
+        // Handles user log out, session clearing and forces portal lock
         function handleLogout() {
             localStorage.removeItem("student");
             updateProfilePanelUI(null);
             toggleProfileDropdown();
-            showToast("Successfully logged out.", "info");
+            showToast("Successfully logged out. DigiLib lock screen activated.", "info");
+
+            // Disable background layout interaction
+            document.body.style.overflow = "hidden";
+
+            // Automatically summon the credentials panel again on logout
+            setTimeout(() => {
+                toggleAuthModal('login');
+            }, 500);
         }
 
         function handleSecureLoginClick() {
