@@ -751,9 +751,9 @@
     </footer>
 
     <!-- Full Mock/Live Database setup -->
-    const BACKEND_URL = "https://digilib-backend-v0r2.onrender.com";
+    <script>
+        const BACKEND_URL = "https://digilib-backend-v0r2.onrender.com";
         let database = [];
-        let localRequestsCache = []; // Shared global cache for the requests board
         let activeTab = 'All';
         let currentFilterBranch = 'Computer Science (CSE)';
         let currentFilterYear = '1st Year';
@@ -761,13 +761,12 @@
         let userStatsViews = 12;
         let userStatsContributed = 0;
 
-        // APPLICATION MAIN ENTRY GATEWAY
         document.addEventListener("DOMContentLoaded", function () {
             lucide.createIcons();
 
             const loggedInUser = localStorage.getItem("student");
             if (!loggedInUser) {
-                // Disable background layout interactions and lock screen frame view
+                // Disable background interactions and enable portal lockout blur mode
                 document.body.style.overflow = "hidden";
                 toggleAuthModal('login');
             } else {
@@ -776,9 +775,9 @@
             }
 
             fetchResources();
-            fetchCampusRequests(); // <-- Seamlessly initializes live request stream arrays here!
-            setupDynamicFormInputs();
-        });
+    fetchCampusRequests(); // <-- Add this exact line right here
+    setupDynamicFormInputs();
+});
 
         // Seed default fallback resources when server is offline
         function getSeedResources() {
@@ -888,8 +887,6 @@
             const contribUrl = document.getElementById('contrib-url');
             const contribFile = document.getElementById('contrib-file');
             const fileLabelText = document.getElementById('file-label-text');
-
-            if (!contribType) return;
 
             contribType.addEventListener('change', function() {
                 if (contribType.value === "Websites & YouTube Links") {
@@ -1063,6 +1060,7 @@
                 const formatLabel = item.format;
                 const resourceId = item._id || item.id;
 
+                // Build a correct, fully qualified URL if it's a relative filepath from server uploads
                 let resourceUrl = item.url;
                 if (resourceUrl && !resourceUrl.startsWith('http') && !resourceUrl.startsWith('blob:')) {
                     resourceUrl = `${BACKEND_URL}/${resourceUrl}`;
@@ -1142,10 +1140,12 @@
             let fileNameVal = null;
             let isDuplicate = false;
 
+            // Handle validations & assignments based on dynamically selected type
             if (typeVal === "Websites & YouTube Links") {
                 const urlVal = document.getElementById('contrib-url').value.trim();
                 resourceUrl = urlVal;
 
+                // DUPLICATE CHECK: Verify by URL or Name
                 isDuplicate = database.some(item => 
                     (item.name && item.name.toLowerCase() === nameVal.toLowerCase()) || 
                     (item.url && item.url.toLowerCase() === urlVal.toLowerCase())
@@ -1172,6 +1172,7 @@
                 return;
             }
 
+            // Assemble FormData for Multipurpose Request
             const formData = new FormData();
             formData.append("name", nameVal);
             formData.append("type", typeVal);
@@ -1204,6 +1205,7 @@
             } catch (err) {
                 console.warn("Backend post failed, adding to session cache:", err);
                 
+                // Offline Fallback capability
                 const fallbackResource = {
                     id: `local-${Date.now()}`,
                     name: nameVal,
@@ -1224,6 +1226,7 @@
             userStatsContributed += 1;
             document.getElementById('profile-stats-contributed').textContent = userStatsContributed;
 
+            // Instantly transition view to showcase the user's branch & year choice
             currentFilterBranch = branchVal;
             currentFilterYear = yearVal;
             currentFilterSemester = semesterVal;
@@ -1235,12 +1238,15 @@
             const container = document.getElementById('resources-showcase-container');
             container.classList.remove('hidden');
             
+            // Re-render UI & reset form fields
             updateUnlockedResourcesUI();
             contributeForm.reset();
             
+            // Reset custom styled file selector input UI
             document.getElementById('file-label-text').textContent = "Select study document...";
             document.getElementById('file-label-text').className = "text-sm font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]";
             
+            // Default select UI toggle back to URL input
             document.getElementById('url-field-container').classList.remove('hidden');
             document.getElementById('file-field-container').classList.add('hidden');
             document.getElementById('contrib-url').setAttribute('required', 'true');
@@ -1252,14 +1258,12 @@
         });
 
         const subscribeForm = document.getElementById('subscribe-form');
-        if(subscribeForm) {
-            subscribeForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const emailInput = this.querySelector('input[type="email"]');
-                showToast(`Thank you! Your request has been submitted successfully.`, 'success');
-                emailInput.value = '';
-            });
-        }
+        subscribeForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const emailInput = this.querySelector('input[type="email"]');
+            showToast(`Thank you! Your request has been submitted successfully.`, 'success');
+            emailInput.value = '';
+        });
 
         // Toggle Password reveal via eye-icon
         function togglePassword(inputId, iconId) {
@@ -1287,6 +1291,7 @@
 
             const hasSession = !!localStorage.getItem("student");
 
+            // Hard validation gate: if no active student profile is loaded in memory, do not permit dismissing modal
             if (!mode) {
                 if (!hasSession) {
                     showToast('Access Denied. Please Login or Sign Up first to enter Digilib.', 'error');
@@ -1297,6 +1302,7 @@
                 return;
             }
 
+            // Lockout view close buttons if student session isn't logged in
             if (!hasSession) {
                 modalCloseBtn.classList.add('hidden');
             } else {
@@ -1443,8 +1449,9 @@
                         localStorage.setItem("student", JSON.stringify(data.user));
                         updateProfilePanelUI(data.user);
                         
+                        // Disable screen lockout blur
                         document.body.style.overflow = "auto";
-                        toggleAuthModal(); 
+                        toggleAuthModal(); // Closes screen
                         showToast("Account created successfully!", "success");
 
                     } catch (netError) {
@@ -1453,8 +1460,9 @@
                         localStorage.setItem("student", JSON.stringify(payloadUser));
                         updateProfilePanelUI(payloadUser);
                         
+                        // Disable screen lockout blur
                         document.body.style.overflow = "auto";
-                        toggleAuthModal(); 
+                        toggleAuthModal(); // Closes screen
                         showToast("Created academic offline session profile!", "success");
                     }
                 }
@@ -1485,6 +1493,7 @@
                         localStorage.setItem("student", JSON.stringify(data.user));
                         updateProfilePanelUI(data.user);
                         
+                        // Disable screen lockout blur
                         document.body.style.overflow = "auto";
                         toggleAuthModal();
                         showToast(`Welcome ${data.user.name}!`, "success");
@@ -1502,6 +1511,7 @@
                         localStorage.setItem("student", JSON.stringify(simulatedUser));
                         updateProfilePanelUI(simulatedUser);
                         
+                        // Disable screen lockout blur
                         document.body.style.overflow = "auto";
                         toggleAuthModal();
                         showToast(`Logged in successfully to temporary offline session workspace.`, "success");
@@ -1596,8 +1606,10 @@
             toggleProfileDropdown();
             showToast("Successfully logged out. DigiLib lock screen activated.", "info");
 
+            // Disable background layout interaction
             document.body.style.overflow = "hidden";
 
+            // Automatically summon the credentials panel again on logout
             setTimeout(() => {
                 toggleAuthModal('login');
             }, 500);
@@ -1645,121 +1657,121 @@
                 setTimeout(() => { toast.remove(); }, 300);
             }, 4500);
         }
+        let localRequestsCache = [];
 
-        // --- NEW CROWDSOURCED REQUESTS CONTROLLER LOGIC ENGINE ---
+// Call this inside your DOMContentLoaded listener to fetch pending requests when page mounts
+async function fetchCampusRequests() {
+    try {
+        const response = await fetch(`${BACKEND_URL}/requests`);
+        if (!response.ok) throw new Error("Server issues");
+        localRequestsCache = await response.json();
+    } catch (err) {
+        console.warn("Backend disconnected, showing safe mock campus requests.");
+        localRequestsCache = [
+            { _id: "req-mock-1", studentName: "TEJESWAR", branch: "Computer Science (CSE)", resourceTitle: "Discrete Mathematics Graph Theory Spanning Tree Notes", details: "Urgent need for internal exam prep!" }
+        ];
+    }
+    renderRequestsBoardUI();
+}
 
-        // Call this inside your DOMContentLoaded listener to fetch pending requests when page mounts
-        async function fetchCampusRequests() {
-            try {
-                const response = await fetch(`${BACKEND_URL}/requests`);
-                if (!response.ok) throw new Error("Server issues");
-                localRequestsCache = await response.json();
-            } catch (err) {
-                console.warn("Backend disconnected, showing safe mock campus requests.");
-                localRequestsCache = [
-                    { _id: "req-mock-1", studentName: "TEJESWAR", branch: "Computer Science (CSE)", resourceTitle: "Discrete Mathematics Graph Theory Spanning Tree Notes", details: "Urgent need for internal exam prep!" }
-                ];
-            }
-            renderRequestsBoardUI();
-        }
+// Render Request cards onto live stream view
+function renderRequestsBoardUI() {
+    const targetFeed = document.getElementById('live-requests-feed');
+    const countBadge = document.getElementById('request-counter-badge');
+    
+    if(!targetFeed) return;
+    
+    countBadge.textContent = `${localRequestsCache.length} Active Requests`;
+    targetFeed.innerHTML = '';
 
-        // Render Request cards onto live stream view
-        function renderRequestsBoardUI() {
-            const targetFeed = document.getElementById('live-requests-feed');
-            const countBadge = document.getElementById('request-counter-badge');
-            
-            if(!targetFeed) return;
-            
-            countBadge.textContent = `${localRequestsCache.length} Active Requests`;
-            targetFeed.innerHTML = '';
+    if(localRequestsCache.length === 0) {
+        targetFeed.innerHTML = `
+            <div class="col-span-full py-8 text-center text-slate-400 text-xs font-medium">
+                🎉 No pending requests right now! The student database is fully satisfied.
+            </div>`;
+        return;
+    }
 
-            if(localRequestsCache.length === 0) {
-                targetFeed.innerHTML = `
-                    <div class="col-span-full py-8 text-center text-slate-400 text-xs font-medium">
-                        🎉 No pending requests right now! The student database is fully satisfied.
-                    </div>`;
-                return;
-            }
+    localRequestsCache.forEach(req => {
+        const card = document.createElement('div');
+        card.className = "p-5 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-800 rounded-2xl flex flex-col justify-between hover:shadow-sm transition-all";
+        card.innerHTML = `
+            <div class="space-y-2">
+                <div class="flex items-center justify-between text-[10px]">
+                    <span class="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tight truncate max-w-[120px]">👤 ${req.studentName}</span>
+                    <span class="px-2 py-0.5 rounded bg-brand-100 text-brand-600 dark:bg-brand-950 dark:text-brand-400 font-extrabold">${req.branch}</span>
+                </div>
+                <h5 class="font-bold text-sm text-slate-900 dark:text-white leading-snug line-clamp-2">${req.resourceTitle}</h5>
+                ${req.details ? `<p class="text-xs text-slate-500 italic truncate">"${req.details}"</p>` : ''}
+            </div>
+            <button onclick="fulfillRequestTrigger('${req._id}', '${escapeHtml(req.resourceTitle)}')" class="mt-4 w-full py-2 bg-white dark:bg-slate-900 hover:bg-brand-600 hover:text-white border border-slate-200 dark:border-slate-800 hover:border-brand-600 text-xs font-bold text-slate-700 dark:text-slate-300 rounded-xl transition-all flex items-center justify-center gap-1">
+                Fulfill Request ⚡
+            </button>
+        `;
+        targetFeed.appendChild(card);
+    });
+    lucide.createIcons();
+}
 
-            localRequestsCache.forEach(req => {
-                const card = document.createElement('div');
-                card.className = "p-5 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-800 rounded-2xl flex flex-col justify-between hover:shadow-sm transition-all";
-                card.innerHTML = `
-                    <div class="space-y-2">
-                        <div class="flex items-center justify-between text-[10px]">
-                            <span class="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tight truncate max-w-[120px]">👤 ${req.studentName}</span>
-                            <span class="px-2 py-0.5 rounded bg-brand-100 text-brand-600 dark:bg-brand-950 dark:text-brand-400 font-extrabold">${req.branch}</span>
-                        </div>
-                        <h5 class="font-bold text-sm text-slate-900 dark:text-white leading-snug line-clamp-2">${req.resourceTitle}</h5>
-                        ${req.details ? `<p class="text-xs text-slate-500 italic truncate">"${req.details}"</p>` : ''}
-                    </div>
-                    <button onclick="fulfillRequestTrigger('${req._id}', '${escapeHtml(req.resourceTitle)}')" class="mt-4 w-full py-2 bg-white dark:bg-slate-900 hover:bg-brand-600 hover:text-white border border-slate-200 dark:border-slate-800 hover:border-brand-600 text-xs font-bold text-slate-700 dark:text-slate-300 rounded-xl transition-all flex items-center justify-center gap-1">
-                        Fulfill Request ⚡
-                    </button>
-                `;
-                targetFeed.appendChild(card);
-            });
-            lucide.createIcons();
-        }
+// Setup Form Submission interceptor listener
+document.getElementById('resource-request-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Get current logged in student context
+    const currentStudentStr = localStorage.getItem("student");
+    if(!currentStudentStr) {
+        showToast("Please authenticate/login to broadcast study requests to the campus.", "error");
+        return;
+    }
+    const currentStudent = JSON.parse(currentStudentStr);
 
-        // Setup Form Submission interceptor listener
-        setTimeout(() => {
-            const reqForm = document.getElementById('resource-request-form');
-            if (reqForm) {
-                reqForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    
-                    const currentStudentStr = localStorage.getItem("student");
-                    if(!currentStudentStr) {
-                        showToast("Please authenticate/login to broadcast study requests to the campus.", "error");
-                        return;
-                    }
-                    const currentStudent = JSON.parse(currentStudentStr);
+    const titleVal = document.getElementById('req-title').value.trim();
+    const detailsVal = document.getElementById('req-details').value.trim();
 
-                    const titleVal = document.getElementById('req-title').value.trim();
-                    const detailsVal = document.getElementById('req-details').value.trim();
+    const payload = {
+        studentName: currentStudent.name.split(' ')[0].toUpperCase(),
+        branch: currentStudent.branch || "CSE",
+        resourceTitle: titleVal,
+        details: detailsVal
+    };
 
-                    const payload = {
-                        studentName: currentStudent.name.split(' ')[0].toUpperCase(),
-                        branch: currentStudent.branch || "CSE",
-                        resourceTitle: titleVal,
-                        details: detailsVal
-                    };
+    try {
+        const response = await fetch(`${BACKEND_URL}/requests`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        
+        if(response.ok) {
+            const savedItem = await response.json();
+            localRequestsCache.unshift(savedItem);
+            showToast("Request broadcasted successfully to live campus streams!", "success");
+        } else { throw new Error(); }
+    } catch(err) {
+        payload._id = "local-req-" + Date.now();
+        localRequestsCache.unshift(payload);
+        showToast("Server offline. Request posted temporarily to runtime dashboard view.", "info");
+    }
 
-                    try {
-                        const response = await fetch(`${BACKEND_URL}/requests`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(payload)
-                        });
-                        
-                        if(response.ok) {
-                            const savedItem = await response.json();
-                            localRequestsCache.unshift(savedItem);
-                            showToast("Request broadcasted successfully to live campus streams!", "success");
-                        } else { throw new Error(); }
-                    } catch(err) {
-                        payload._id = "local-req-" + Date.now();
-                        localRequestsCache.unshift(payload);
-                        showToast("Server offline. Request posted temporarily to runtime dashboard view.", "info");
-                    }
+    this.reset();
+    renderRequestsBoardUI();
+});
 
-                    this.reset();
-                    renderRequestsBoardUI();
-                });
-            }
-        }, 100);
+// Helper that pre-fills and auto scrolls user to contribution section to fulfill request effortlessly
+function fulfillRequestTrigger(requestId, targetTitle) {
+    document.getElementById('contribute').scrollIntoView({ behavior: 'smooth' });
+    const contribNameInput = document.getElementById('contrib-name');
+    if (contribNameInput) {
+        contribNameInput.value = `Fulfillment: ${targetTitle}`;
+        showToast("Auto-scrolled! Simply drop or upload the file here to fulfill your peer's request.", "success");
+    }
+}
 
-        // Helper that pre-fills and auto scrolls user to contribution section to fulfill request effortlessly
-        function fulfillRequestTrigger(requestId, targetTitle) {
-            document.getElementById('contribute').scrollIntoView({ behavior: 'smooth' });
-            const contribNameInput = document.getElementById('contrib-name');
-            if (contribNameInput) {
-                contribNameInput.value = `Fulfillment: ${targetTitle}`;
-                showToast("Auto-scrolled! Simply drop or upload the file here to fulfill your peer's request.", "success");
-            }
-        }
+function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
 
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
+// Remember to append fetchCampusRequests() inside your existing window/DOM load callback logic!
+    </script>
+</body>
+</html>
