@@ -986,22 +986,34 @@
             updateUnlockedResourcesUI(true);
         }
 
-        const filterForm = document.getElementById('filter-form');
-        filterForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            currentFilterBranch = document.getElementById('filter-branch').value;
-            currentFilterYear = document.getElementById('filter-year').value;
-            currentFilterSemester = document.getElementById('filter-semester').value;
+       const filterForm = document.getElementById('filter-form');
 
-            const container = document.getElementById('resources-showcase-container');
-            container.classList.remove('hidden');
-            updateUnlockedResourcesUI();
-            showToast('Resources unlocked successfully based on your academic profile!', 'success');
-            setTimeout(() => {
-                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
+filterForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    currentFilterBranch = document.getElementById('filter-branch').value;
+    currentFilterYear = document.getElementById('filter-year').value;
+    currentFilterSemester = document.getElementById('filter-semester').value;
+
+    const container = document.getElementById('resources-showcase-container');
+
+    // SHOW SECTION
+    container.classList.remove('hidden');
+
+    // UPDATE UI
+    updateUnlockedResourcesUI();
+
+    // SUCCESS MESSAGE
+    showToast('Resources unlocked successfully!', 'success');
+
+    // SCROLL TO RESOURCES
+    setTimeout(() => {
+        container.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
         });
-
+    }, 200);
+});
         function updateUnlockedResourcesUI(retainTab = false) {
             if (!retainTab) {
                 activeTab = 'All';
@@ -1453,7 +1465,7 @@
                         // Disable screen lockout blur
                         document.body.style.overflow = "auto";
                         toggleAuthModal(); // Closes screen
-                        showToast("Account created successfully!", "success");
+                        showToast(`Welcome to DigiLib, ${data.user.name}!`, "success");
 
                     } catch (netError) {
                         console.warn("Server offline. Simulating academic registration cache offline.", netError);
@@ -1497,7 +1509,7 @@
                         // Disable screen lockout blur
                         document.body.style.overflow = "auto";
                         toggleAuthModal();
-                        showToast(`Welcome ${data.user.name}!`, "success");
+                        showToast(`Welcome back, ${data.user.name}!`, "success");
 
                     } catch (netError) {
                         console.warn("Server offline. Logging in as local credentials cache.", netError);
