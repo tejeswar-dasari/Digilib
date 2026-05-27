@@ -311,3 +311,60 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running successfully on port ${PORT}`);
 });
+
+// Add this model definition near your other imports or top of the file
+const RequestSchema = new mongoose.Schema({
+    studentName: { type: String, required: true },
+    branch: { type: String, required: true },
+    resourceTitle: { type: String, required: true },
+    details: { type: String },
+    createdAt: { type: Date, default: Date.now }
+});
+const RequestModel = mongoose.model('Request', RequestSchema);
+
+// --- API ENDPOINTS FOR REQUESTS ---
+
+// 1. GET ALL PENDING REQUESTS
+app.get('/requests', async (req, res) => {
+    try {
+        if (mongoose.connection.readyState !== 1) {
+            return res.status(503).json({ message: 'Database connection offline' });
+        }
+        const requests = await RequestModel.find().sort({ createdAt: -1 });
+        res.json(requests);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching requests', error: error.message });
+    }
+});
+
+// 2. SUBMIT A NEW RESOURCE REQUEST
+app.post('/requests', async (req, res) => {
+    try {
+        const { studentName, branch, resourceTitle, details } = req.body;
+        if (!studentName || !branch || !resourceTitle) {
+            return res.status(400).json({ message: 'Missing required request fields' });
+        }
+        if (mongoose.connection.readyState !== 1) {
+            return res.status(503).json({ message: 'Database offline' });
+        }
+
+        const newRequest = new RequestModel({ studentName, branch, resourceTitle, details });
+        const savedRequest = await newRequest.save();
+        res.status(201).json(savedRequest);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to post request', error: error.message });
+    }
+});
+
+// 3. DELETE/RESOLVE REQUEST (When someone fulfills it)
+app.delete('/requests/:id', async (req, res) => {
+    try {
+        if (mongoose.connection.readyState !== 1) {
+            return res.status(503).json({ message: 'Database offline' });
+        }
+        await RequestModel.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Request resolved and removed successfully!' });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to delete request', error: error.message });
+    }
+});
