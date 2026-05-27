@@ -759,6 +759,43 @@
         let currentFilterSemester = '1st Semester';
         let userStatsViews = 12;
         let userStatsContributed = 0;
+        let localRequestsCache = [];
+
+        // IMPLEMENTING MISSING SHOW TOAST NOTIFICATION FUNCTION
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border transition-all duration-300 transform translate-y-2 opacity-0 max-w-sm`;
+
+            if (type === 'success') {
+                toast.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-100', 'dark:bg-emerald-950/90', 'dark:text-emerald-200', 'dark:border-emerald-900/50');
+                toast.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5 text-emerald-500 shrink-0"></i><span class="text-sm font-semibold">${message}</span>`;
+            } else if (type === 'error') {
+                toast.classList.add('bg-rose-50', 'text-rose-800', 'border-rose-100', 'dark:bg-rose-950/90', 'dark:text-rose-200', 'dark:border-rose-900/50');
+                toast.innerHTML = `<i data-lucide="alert-circle" class="w-5 h-5 text-rose-500 shrink-0"></i><span class="text-sm font-semibold">${message}</span>`;
+            } else {
+                toast.classList.add('bg-blue-50', 'text-blue-800', 'border-blue-100', 'dark:bg-blue-950/90', 'dark:text-blue-200', 'dark:border-blue-900/50');
+                toast.innerHTML = `<i data-lucide="info" class="w-5 h-5 text-blue-500 shrink-0"></i><span class="text-sm font-semibold">${message}</span>`;
+            }
+
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            // Animate In
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            // Auto dismiss after 4 seconds
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 4000);
+        }
 
         document.addEventListener("DOMContentLoaded", function () {
             lucide.createIcons();
@@ -888,30 +925,34 @@
             const contribFile = document.getElementById('contrib-file');
             const fileLabelText = document.getElementById('file-label-text');
 
-            contribType.addEventListener('change', function() {
-                if (contribType.value === "Websites & YouTube Links") {
-                    urlFieldContainer.classList.remove('hidden');
-                    fileFieldContainer.classList.add('hidden');
-                    contribUrl.setAttribute('required', 'true');
-                    contribFile.removeAttribute('required');
-                } else {
-                    urlFieldContainer.classList.add('hidden');
-                    fileFieldContainer.classList.remove('hidden');
-                    contribUrl.removeAttribute('required');
-                    contribFile.setAttribute('required', 'true');
-                }
-            });
+            if (contribType) {
+                contribType.addEventListener('change', function() {
+                    if (contribType.value === "Websites & YouTube Links") {
+                        urlFieldContainer.classList.remove('hidden');
+                        fileFieldContainer.classList.add('hidden');
+                        contribUrl.setAttribute('required', 'true');
+                        contribFile.removeAttribute('required');
+                    } else {
+                        urlFieldContainer.classList.add('hidden');
+                        fileFieldContainer.classList.remove('hidden');
+                        contribUrl.removeAttribute('required');
+                        contribFile.setAttribute('required', 'true');
+                    }
+                });
+            }
 
             // Handle filename text changes when a file is selected
-            contribFile.addEventListener('change', function() {
-                if (contribFile.files && contribFile.files.length > 0) {
-                    fileLabelText.textContent = contribFile.files[0].name;
-                    fileLabelText.className = "text-sm font-bold text-brand-600 dark:text-brand-400 truncate max-w-[240px]";
-                } else {
-                    fileLabelText.textContent = "Select study document...";
-                    fileLabelText.className = "text-sm font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]";
-                }
-            });
+            if (contribFile) {
+                contribFile.addEventListener('change', function() {
+                    if (contribFile.files && contribFile.files.length > 0) {
+                        fileLabelText.textContent = contribFile.files[0].name;
+                        fileLabelText.className = "text-sm font-bold text-brand-600 dark:text-brand-400 truncate max-w-[240px]";
+                    } else {
+                        fileLabelText.textContent = "Select study document...";
+                        fileLabelText.className = "text-sm font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]";
+                    }
+                });
+            }
         }
 
         function applySavedTheme() {
@@ -986,34 +1027,34 @@
             updateUnlockedResourcesUI(true);
         }
 
-       const filterForm = document.getElementById('filter-form');
+        const filterForm = document.getElementById('filter-form');
+        filterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
 
-filterForm.addEventListener('submit', function(e) {
-    e.preventDefault();
+            currentFilterBranch = document.getElementById('filter-branch').value;
+            currentFilterYear = document.getElementById('filter-year').value;
+            currentFilterSemester = document.getElementById('filter-semester').value;
 
-    currentFilterBranch = document.getElementById('filter-branch').value;
-    currentFilterYear = document.getElementById('filter-year').value;
-    currentFilterSemester = document.getElementById('filter-semester').value;
+            const container = document.getElementById('resources-showcase-container');
 
-    const container = document.getElementById('resources-showcase-container');
+            // SHOW SECTION
+            container.classList.remove('hidden');
 
-    // SHOW SECTION
-    container.classList.remove('hidden');
+            // UPDATE UI
+            updateUnlockedResourcesUI();
 
-    // UPDATE UI
-    updateUnlockedResourcesUI();
+            // SUCCESS MESSAGE
+            showToast('Resources unlocked successfully!', 'success');
 
-    // SUCCESS MESSAGE
-    showToast('Resources unlocked successfully!', 'success');
-
-    // SCROLL TO RESOURCES
-    setTimeout(() => {
-        container.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
+            // SCROLL DOWN TO UNLOCKED SHOWCASE AUTOMATICALLY
+            setTimeout(() => {
+                container.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 150);
         });
-    }, 200);
-});
+
         function updateUnlockedResourcesUI(retainTab = false) {
             if (!retainTab) {
                 activeTab = 'All';
@@ -1268,16 +1309,6 @@ filterForm.addEventListener('submit', function(e) {
             }, 300);
         });
 
-        const subscribeForm = document.getElementById('subscribe-form');
-        if (subscribeForm) {
-            subscribeForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const emailInput = this.querySelector('input[type="email"]');
-                showToast(`Thank you! Your request has been submitted successfully.`, 'success');
-                emailInput.value = '';
-            });
-        }
-
         // Toggle Password reveal via eye-icon
         function togglePassword(inputId, iconId) {
             const field = document.getElementById(inputId);
@@ -1476,7 +1507,7 @@ filterForm.addEventListener('submit', function(e) {
                         // Disable screen lockout blur
                         document.body.style.overflow = "auto";
                         toggleAuthModal(); // Closes screen
-                        showToast("Created academic offline session profile!", "success");
+                        showToast(`Welcome to DigiLib, ${payloadUser.name}!`, "success");
                     }
                 }
 
@@ -1527,7 +1558,7 @@ filterForm.addEventListener('submit', function(e) {
                         // Disable screen lockout blur
                         document.body.style.overflow = "auto";
                         toggleAuthModal();
-                        showToast("Logged in successfully to temporary offline session workspace.", "success");
+                        showToast(`Welcome back, ${simulatedUser.name}!`, "success");
                     }
                 }
 
@@ -1585,7 +1616,7 @@ filterForm.addEventListener('submit', function(e) {
                             <i data-lucide="log-out" class="w-4 h-4"></i>
                             Log Out Account
                         </button>
-                        <button onclick="toggleProfileDropdown()" class="w-full py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-all">
+                        <button onclick="toggleProfileDropdown()" class="w-full py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:text-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-all">
                             Dismiss Panel
                         </button>
                     `;
@@ -1603,7 +1634,7 @@ filterForm.addEventListener('submit', function(e) {
                             <i data-lucide="shield-check" class="w-4 h-4"></i>
                             Secure Account Login
                         </button>
-                        <button onclick="toggleProfileDropdown()" class="w-full py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-all">
+                        <button onclick="toggleProfileDropdown()" class="w-full py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:text-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-all">
                             Dismiss Panel
                         </button>
                     `;
@@ -1799,7 +1830,7 @@ filterForm.addEventListener('submit', function(e) {
         }
 
         function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "減039;");
         }
     </script>
 </body>
