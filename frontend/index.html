@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digilib - Your Study Resources, All in One Place</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -27,7 +26,6 @@
             }
         }
     </script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
@@ -57,13 +55,10 @@
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col relative">
 
-    <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- Header Navigation -->
     <header class="fixed top-0 left-0 w-full z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-900 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <!-- Logo -->
             <a href="#" class="flex items-center gap-3 group">
                 <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
                     <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -76,7 +71,6 @@
                 </span>
             </a>
 
-            <!-- Desktop Links -->
             <nav class="hidden md:flex items-center gap-8">
                 <a href="#" class="text-sm font-semibold text-brand-600 dark:text-brand-400">Home</a>
                 <a href="#explore" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Services</a>
@@ -84,21 +78,17 @@
                 <a href="#faq" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Contact</a>
             </nav>
 
-            <!-- Navigation Actions -->
             <div class="flex items-center gap-3">
-                <!-- Theme Toggle (Desktop Only) -->
                 <button id="theme-toggle" class="hidden md:block p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all" aria-label="Toggle Dark Mode">
                     <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
                     <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
                 </button>
 
-                <!-- Profile Button -->
                 <button onclick="toggleProfileDropdown()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all relative group" aria-label="User Account Profile">
                     <i data-lucide="user" class="w-5 h-5"></i>
                     <span class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-indigo-500 border-2 border-white dark:border-slate-950"></span>
                 </button>
 
-                <!-- Auth Buttons (Desktop Only) -->
                 <div class="hidden md:flex items-center gap-3">
                     <button onclick="toggleAuthModal('login')" class="px-5 py-2.5 rounded-xl border border-brand-100 dark:border-slate-800 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-slate-900 text-sm font-bold transition-all">
                         Login
@@ -108,7 +98,6 @@
                     </button>
                 </div>
 
-                <!-- Mobile Menu Button (Toggle Drawer) -->
                 <button id="mobile-menu-btn" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all md:hidden">
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
@@ -116,11 +105,9 @@
         </div>
     </header>
 
-    <!-- Mobile Drawer Menu Overlay -->
     <div id="mobile-drawer-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0"></div>
     <div id="mobile-drawer" class="fixed top-0 left-0 right-0 bg-white dark:bg-slate-900 z-50 rounded-b-3xl shadow-2xl p-6 border-b border-slate-150 dark:border-slate-800 transform -translate-y-full transition-transform duration-300 ease-out md:hidden">
         
-        <!-- Header inside Mobile Drawer -->
         <div class="flex items-center justify-between pb-8">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600 dark:text-brand-400">
@@ -134,7 +121,6 @@
                 </span>
             </div>
 
-            <!-- Header buttons -->
             <div class="flex items-center gap-3">
                 <button id="drawer-theme-toggle" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all">
                     <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
@@ -164,12 +150,10 @@
     </div>
 
     <main class="flex-grow">
-        <!-- Hero Section -->
-       <section class="relative pt-24 sm:pt-28 lg:pt-20 pb-4 sm:pb-8 lg:pb-10 overflow-hidden">
+        <section class="relative pt-24 sm:pt-28 lg:pt-20 pb-4 sm:pb-8 lg:pb-10 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
                     
-                    <!-- Left Hero Text -->
                     <div class="lg:col-span-4 space-y-6 text-center lg:text-left z-10 pt-4 sm:pt-8">
                         <div class="space-y-4">
                             <h1 class="text-3xl sm:text-5xl lg:text-[52px] font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
@@ -181,7 +165,6 @@
                             </p>
                         </div>
 
-                        <!-- CTA Action Buttons -->
                         <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-4 w-full sm:w-auto">
                             <a href="#filters" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow-lg shadow-brand-500/20 hover:shadow-xl hover:shadow-brand-500/30 transform hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
                                 Get Started
@@ -194,7 +177,6 @@
                         </div>
                     </div>
 
-                    <!-- Right Hero Image -->
                     <div class="lg:col-span-8 flex justify-center items-center w-full">
                         <img
                             src="hero.jpeg"
@@ -208,7 +190,6 @@
             </div>
         </section>
 
-        <!-- Explore Our Resources Section -->
         <section id="explore" class="py-16 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
@@ -223,7 +204,6 @@
                 </div>
 
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Card 1: Websites & YouTube -->
                     <div class="group relative bg-slate-50 dark:bg-slate-950 p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 hover:shadow-xl hover:shadow-brand-500/5 hover:-translate-y-1 transition-all duration-300">
                         <div class="w-16 h-16 rounded-2xl bg-brand-100 dark:bg-brand-950/50 flex items-center justify-center text-brand-600 dark:text-brand-400 mb-6 group-hover:scale-110 transition-transform relative">
                             <i data-lucide="globe" class="w-8 h-8"></i>
@@ -241,7 +221,6 @@
                         </a>
                     </div>
 
-                    <!-- Card 2: Previous Year Papers -->
                     <div class="group relative bg-slate-50 dark:bg-slate-950 p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-xl hover:shadow-emerald-500/5 hover:-translate-y-1 transition-all duration-300">
                         <div class="w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-950/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-6 group-hover:scale-110 transition-transform">
                             <i data-lucide="file-text" class="w-8 h-8"></i>
@@ -256,7 +235,6 @@
                         </a>
                     </div>
 
-                    <!-- Card 3: Study Materials -->
                     <div class="group relative bg-slate-50 dark:bg-slate-950 p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-500 hover:shadow-xl hover:shadow-amber-500/5 hover:-translate-y-1 transition-all duration-300">
                         <div class="w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-950/35 flex items-center justify-center text-amber-600 dark:text-amber-500 mb-6 group-hover:scale-110 transition-transform">
                             <i data-lucide="book-open" class="w-8 h-8"></i>
@@ -275,24 +253,18 @@
             </div>
         </section>
 
-        <!-- Active Academic Filter Profile Section -->
         <section id="filters" class="py-12 bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <!-- Section Heading -->
                 <div class="text-center space-y-3 mb-10">
-                    <!-- Small Badge -->
                     <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold bg-brand-100 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 tracking-wider uppercase">
                         Academic Access
                     </span>
-                    <!-- Main Heading -->
                     <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                         Unlock Resources
                     </h2>
-                    <!-- Description -->
                     <p class="text-slate-500 dark:text-slate-400 text-sm max-w-2xl mx-auto">
                         Select your branch, academic year, and semester to access personalized study resources.
                     </p>
-                    <!-- Bottom Line -->
                     <div class="w-16 h-1.5 bg-brand-600 dark:bg-brand-500 mx-auto rounded-full"></div>
                 </div>
                 
@@ -363,7 +335,6 @@
 
                 </div>
 
-                <!-- Dynamic Real-time Showcase Drawer -->
                 <div id="resources-showcase-container" class="mt-12 hidden">
                     <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
                         
@@ -400,7 +371,6 @@
             </div>
         </section>
 
-        <!-- Crowdsourced Database / Contribute Resource Section -->
         <section id="contribute" class="py-10 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
@@ -463,7 +433,6 @@
                                 </div>
                             </div>
 
-                            <!-- Semester dropdown -->
                             <div class="space-y-2">
                                 <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Semester</label>
                                 <div class="relative">
@@ -493,20 +462,17 @@
                             </div>
                         </div>
 
-                        <!-- Dynamic Row For Input Fields -->
                         <div class="grid lg:grid-cols-12 gap-6 items-end">
                             <div class="lg:col-span-5 space-y-2">
                                 <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Resource Name / Title</label>
                                 <input id="contrib-name" type="text" placeholder="e.g., Data Structures Playlist by Abdul Bari" required class="w-full px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium transition-all" />
                             </div>
 
-                            <!-- Dynamic Block for URL Input (Websites/YT Links) -->
                             <div id="url-field-container" class="lg:col-span-5 space-y-2">
                                 <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Resource URL</label>
                                 <input id="contrib-url" type="url" placeholder="https://youtube.com/playlist?list=..." required class="w-full px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium transition-all" />
                             </div>
 
-                            <!-- Dynamic Block for File Upload Input (Papers/Study Materials) -->
                             <div id="file-field-container" class="lg:col-span-5 space-y-2 hidden animate-fade-in">
                                 <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Upload Study File (PDF/Docs/PPT)</label>
                                 <div class="relative flex items-center justify-center w-full">
@@ -533,87 +499,84 @@
             </div>
         </section>
 
-        <!-- Support Section -->
         <section id="faq" class="py-16 bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid md:grid-cols-2 gap-8">
-            
-            <div class="bg-gradient-to-br from-brand-50 to-indigo-100/50 dark:from-slate-900 dark:to-brand-950/25 border border-brand-100 dark:border-slate-800/80 rounded-3xl p-8 flex flex-col sm:flex-row gap-6 items-start relative overflow-hidden h-fit">
-                <div class="w-24 h-24 shrink-0 bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl flex items-center justify-center shadow-md relative mx-auto sm:mx-0">
-                    <svg class="w-14 h-14" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="8" y="18" width="48" height="32" rx="6" fill="#6366f1" />
-                        <path d="M8 22 L32 38 L56 22" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M8 46 L24 34" stroke="#a5b4fc" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M56 46 L40 34" stroke="#a5b4fc" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </div>
-                
-                <div class="space-y-4 text-center sm:text-left">
-                    <div>
-                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">
-                            Have Questions?<br>We're Here to Help!
-                        </h3>
-                        <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">
-                            Reach out to us for any queries, campus technical issues, or platform support.
-                        </p>
-                    </div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-2 gap-8">
+                    
+                    <div class="bg-gradient-to-br from-brand-50 to-indigo-100/50 dark:from-slate-900 dark:to-brand-950/25 border border-brand-100 dark:border-slate-800/80 rounded-3xl p-8 flex flex-col sm:flex-row gap-6 items-start relative overflow-hidden h-fit">
+                        <div class="w-24 h-24 shrink-0 bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl flex items-center justify-center shadow-md relative mx-auto sm:mx-0">
+                            <svg class="w-14 h-14" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="8" y="18" width="48" height="32" rx="6" fill="#6366f1" />
+                                <path d="M8 22 L32 38 L56 22" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M8 46 L24 34" stroke="#a5b4fc" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M56 46 L40 34" stroke="#a5b4fc" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        
+                        <div class="space-y-4 text-center sm:text-left">
+                            <div>
+                                <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">
+                                    Have Questions?<br>We're Here to Help!
+                                </h3>
+                                <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">
+                                    Reach out to us for any campus technical issues, or platform support.
+                                </p>
+                            </div>
 
-                    <div class="space-y-2.5">
-                        <a href="mailto:digilib@college.edu" class="flex items-center justify-center sm:justify-start gap-3 text-sm font-semibold text-brand-600 dark:text-brand-400 hover:underline">
-                            <i data-lucide="mail" class="w-4 h-4 text-brand-500"></i>
-                            digilib@college.edu
-                        </a>
-                        <div class="flex items-center justify-center sm:justify-start gap-3 text-sm text-slate-600 dark:text-slate-400 font-medium">
-                            <i data-lucide="map-pin" class="w-4 h-4 text-brand-500"></i>
-                            JNTUACEP, Pulivendula
+                            <div class="space-y-2.5">
+                                <a href="mailto:digilib@college.edu" class="flex items-center justify-center sm:justify-start gap-3 text-sm font-semibold text-brand-600 dark:text-brand-400 hover:underline">
+                                    <i data-lucide="mail" class="w-4 h-4 text-brand-500"></i>
+                                    digilib@college.edu
+                                </a>
+                                <div class="flex items-center justify-center sm:justify-start gap-3 text-sm text-slate-600 dark:text-slate-400 font-medium">
+                                    <i data-lucide="map-pin" class="w-4 h-4 text-brand-500"></i>
+                                    JNTUACEP, Pulivendula
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <div class="bg-gradient-to-br from-amber-50/60 to-orange-50/40 dark:from-slate-900 dark:to-amber-950/10 border border-amber-100/80 dark:border-slate-800/80 rounded-3xl p-8 flex flex-col gap-6 relative overflow-hidden">
+                        <div>
+                            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i data-lucide="help-circle" class="text-amber-500 w-6 h-6"></i>
+                                Can't Find a Material? Request It!
+                            </h3>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                                Post what resource you need. Other peers on this platform can view it below and upload it directly for you!
+                            </p>
+                        </div>
+
+                        <form id="resource-request-form" class="space-y-3">
+                            <input type="text" id="req-title" placeholder="What material/book do you need? (e.g. Operating Systems Textbook by Galvin)" required class="w-full px-4 py-3 bg-white dark:bg-slate-950 text-slate-900 dark:text-white rounded-xl border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <input type="text" id="req-details" placeholder="Optional details (e.g., Chapter 4 Notes, 2023 Regulation...)" class="w-full px-4 py-3 bg-white dark:bg-slate-950 text-slate-900 dark:text-white rounded-xl border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <button type="submit" class="w-full py-3 bg-amber-600 hover:bg-amber-700 transition-all text-white text-sm font-bold rounded-xl shadow-md flex items-center justify-center gap-2">
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                                Post Resource Request
+                            </button>
+                        </form>
+                    </div>
                 </div>
+
+                <div class="mt-12 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm">
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 mb-6">
+                        <div>
+                            <h4 class="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+                                Requested Resource Names
+                            </h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">If you have any of these files, hit fulfill to upload and share it!</p>
+                        </div>
+                        <span id="request-counter-badge" class="px-2.5 py-1 text-xs font-bold bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-full">0 Active Requests</span>
+                    </div>
+
+                    <div id="live-requests-feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                </div>
+
             </div>
-
-            <div class="bg-gradient-to-br from-amber-50/60 to-orange-50/40 dark:from-slate-900 dark:to-amber-950/10 border border-amber-100/80 dark:border-slate-800/80 rounded-3xl p-8 flex flex-col gap-6 relative overflow-hidden">
-                <div>
-                    <h3 class="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                        <i data-lucide="help-circle" class="text-amber-500 w-6 h-6"></i>
-                        Can't Find a Material? Request It!
-                    </h3>
-                    <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                        Post what resource you need. Other peers on this platform can view it below and upload it directly for you!
-                    </p>
-                </div>
-
-                <form id="resource-request-form" class="space-y-3">
-                    <input type="text" id="req-title" placeholder="What material/book do you need? (e.g. Operating Systems Textbook by Galvin)" required class="w-full px-4 py-3 bg-white dark:bg-slate-950 text-slate-900 dark:text-white rounded-xl border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                    <input type="text" id="req-details" placeholder="Optional details (e.g., Chapter 4 Notes, 2023 Regulation...)" class="w-full px-4 py-3 bg-white dark:bg-slate-950 text-slate-900 dark:text-white rounded-xl border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                    <button type="submit" class="w-full py-3 bg-amber-600 hover:bg-amber-700 transition-all text-white text-sm font-bold rounded-xl shadow-md flex items-center justify-center gap-2">
-                        <i data-lucide="send" class="w-4 h-4"></i>
-                        Post Resource Request
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <div class="mt-12 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm">
-            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 mb-6">
-                <div>
-                    <h4 class="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
-                        Requested Resource Names
-                    </h4>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">If you have any of these files, hit fulfill to upload and share it!</p>
-                </div>
-                <span id="request-counter-badge" class="px-2.5 py-1 text-xs font-bold bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-full">0 Active Requests</span>
-            </div>
-
-            <div id="live-requests-feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                </div>
-        </div>
-
-    </div>
-</section>
+        </section>
     </main>
 
-    <!-- Interactive Auth Modal (Lock screen container backdrop) -->
     <div id="auth-modal-backdrop" class="fixed inset-0 bg-slate-950/95 dark:bg-slate-950/98 backdrop-blur-2xl z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl w-full max-w-md p-8 relative shadow-2xl transform scale-95 opacity-0 transition-all duration-300">
             <button onclick="toggleAuthModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden" id="modal-close-btn">
@@ -623,7 +586,6 @@
         </div>
     </div>
 
-    <!-- User Profile Details Floating Panel -->
     <div id="profile-dropdown-backdrop" class="fixed inset-0 z-40 hidden" onclick="toggleProfileDropdown()"></div>
     <div id="profile-dropdown" class="fixed top-24 right-4 sm:right-8 md:right-16 lg:right-24 z-40 w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-3xl shadow-2xl p-6 hidden transform scale-95 opacity-0 transition-all duration-300">
         <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
@@ -668,7 +630,6 @@
             </div>
 
             <div id="profile-actions-container" class="space-y-2.5 pt-2">
-                <!-- Action buttons dynamically rendered based on Auth status -->
                 <button onclick="handleSecureLoginClick()" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition-all flex items-center justify-center gap-2">
                     <i data-lucide="shield-check" class="w-4 h-4"></i>
                     Secure Account Login
@@ -680,7 +641,6 @@
         </div>
     </div>
 
-    <!-- Footer Section -->
     <footer class="bg-brand-950 text-slate-300 pt-10 pb-8 border-t border-slate-900 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 pb-12 border-b border-slate-900">
@@ -750,10 +710,10 @@
         </div>
     </footer>
 
-    <!-- Full Mock/Live Database setup -->
     <script>
         const BACKEND_URL = "https://digilib-backend-v0r2.onrender.com";
         let database = [];
+        let localRequestsCache = [];
         let activeTab = 'All';
         let currentFilterBranch = 'Computer Science (CSE)';
         let currentFilterYear = '1st Year';
@@ -766,7 +726,6 @@
 
             const loggedInUser = localStorage.getItem("student");
             if (!loggedInUser) {
-                // Disable background interactions and enable portal lockout blur mode
                 document.body.style.overflow = "hidden";
                 toggleAuthModal('login');
             } else {
@@ -775,9 +734,10 @@
             }
 
             fetchResources();
-    fetchCampusRequests(); // <-- Add this exact line right here
-    setupDynamicFormInputs();
-});
+            fetchCampusRequests(); 
+            setupDynamicFormInputs();
+            setupRequestFormListener(); // Mount initialization handlers correctly
+        });
 
         // Seed default fallback resources when server is offline
         function getSeedResources() {
@@ -1060,7 +1020,6 @@
                 const formatLabel = item.format;
                 const resourceId = item._id || item.id;
 
-                // Build a correct, fully qualified URL if it's a relative filepath from server uploads
                 let resourceUrl = item.url;
                 if (resourceUrl && !resourceUrl.startsWith('http') && !resourceUrl.startsWith('blob:')) {
                     resourceUrl = `${BACKEND_URL}/${resourceUrl}`;
@@ -1172,7 +1131,6 @@
                 return;
             }
 
-            // Assemble FormData for Multipurpose Request
             const formData = new FormData();
             formData.append("name", nameVal);
             formData.append("type", typeVal);
@@ -1205,7 +1163,6 @@
             } catch (err) {
                 console.warn("Backend post failed, adding to session cache:", err);
                 
-                // Offline Fallback capability
                 const fallbackResource = {
                     id: `local-${Date.now()}`,
                     name: nameVal,
@@ -1226,7 +1183,6 @@
             userStatsContributed += 1;
             document.getElementById('profile-stats-contributed').textContent = userStatsContributed;
 
-            // Instantly transition view to showcase the user's branch & year choice
             currentFilterBranch = branchVal;
             currentFilterYear = yearVal;
             currentFilterSemester = semesterVal;
@@ -1238,15 +1194,12 @@
             const container = document.getElementById('resources-showcase-container');
             container.classList.remove('hidden');
             
-            // Re-render UI & reset form fields
             updateUnlockedResourcesUI();
             contributeForm.reset();
             
-            // Reset custom styled file selector input UI
             document.getElementById('file-label-text').textContent = "Select study document...";
             document.getElementById('file-label-text').className = "text-sm font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]";
             
-            // Default select UI toggle back to URL input
             document.getElementById('url-field-container').classList.remove('hidden');
             document.getElementById('file-field-container').classList.add('hidden');
             document.getElementById('contrib-url').setAttribute('required', 'true');
@@ -1258,12 +1211,14 @@
         });
 
         const subscribeForm = document.getElementById('subscribe-form');
-        subscribeForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const emailInput = this.querySelector('input[type="email"]');
-            showToast(`Thank you! Your request has been submitted successfully.`, 'success');
-            emailInput.value = '';
-        });
+        if (subscribeForm) {
+            subscribeForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const emailInput = this.querySelector('input[type="email"]');
+                showToast(`Thank you! Your request has been submitted successfully.`, 'success');
+                emailInput.value = '';
+            });
+        }
 
         // Toggle Password reveal via eye-icon
         function togglePassword(inputId, iconId) {
@@ -1291,7 +1246,6 @@
 
             const hasSession = !!localStorage.getItem("student");
 
-            // Hard validation gate: if no active student profile is loaded in memory, do not permit dismissing modal
             if (!mode) {
                 if (!hasSession) {
                     showToast('Access Denied. Please Login or Sign Up first to enter Digilib.', 'error');
@@ -1302,7 +1256,6 @@
                 return;
             }
 
-            // Lockout view close buttons if student session isn't logged in
             if (!hasSession) {
                 modalCloseBtn.classList.add('hidden');
             } else {
@@ -1449,9 +1402,8 @@
                         localStorage.setItem("student", JSON.stringify(data.user));
                         updateProfilePanelUI(data.user);
                         
-                        // Disable screen lockout blur
                         document.body.style.overflow = "auto";
-                        toggleAuthModal(); // Closes screen
+                        toggleAuthModal(); 
                         showToast("Account created successfully!", "success");
 
                     } catch (netError) {
@@ -1460,9 +1412,8 @@
                         localStorage.setItem("student", JSON.stringify(payloadUser));
                         updateProfilePanelUI(payloadUser);
                         
-                        // Disable screen lockout blur
                         document.body.style.overflow = "auto";
-                        toggleAuthModal(); // Closes screen
+                        toggleAuthModal(); 
                         showToast("Created academic offline session profile!", "success");
                     }
                 }
@@ -1493,7 +1444,6 @@
                         localStorage.setItem("student", JSON.stringify(data.user));
                         updateProfilePanelUI(data.user);
                         
-                        // Disable screen lockout blur
                         document.body.style.overflow = "auto";
                         toggleAuthModal();
                         showToast(`Welcome ${data.user.name}!`, "success");
@@ -1511,10 +1461,9 @@
                         localStorage.setItem("student", JSON.stringify(simulatedUser));
                         updateProfilePanelUI(simulatedUser);
                         
-                        // Disable screen lockout blur
                         document.body.style.overflow = "auto";
                         toggleAuthModal();
-                        showToast(`Logged in successfully to temporary offline session workspace.`, "success");
+                        showToast("Logged in successfully to temporary offline session workspace.", "success");
                     }
                 }
 
@@ -1606,10 +1555,8 @@
             toggleProfileDropdown();
             showToast("Successfully logged out. DigiLib lock screen activated.", "info");
 
-            // Disable background layout interaction
             document.body.style.overflow = "hidden";
 
-            // Automatically summon the credentials panel again on logout
             setTimeout(() => {
                 toggleAuthModal('login');
             }, 500);
@@ -1628,150 +1575,121 @@
             }, 50);
         }
 
-        // Generates clean toasts in replacement of standard browser alerts
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            let bgClass = "bg-white dark:bg-slate-900 border-l-4 border-indigo-500 text-slate-800 dark:text-slate-100";
-            let iconMarkup = `<i data-lucide="info" class="w-5 h-5 text-indigo-500"></i>`;
+        // Fetch pending requests when page mounts
+        async function fetchCampusRequests() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/requests`);
+                if (!response.ok) throw new Error("Server issues");
+                localRequestsCache = await response.json();
+            } catch (err) {
+                console.warn("Backend disconnected, showing safe mock campus requests.");
+                localRequestsCache = [
+                    { _id: "req-mock-1", studentName: "TEJESWAR", branch: "Computer Science (CSE)", resourceTitle: "Discrete Mathematics Graph Theory Spanning Tree Notes", details: "Urgent need for internal exam prep!" }
+                ];
+            }
+            renderRequestsBoardUI();
+        }
+
+        // Render Request cards onto live stream view
+        function renderRequestsBoardUI() {
+            const targetFeed = document.getElementById('live-requests-feed');
+            const countBadge = document.getElementById('request-counter-badge');
             
-            if (type === 'success') {
-                bgClass = "bg-white dark:bg-slate-900 border-l-4 border-emerald-500 text-slate-800 dark:text-slate-100";
-                iconMarkup = `<i data-lucide="check-circle" class="w-5 h-5 text-emerald-500"></i>`;
-            } else if (type === 'error') {
-                bgClass = "bg-white dark:bg-slate-900 border-l-4 border-rose-500 text-slate-800 dark:text-slate-100";
-                iconMarkup = `<i data-lucide="alert-circle" class="w-5 h-5 text-rose-500"></i>`;
+            if(!targetFeed) return;
+            
+            countBadge.textContent = `${localRequestsCache.length} Active Requests`;
+            targetFeed.innerHTML = '';
+
+            if(localRequestsCache.length === 0) {
+                targetFeed.innerHTML = `
+                    <div class="col-span-full py-8 text-center text-slate-400 text-xs font-medium">
+                        🎉 No pending requests right now! The student database is fully satisfied.
+                    </div>`;
+                return;
             }
 
-            toast.className = `flex items-start gap-3 p-4 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 min-w-[300px] max-w-sm transform translate-x-10 opacity-0 transition-all duration-300 pointer-events-auto ${bgClass}`;
-            toast.innerHTML = `
-                <div class="shrink-0 mt-0.5">${iconMarkup}</div>
-                <div class="flex-grow"><p class="text-sm font-medium leading-relaxed">${message}</p></div>
-                <button class="shrink-0 text-slate-400 hover:text-slate-600" onclick="this.parentElement.remove()"><i data-lucide="x" class="w-4 h-4"></i></button>
-            `;
-            container.appendChild(toast);
+            localRequestsCache.forEach(req => {
+                const card = document.createElement('div');
+                card.className = "p-5 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-800 rounded-2xl flex flex-col justify-between hover:shadow-sm transition-all";
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-[10px]">
+                            <span class="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tight truncate max-w-[120px]">👤 ${req.studentName}</span>
+                            <span class="px-2 py-0.5 rounded bg-brand-100 text-brand-600 dark:bg-brand-950 dark:text-brand-400 font-extrabold">${req.branch}</span>
+                        </div>
+                        <h5 class="font-bold text-sm text-slate-900 dark:text-white leading-snug line-clamp-2">${req.resourceTitle}</h5>
+                        ${req.details ? `<p class="text-xs text-slate-500 italic truncate">"${req.details}"</p>` : ''}
+                    </div>
+                    <button onclick="fulfillRequestTrigger('${req._id}', '${escapeHtml(req.resourceTitle)}')" class="mt-4 w-full py-2 bg-white dark:bg-slate-900 hover:bg-brand-600 hover:text-white border border-slate-200 dark:border-slate-800 hover:border-brand-600 text-xs font-bold text-slate-700 dark:text-slate-300 rounded-xl transition-all flex items-center justify-center gap-1">
+                        Fulfill Request ⚡
+                    </button>
+                `;
+                targetFeed.appendChild(card);
+            });
             lucide.createIcons();
-            setTimeout(() => { toast.classList.remove('translate-x-10', 'opacity-0'); }, 10);
-            setTimeout(() => {
-                toast.classList.add('translate-x-10', 'opacity-0');
-                setTimeout(() => { toast.remove(); }, 300);
-            }, 4500);
         }
-        let localRequestsCache = [];
 
-// Call this inside your DOMContentLoaded listener to fetch pending requests when page mounts
-async function fetchCampusRequests() {
-    try {
-        const response = await fetch(`${BACKEND_URL}/requests`);
-        if (!response.ok) throw new Error("Server issues");
-        localRequestsCache = await response.json();
-    } catch (err) {
-        console.warn("Backend disconnected, showing safe mock campus requests.");
-        localRequestsCache = [
-            { _id: "req-mock-1", studentName: "TEJESWAR", branch: "Computer Science (CSE)", resourceTitle: "Discrete Mathematics Graph Theory Spanning Tree Notes", details: "Urgent need for internal exam prep!" }
-        ];
-    }
-    renderRequestsBoardUI();
-}
+        // Mount Form Submission execution context cleanly inside DOM loop wrappers
+        function setupRequestFormListener() {
+            const requestFormElement = document.getElementById('resource-request-form');
+            if (requestFormElement) {
+                requestFormElement.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const currentStudentStr = localStorage.getItem("student");
+                    if(!currentStudentStr) {
+                        showToast("Please authenticate/login to broadcast study requests to the campus.", "error");
+                        return;
+                    }
+                    const currentStudent = JSON.parse(currentStudentStr);
 
-// Render Request cards onto live stream view
-function renderRequestsBoardUI() {
-    const targetFeed = document.getElementById('live-requests-feed');
-    const countBadge = document.getElementById('request-counter-badge');
-    
-    if(!targetFeed) return;
-    
-    countBadge.textContent = `${localRequestsCache.length} Active Requests`;
-    targetFeed.innerHTML = '';
+                    const titleVal = document.getElementById('req-title').value.trim();
+                    const detailsVal = document.getElementById('req-details').value.trim();
 
-    if(localRequestsCache.length === 0) {
-        targetFeed.innerHTML = `
-            <div class="col-span-full py-8 text-center text-slate-400 text-xs font-medium">
-                🎉 No pending requests right now! The student database is fully satisfied.
-            </div>`;
-        return;
-    }
+                    const payload = {
+                        studentName: currentStudent.name.split(' ')[0].toUpperCase(),
+                        branch: currentStudent.branch || "CSE",
+                        resourceTitle: titleVal,
+                        details: detailsVal
+                    };
 
-    localRequestsCache.forEach(req => {
-        const card = document.createElement('div');
-        card.className = "p-5 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-800 rounded-2xl flex flex-col justify-between hover:shadow-sm transition-all";
-        card.innerHTML = `
-            <div class="space-y-2">
-                <div class="flex items-center justify-between text-[10px]">
-                    <span class="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tight truncate max-w-[120px]">👤 ${req.studentName}</span>
-                    <span class="px-2 py-0.5 rounded bg-brand-100 text-brand-600 dark:bg-brand-950 dark:text-brand-400 font-extrabold">${req.branch}</span>
-                </div>
-                <h5 class="font-bold text-sm text-slate-900 dark:text-white leading-snug line-clamp-2">${req.resourceTitle}</h5>
-                ${req.details ? `<p class="text-xs text-slate-500 italic truncate">"${req.details}"</p>` : ''}
-            </div>
-            <button onclick="fulfillRequestTrigger('${req._id}', '${escapeHtml(req.resourceTitle)}')" class="mt-4 w-full py-2 bg-white dark:bg-slate-900 hover:bg-brand-600 hover:text-white border border-slate-200 dark:border-slate-800 hover:border-brand-600 text-xs font-bold text-slate-700 dark:text-slate-300 rounded-xl transition-all flex items-center justify-center gap-1">
-                Fulfill Request ⚡
-            </button>
-        `;
-        targetFeed.appendChild(card);
-    });
-    lucide.createIcons();
-}
+                    try {
+                        const response = await fetch(`${BACKEND_URL}/requests`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        if(response.ok) {
+                            const savedItem = await response.json();
+                            localRequestsCache.unshift(savedItem);
+                            showToast("Request broadcasted successfully to live campus streams!", "success");
+                        } else { throw new Error(); }
+                    } catch(err) {
+                        payload._id = "local-req-" + Date.now();
+                        localRequestsCache.unshift(payload);
+                        showToast("Server offline. Request posted temporarily to runtime dashboard view.", "info");
+                    }
 
-// Setup Form Submission interceptor listener
-document.getElementById('resource-request-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    // Get current logged in student context
-    const currentStudentStr = localStorage.getItem("student");
-    if(!currentStudentStr) {
-        showToast("Please authenticate/login to broadcast study requests to the campus.", "error");
-        return;
-    }
-    const currentStudent = JSON.parse(currentStudentStr);
+                    this.reset();
+                    renderRequestsBoardUI();
+                });
+            }
+        }
 
-    const titleVal = document.getElementById('req-title').value.trim();
-    const detailsVal = document.getElementById('req-details').value.trim();
+        // Helper that pre-fills and auto scrolls user to contribution section to fulfill request effortlessly
+        function fulfillRequestTrigger(requestId, targetTitle) {
+            document.getElementById('contribute').scrollIntoView({ behavior: 'smooth' });
+            const contribNameInput = document.getElementById('contrib-name');
+            if (contribNameInput) {
+                contribNameInput.value = `Fulfillment: ${targetTitle}`;
+                showToast("Auto-scrolled! Simply drop or upload the file here to fulfill your peer's request.", "success");
+            }
+        }
 
-    const payload = {
-        studentName: currentStudent.name.split(' ')[0].toUpperCase(),
-        branch: currentStudent.branch || "CSE",
-        resourceTitle: titleVal,
-        details: detailsVal
-    };
-
-    try {
-        const response = await fetch(`${BACKEND_URL}/requests`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-        
-        if(response.ok) {
-            const savedItem = await response.json();
-            localRequestsCache.unshift(savedItem);
-            showToast("Request broadcasted successfully to live campus streams!", "success");
-        } else { throw new Error(); }
-    } catch(err) {
-        payload._id = "local-req-" + Date.now();
-        localRequestsCache.unshift(payload);
-        showToast("Server offline. Request posted temporarily to runtime dashboard view.", "info");
-    }
-
-    this.reset();
-    renderRequestsBoardUI();
-});
-
-// Helper that pre-fills and auto scrolls user to contribution section to fulfill request effortlessly
-function fulfillRequestTrigger(requestId, targetTitle) {
-    document.getElementById('contribute').scrollIntoView({ behavior: 'smooth' });
-    const contribNameInput = document.getElementById('contrib-name');
-    if (contribNameInput) {
-        contribNameInput.value = `Fulfillment: ${targetTitle}`;
-        showToast("Auto-scrolled! Simply drop or upload the file here to fulfill your peer's request.", "success");
-    }
-}
-
-function escapeHtml(str) {
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
-
-// Remember to append fetchCampusRequests() inside your existing window/DOM load callback logic!
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
     </script>
 </body>
 </html>
