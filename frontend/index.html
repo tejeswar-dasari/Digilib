@@ -2,7 +2,7 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digilib - Your Study Resources, All in One Place</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -53,45 +53,6 @@
             margin-top: 20px;
             border-radius: 20px;
         }
-
-        /* ==========================================================================
-           Mobile App WebView Overlap & Native Integration Styling Fixes
-           ========================================================================== */
-        @media (max-width: 767px) {
-            /* 1. Prevent Phone Status Bar Overlap by pushing the header down */
-            header {
-                padding-top: max(16px, env(safe-area-inset-top, 20px)) !important;
-                height: auto !important;
-            }
-            header > div {
-                height: 4.5rem !important; /* Elegant compact height for mobile navigation bar items */
-            }
-
-            /* 2. Compensate first section to start below the taller header */
-            #hero-section {
-                padding-top: max(110px, calc(85px + env(safe-area-inset-top, 20px))) !important;
-            }
-
-            /* 3. Push Mobile Drawer down so items are clear of the status bar when open */
-            #mobile-drawer {
-                padding-top: max(24px, calc(16px + env(safe-area-inset-top, 20px))) !important;
-            }
-
-            /* 4. Elevate toast alerts to trigger below the status bar */
-            #toast-container {
-                top: max(24px, calc(16px + env(safe-area-inset-top, 20px))) !important;
-            }
-
-            /* 5. Adjust workspace profile panel downward to look clean */
-            #profile-dropdown {
-                top: max(90px, calc(72px + env(safe-area-inset-top, 20px))) !important;
-            }
-
-            /* 6. Push Footer Bottom Up dynamically to prevent AppsGeyser Banner overlap */
-            footer {
-                padding-bottom: calc(115px + env(safe-area-inset-bottom, 20px)) !important;
-            }
-        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col relative">
@@ -124,9 +85,9 @@
             </nav>
 
             <!-- Navigation Actions -->
-            <div class="flex items-center gap-2.5">
-                <!-- Theme Toggle (Now Visible on All Screens for Native App Convenience) -->
-                <button id="theme-toggle" class="flex p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all" aria-label="Toggle Dark Mode">
+            <div class="flex items-center gap-3">
+                <!-- Theme Toggle (Desktop Only) -->
+                <button id="theme-toggle" class="hidden md:block p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all" aria-label="Toggle Dark Mode">
                     <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
                     <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
                 </button>
@@ -175,6 +136,10 @@
 
             <!-- Header buttons -->
             <div class="flex items-center gap-3">
+                <button id="drawer-theme-toggle" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                </button>
                 <button id="drawer-close-btn" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-300 transition-all">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
@@ -200,7 +165,7 @@
 
     <main class="flex-grow">
         <!-- Hero Section -->
-       <section id="hero-section" class="relative pt-24 sm:pt-28 lg:pt-20 pb-4 sm:pb-8 lg:pb-10 overflow-hidden">
+       <section class="relative pt-24 sm:pt-28 lg:pt-20 pb-4 sm:pb-8 lg:pb-10 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
                     
@@ -532,13 +497,13 @@
                         <div class="grid lg:grid-cols-12 gap-6 items-end">
                             <div class="lg:col-span-5 space-y-2">
                                 <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Resource Name / Title</label>
-                                <input id="contrib-name" type="text" placeholder="e.g., Data Structures Playlist by Abdul Bari" required class="w-full px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 text-sm dark:text-slate-200 font-medium transition-all" />
+                                <input id="contrib-name" type="text" placeholder="e.g., Data Structures Playlist by Abdul Bari" required class="w-full px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium transition-all" />
                             </div>
 
                             <!-- Dynamic Block for URL Input (Websites/YT Links) -->
                             <div id="url-field-container" class="lg:col-span-5 space-y-2">
                                 <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Resource URL</label>
-                                <input id="contrib-url" type="url" placeholder="https://youtube.com/playlist?list=..." required class="w-full px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 text-sm dark:text-slate-200 font-medium transition-all" />
+                                <input id="contrib-url" type="url" placeholder="https://youtube.com/playlist?list=..." required class="w-full px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium transition-all" />
                             </div>
 
                             <!-- Dynamic Block for File Upload Input (Papers/Study Materials) -->
@@ -548,7 +513,7 @@
                                     <label class="flex flex-col items-center justify-center w-full h-[52px] border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 rounded-xl cursor-pointer bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-950 transition-all">
                                         <div class="flex items-center gap-3 px-4">
                                             <i data-lucide="upload-cloud" class="w-5 h-5 text-slate-400"></i>
-                                            <span id="file-label-text" class="text-xs font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]">Select study document...</span>
+                                            <span id="file-label-text" class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]">Select study document...</span>
                                         </div>
                                         <input id="contrib-file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" class="hidden" />
                                     </label>
@@ -716,7 +681,7 @@
 
     <!-- Footer Section -->
     <footer class="bg-brand-950 text-slate-300 pt-10 pb-8 border-t border-slate-900 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-sans">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 pb-12 border-b border-slate-900">
                 
                 <div class="space-y-4">
@@ -778,7 +743,7 @@
 
             <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-400">
                 <div>
-                    &copy; 2026 DigiLib. All rights reserved.
+                    &copy; 2026 Digilib. All rights reserved.
                 </div>
             </div>
         </div>
@@ -981,10 +946,10 @@
                 contribFile.addEventListener('change', function() {
                     if (contribFile.files && contribFile.files.length > 0) {
                         fileLabelText.textContent = contribFile.files[0].name;
-                        fileLabelText.className = "text-xs font-bold text-brand-600 dark:text-brand-400 truncate max-w-[240px]";
+                        fileLabelText.className = "text-sm font-bold text-brand-600 dark:text-brand-400 truncate max-w-[240px]";
                     } else {
                         fileLabelText.textContent = "Select study document...";
-                        fileLabelText.className = "text-xs font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]";
+                        fileLabelText.className = "text-sm font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]";
                     }
                 });
             }
@@ -1010,6 +975,7 @@
         }
 
         document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+        document.getElementById('drawer-theme-toggle').addEventListener('click', toggleTheme);
 
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const drawerCloseBtn = document.getElementById('drawer-close-btn');
@@ -1330,7 +1296,7 @@
             
             // Reset custom styled file selector input UI
             document.getElementById('file-label-text').textContent = "Select study document...";
-            document.getElementById('file-label-text').className = "text-xs font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]";
+            document.getElementById('file-label-text').className = "text-sm font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]";
             
             // Default select UI toggle back to URL input
             document.getElementById('url-field-container').classList.remove('hidden');
