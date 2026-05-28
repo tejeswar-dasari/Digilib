@@ -1415,7 +1415,9 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-md transition-all mt-3">Register Account</button>
+                       <button id="signup-btn" type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-md transition-all mt-3">
+    Register Account
+</button>
                     </form>
                     <p class="text-xs text-center text-slate-500 dark:text-slate-400 mt-4">
                         Already have an academic profile? <a href="#" onclick="toggleAuthModal('login')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline">Log In</a>
@@ -1431,6 +1433,12 @@
         // Handles user authentication submits, with integrated backend connection + simulated robust fallbacks
         async function handleAuthSubmit(event, type) {
             event.preventDefault();
+            const signupBtn = document.getElementById("signup-btn");
+
+if (signupBtn) {
+    signupBtn.disabled = true;
+    signupBtn.innerText = "Creating Account...";
+}
 
             try {
                 if (type === "signup") {
@@ -1459,13 +1467,19 @@
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ name, roll, branch, email, password })
                         });
+let data;
 
-                        const data = await response.json();
+try {
+    data = await response.json();
+} catch {
+    showToast("Server error occurred.", "error");
+    return;
+}
 
-                        if (!response.ok) {
-                            showToast(data.message || "Signup failed", "error");
-                            return;
-                        }
+if (!response.ok) {
+    showToast(data.message || "Signup failed", "error");
+    return;
+}
 
                         localStorage.setItem("student", JSON.stringify(data.user));
                         updateProfilePanelUI(data.user);
@@ -1473,6 +1487,10 @@
                         // Disable screen lockout blur
                         document.body.style.overflow = "auto";
                         toggleAuthModal(); // Closes screen
+                        if (signupBtn) {
+    signupBtn.disabled = false;
+    signupBtn.innerText = "Register Account";
+}
                         showToast(`Welcome to DigiLib, ${data.user.name}!`, "success");
 
                     } catch (netError) {
