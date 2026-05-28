@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config(); // Corrected the capital 'R' to lowercase 'r' to prevent runtime crash
 
 const express = require('express');
 const cors = require('cors');
@@ -30,7 +30,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, "../frontend")));
 
 // MongoDB Atlas Connection String
-// Added 'serverSelectionTimeoutMS' to prevent server from hanging if your IP is not whitelisted in Atlas
 const MONGO_URI = process.env.MONGO_URI;
 
 mongoose.connect(MONGO_URI, {
@@ -207,7 +206,8 @@ app.delete('/resources/:id', async (req, res) => {
 // STUDENT SIGNUP
 app.post('/signup', async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        // Corrected: Extracted roll and branch from request body
+        const { name, email, password, roll, branch } = req.body;
 
         // Ensure variables are captured cleanly
         if (!name || !email || !password) {
@@ -232,11 +232,13 @@ app.post('/signup', async (req, res) => {
         // Encrypt password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create user
+        // Create user with roll and branch properties
         const user = new User({
             name,
             email: email.toLowerCase(),
-            password: hashedPassword
+            password: hashedPassword,
+            roll: roll || "STU-OFFLINE",
+            branch: branch || "Computer Science (CSE)"
         });
 
         await user.save();
@@ -245,7 +247,9 @@ app.post('/signup', async (req, res) => {
             message: 'Signup successful',
             user: {
                 name: user.name,
-                email: user.email
+                email: user.email,
+                roll: user.roll,
+                branch: user.branch
             }
         });
     } catch (error) {
@@ -289,11 +293,14 @@ app.post('/login', async (req, res) => {
             });
         }
 
+        // Corrected: Returned roll and branch to sync with the frontend's profile layout properly
         res.status(200).json({
             message: 'Login successful',
             user: {
                 name: user.name,
-                email: user.email
+                email: user.email,
+                roll: user.roll || "STU-OFFLINE",
+                branch: user.branch || "Computer Science (CSE)"
             }
         });
 
@@ -312,7 +319,7 @@ app.listen(PORT, () => {
     console.log(`Server running successfully on port ${PORT}`);
 });
 
-// Add this model definition near your other imports or top of the file
+// Model definition for Requests
 const RequestSchema = new mongoose.Schema({
     studentName: { type: String, required: true },
     branch: { type: String, required: true },

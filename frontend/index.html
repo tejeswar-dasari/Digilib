@@ -2,7 +2,7 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Digilib - Your Study Resources, All in One Place</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -53,6 +53,40 @@
             margin-top: 20px;
             border-radius: 20px;
         }
+
+        /* ==========================================================================
+           Mobile App WebView Overlap & Native Integration Styling Fixes
+           ========================================================================== */
+        @media (max-width: 767px) {
+            /* 1. Prevent Phone Status Bar Overlap by pushing the header down */
+            header {
+                padding-top: max(16px, env(safe-area-inset-top, 20px)) !important;
+                height: auto !important;
+            }
+            header > div {
+                height: 4.5rem !important; /* Elegant compact height for mobile navigation bar items */
+            }
+
+            /* 2. Compensate first section to start below the taller header */
+            #hero-section {
+                padding-top: max(110px, calc(85px + env(safe-area-inset-top, 20px))) !important;
+            }
+
+            /* 3. Push Mobile Drawer down so items are clear of the status bar when open */
+            #mobile-drawer {
+                padding-top: max(24px, calc(16px + env(safe-area-inset-top, 20px))) !important;
+            }
+
+            /* 4. Elevate toast alerts to trigger below the status bar */
+            #toast-container {
+                top: max(24px, calc(16px + env(safe-area-inset-top, 20px))) !important;
+            }
+
+            /* 5. Push Footer Bottom Up dynamically to prevent AppsGeyser Banner overlap without leaving empty space */
+            footer {
+                padding-bottom: calc(60px + env(safe-area-inset-bottom, 16px)) !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col relative">
@@ -85,9 +119,9 @@
             </nav>
 
             <!-- Navigation Actions -->
-            <div class="flex items-center gap-3">
-                <!-- Theme Toggle (Desktop Only) -->
-                <button id="theme-toggle" class="hidden md:block p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all" aria-label="Toggle Dark Mode">
+            <div class="flex items-center gap-2.5">
+                <!-- Theme Toggle (Now Visible on All Screens for Native App Convenience) -->
+                <button id="theme-toggle" class="flex p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all" aria-label="Toggle Dark Mode">
                     <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
                     <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
                 </button>
@@ -136,10 +170,6 @@
 
             <!-- Header buttons -->
             <div class="flex items-center gap-3">
-                <button id="drawer-theme-toggle" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all">
-                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
-                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
-                </button>
                 <button id="drawer-close-btn" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-300 transition-all">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
@@ -165,7 +195,7 @@
 
     <main class="flex-grow">
         <!-- Hero Section -->
-       <section class="relative pt-24 sm:pt-28 lg:pt-20 pb-4 sm:pb-8 lg:pb-10 overflow-hidden">
+       <section id="hero-section" class="relative pt-24 sm:pt-28 lg:pt-20 pb-4 sm:pb-8 lg:pb-10 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
                     
@@ -497,13 +527,13 @@
                         <div class="grid lg:grid-cols-12 gap-6 items-end">
                             <div class="lg:col-span-5 space-y-2">
                                 <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Resource Name / Title</label>
-                                <input id="contrib-name" type="text" placeholder="e.g., Data Structures Playlist by Abdul Bari" required class="w-full px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium transition-all" />
+                                <input id="contrib-name" type="text" placeholder="e.g., Data Structures Playlist by Abdul Bari" required class="w-full px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 text-sm dark:text-slate-200 font-medium transition-all" />
                             </div>
 
                             <!-- Dynamic Block for URL Input (Websites/YT Links) -->
                             <div id="url-field-container" class="lg:col-span-5 space-y-2">
                                 <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Resource URL</label>
-                                <input id="contrib-url" type="url" placeholder="https://youtube.com/playlist?list=..." required class="w-full px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium transition-all" />
+                                <input id="contrib-url" type="url" placeholder="https://youtube.com/playlist?list=..." required class="w-full px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 text-sm dark:text-slate-200 font-medium transition-all" />
                             </div>
 
                             <!-- Dynamic Block for File Upload Input (Papers/Study Materials) -->
@@ -624,7 +654,8 @@
 
     <!-- User Profile Details Floating Panel -->
     <div id="profile-dropdown-backdrop" class="fixed inset-0 z-40 hidden" onclick="toggleProfileDropdown()"></div>
-    <div id="profile-dropdown" class="fixed top-24 right-4 sm:right-8 md:right-16 lg:right-24 z-40 w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-3xl shadow-2xl p-6 hidden transform scale-95 opacity-0 transition-all duration-300">
+    <!-- FIXED: Added "left-4 right-4 md:left-auto md:w-[360px]" so the card centers beautifully on mobile viewports instead of clipping on the left edge -->
+    <div id="profile-dropdown" class="fixed top-[max(90px,calc(72px+env(safe-area-inset-top,20px)))] right-4 left-4 md:left-auto md:right-16 lg:right-24 z-40 w-auto max-w-sm md:w-[360px] bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-3xl shadow-2xl p-6 hidden transform scale-95 opacity-0 transition-all duration-300">
         <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
             <h4 class="font-extrabold text-slate-900 dark:text-white">Academic Workspace</h4>
             <span class="text-xs font-bold text-emerald-500 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/50 rounded-full flex items-center gap-1">
@@ -644,7 +675,7 @@
                 </div>
             </div>
 
-            <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
+            <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-150 dark:border-slate-800 space-y-2">
                 <div class="flex justify-between text-xs">
                     <span class="text-slate-500 dark:text-slate-400 font-medium">Core Stream:</span>
                     <span id="profile-user-branch" class="font-bold text-slate-800 dark:text-slate-200">Computer Science (CSE)</span>
@@ -656,11 +687,11 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-                <div class="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 text-center">
+                <div class="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-155 dark:border-slate-800 text-center">
                     <span class="block text-2xl font-black text-indigo-600 dark:text-indigo-400" id="profile-stats-downloads">12</span>
                     <span class="text-[10px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-slate-400">Total Views</span>
                 </div>
-                <div class="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 text-center">
+                <div class="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-155 dark:border-slate-800 text-center">
                     <span class="block text-2xl font-black text-emerald-500 dark:text-emerald-400" id="profile-stats-contributed">0</span>
                     <span class="text-[10px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-slate-400">Contributed</span>
                 </div>
@@ -681,7 +712,7 @@
 
     <!-- Footer Section -->
     <footer class="bg-brand-950 text-slate-300 pt-10 pb-8 border-t border-slate-900 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-sans">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 pb-12 border-b border-slate-900">
                 
                 <div class="space-y-4">
@@ -743,7 +774,7 @@
 
             <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-400">
                 <div>
-                    &copy; 2026 Digilib. All rights reserved.
+                    &copy; 2026 DigiLib. All rights reserved.
                 </div>
             </div>
         </div>
@@ -804,7 +835,7 @@
             if (!loggedInUser) {
                 // Disable background interactions and enable portal lockout blur mode
                 document.body.style.overflow = "hidden";
-                toggleAuthModal('login');
+                toggleAuthModal('signup'); // Fixed to launch "Create Student Profile" directly for new users on load!
             } else {
                 document.body.style.overflow = "auto";
                 checkLoggedInUser();
@@ -974,8 +1005,10 @@
             }
         }
 
-        document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-        document.getElementById('drawer-theme-toggle').addEventListener('click', toggleTheme);
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', toggleTheme);
+        }
 
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const drawerCloseBtn = document.getElementById('drawer-close-btn');
@@ -1000,9 +1033,9 @@
             }, 300);
         }
 
-        mobileMenuBtn.addEventListener('click', openDrawerMenu);
-        drawerCloseBtn.addEventListener('click', closeDrawerMenu);
-        mobileDrawerOverlay.addEventListener('click', closeDrawerMenu);
+        if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openDrawerMenu);
+        if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeDrawerMenu);
+        if (mobileDrawerOverlay) mobileDrawerOverlay.addEventListener('click', closeDrawerMenu);
 
         function setResourceFilterType(type) {
             document.getElementById('filters').scrollIntoView({ behavior: 'smooth' });
@@ -1028,32 +1061,34 @@
         }
 
         const filterForm = document.getElementById('filter-form');
-        filterForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+        if (filterForm) {
+            filterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
 
-            currentFilterBranch = document.getElementById('filter-branch').value;
-            currentFilterYear = document.getElementById('filter-year').value;
-            currentFilterSemester = document.getElementById('filter-semester').value;
+                currentFilterBranch = document.getElementById('filter-branch').value;
+                currentFilterYear = document.getElementById('filter-year').value;
+                currentFilterSemester = document.getElementById('filter-semester').value;
 
-            const container = document.getElementById('resources-showcase-container');
+                const container = document.getElementById('resources-showcase-container');
 
-            // SHOW SECTION
-            container.classList.remove('hidden');
+                // SHOW SECTION
+                container.classList.remove('hidden');
 
-            // UPDATE UI
-            updateUnlockedResourcesUI();
+                // UPDATE UI
+                updateUnlockedResourcesUI();
 
-            // SUCCESS MESSAGE
-            showToast('Resources unlocked successfully!', 'success');
+                // SUCCESS MESSAGE
+                showToast('Resources unlocked successfully!', 'success');
 
-            // SCROLL DOWN TO UNLOCKED SHOWCASE AUTOMATICALLY
-            setTimeout(() => {
-                container.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }, 150);
-        });
+                // SCROLL DOWN TO UNLOCKED SHOWCASE AUTOMATICALLY
+                setTimeout(() => {
+                    container.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 150);
+            });
+        }
 
         function updateUnlockedResourcesUI(retainTab = false) {
             if (!retainTab) {
@@ -1069,6 +1104,8 @@
             }
 
             const unlockedGrid = document.getElementById('unlocked-grid');
+            if (!unlockedGrid) return;
+            
             document.getElementById('unlocked-subtitle').textContent = `Displaying resources for ${currentFilterBranch} • ${currentFilterYear} (${currentFilterSemester})`;
 
             let filtered = database.filter(item => {
@@ -1178,136 +1215,138 @@
 
         // Student Contribution submission handler
         const contributeForm = document.getElementById('contribute-form');
-        contributeForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+        if (contributeForm) {
+            contributeForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
 
-            const nameVal = document.getElementById('contrib-name').value.trim();
-            const typeVal = document.getElementById('contrib-type').value;
-            const branchVal = document.getElementById('contrib-branch').value;
-            const yearVal = document.getElementById('contrib-year').value;
-            const semesterVal = document.getElementById('contrib-semester').value;
-            const formatVal = document.getElementById('contrib-format').value;
-           
-            let resourceUrl = "#";
-            let fileNameVal = null;
-            let isDuplicate = false;
+                const nameVal = document.getElementById('contrib-name').value.trim();
+                const typeVal = document.getElementById('contrib-type').value;
+                const branchVal = document.getElementById('contrib-branch').value;
+                const yearVal = document.getElementById('contrib-year').value;
+                const semesterVal = document.getElementById('contrib-semester').value;
+                const formatVal = document.getElementById('contrib-format').value;
+               
+                let resourceUrl = "#";
+                let fileNameVal = null;
+                let isDuplicate = false;
 
-            // Handle validations & assignments based on dynamically selected type
-            if (typeVal === "Websites & YouTube Links") {
-                const urlVal = document.getElementById('contrib-url').value.trim();
-                resourceUrl = urlVal;
+                // Handle validations & assignments based on dynamically selected type
+                if (typeVal === "Websites & YouTube Links") {
+                    const urlVal = document.getElementById('contrib-url').value.trim();
+                    resourceUrl = urlVal;
 
-                // DUPLICATE CHECK: Verify by URL or Name
-                isDuplicate = database.some(item => 
-                    (item.name && item.name.toLowerCase() === nameVal.toLowerCase()) || 
-                    (item.url && item.url.toLowerCase() === urlVal.toLowerCase())
-                );
-            } else {
-                const fileInput = document.getElementById('contrib-file');
-                if (fileInput.files && fileInput.files.length > 0) {
-                    const uploadedFile = fileInput.files[0];
-                    fileNameVal = uploadedFile.name;
-                    resourceUrl = URL.createObjectURL(uploadedFile);
-
+                    // DUPLICATE CHECK: Verify by URL or Name
                     isDuplicate = database.some(item => 
                         (item.name && item.name.toLowerCase() === nameVal.toLowerCase()) || 
-                        (item.fileName && fileNameVal && item.fileName.toLowerCase() === fileNameVal.toLowerCase())
+                        (item.url && item.url.toLowerCase() === urlVal.toLowerCase())
                     );
                 } else {
-                    showToast('Please select a valid study file to contribute.', 'error');
+                    const fileInput = document.getElementById('contrib-file');
+                    if (fileInput.files && fileInput.files.length > 0) {
+                        const uploadedFile = fileInput.files[0];
+                        fileNameVal = uploadedFile.name;
+                        resourceUrl = URL.createObjectURL(uploadedFile);
+
+                        isDuplicate = database.some(item => 
+                            (item.name && item.name.toLowerCase() === nameVal.toLowerCase()) || 
+                            (item.fileName && fileNameVal && item.fileName.toLowerCase() === fileNameVal.toLowerCase())
+                        );
+                    } else {
+                        showToast('Please select a valid study file to contribute.', 'error');
+                        return;
+                    }
+                }
+
+                if (isDuplicate) {
+                    showToast('This resource/file already exists in our database. Duplicate entries are blocked.', 'error');
                     return;
                 }
-            }
 
-            if (isDuplicate) {
-                showToast('This resource/file already exists in our database. Duplicate entries are blocked.', 'error');
-                return;
-            }
+                // Assemble FormData for Multipurpose Request
+                const formData = new FormData();
+                formData.append("name", nameVal);
+                formData.append("type", typeVal);
+                formData.append("branch", branchVal);
+                formData.append("year", yearVal);
+                formData.append("semester", semesterVal);
+                formData.append("format", formatVal);
 
-            // Assemble FormData for Multipurpose Request
-            const formData = new FormData();
-            formData.append("name", nameVal);
-            formData.append("type", typeVal);
-            formData.append("branch", branchVal);
-            formData.append("year", yearVal);
-            formData.append("semester", semesterVal);
-            formData.append("format", formatVal);
-
-            if (typeVal === "Websites & YouTube Links") {
-                formData.append("url", resourceUrl);
-            } else {
-                formData.append("file", document.getElementById('contrib-file').files[0]);
-            }
-
-            try {
-                showToast('Uploading Your Resource...', 'info');
-                
-                const response = await fetch(`${BACKEND_URL}/resources`, {
-                    method: "POST",
-                    body: formData
-                });
-
-                if (response.ok) {
-                    const savedResource = await response.json();
-                    database.unshift(savedResource);
-                    showToast('Wonderful! Your study resource was published to the live stream.', 'success');
+                if (typeVal === "Websites & YouTube Links") {
+                    formData.append("url", resourceUrl);
                 } else {
-                    throw new Error("Server rejected request");
+                    formData.append("file", document.getElementById('contrib-file').files[0]);
                 }
-            } catch (err) {
-                console.warn("Backend post failed, adding to session cache:", err);
+
+                try {
+                    showToast('Uploading Your Resource...', 'info');
+                    
+                    const response = await fetch(`${BACKEND_URL}/resources`, {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const savedResource = await response.json();
+                        database.unshift(savedResource);
+                        showToast('Wonderful! Your study resource was published to the live stream.', 'success');
+                    } else {
+                        throw new Error("Server rejected request");
+                    }
+                } catch (err) {
+                    console.warn("Backend post failed, adding to session cache:", err);
+                    
+                    // Offline Fallback capability
+                    const fallbackResource = {
+                        id: `local-${Date.now()}`,
+                        name: nameVal,
+                        type: typeVal,
+                        branch: branchVal,
+                        year: yearVal,
+                        semester: semesterVal,
+                        format: formatVal,
+                        url: resourceUrl,
+                        fileName: fileNameVal,
+                        clicks: 0,
+                        verified: true
+                    };
+                    database.unshift(fallbackResource);
+                    showToast('Server connection issues! Added to temporary session feed.', 'info');
+                }
+
+                userStatsContributed += 1;
+                document.getElementById('profile-stats-contributed').textContent = userStatsContributed;
+
+                // Instantly transition view to showcase the user's branch & year choice
+                currentFilterBranch = branchVal;
+                currentFilterYear = yearVal;
+                currentFilterSemester = semesterVal;
+
+                document.getElementById('filter-branch').value = branchVal;
+                document.getElementById('filter-year').value = yearVal;
+                document.getElementById('filter-semester').value = semesterVal;
+
+                const container = document.getElementById('resources-showcase-container');
+                container.classList.remove('hidden');
                 
-                // Offline Fallback capability
-                const fallbackResource = {
-                    id: `local-${Date.now()}`,
-                    name: nameVal,
-                    type: typeVal,
-                    branch: branchVal,
-                    year: yearVal,
-                    semester: semesterVal,
-                    format: formatVal,
-                    url: resourceUrl,
-                    fileName: fileNameVal,
-                    clicks: 0,
-                    verified: true
-                };
-                database.unshift(fallbackResource);
-                showToast('Server connection issues! Added to temporary session feed.', 'info');
-            }
+                // Re-render UI & reset form fields
+                updateUnlockedResourcesUI();
+                contributeForm.reset();
+                
+                // Reset custom styled file selector input UI
+                document.getElementById('file-label-text').textContent = "Select study document...";
+                document.getElementById('file-label-text').className = "text-xs font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]";
+                
+                // Default select UI toggle back to URL input
+                document.getElementById('url-field-container').classList.remove('hidden');
+                document.getElementById('file-field-container').classList.add('hidden');
+                document.getElementById('contrib-url').setAttribute('required', 'true');
+                document.getElementById('contrib-file').removeAttribute('required');
 
-            userStatsContributed += 1;
-            document.getElementById('profile-stats-contributed').textContent = userStatsContributed;
-
-            // Instantly transition view to showcase the user's branch & year choice
-            currentFilterBranch = branchVal;
-            currentFilterYear = yearVal;
-            currentFilterSemester = semesterVal;
-
-            document.getElementById('filter-branch').value = branchVal;
-            document.getElementById('filter-year').value = yearVal;
-            document.getElementById('filter-semester').value = semesterVal;
-
-            const container = document.getElementById('resources-showcase-container');
-            container.classList.remove('hidden');
-            
-            // Re-render UI & reset form fields
-            updateUnlockedResourcesUI();
-            contributeForm.reset();
-            
-            // Reset custom styled file selector input UI
-            document.getElementById('file-label-text').textContent = "Select study document...";
-            document.getElementById('file-label-text').className = "text-sm font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]";
-            
-            // Default select UI toggle back to URL input
-            document.getElementById('url-field-container').classList.remove('hidden');
-            document.getElementById('file-field-container').classList.add('hidden');
-            document.getElementById('contrib-url').setAttribute('required', 'true');
-            document.getElementById('contrib-file').removeAttribute('required');
-
-            setTimeout(() => { 
-                container.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
-            }, 300);
-        });
+                setTimeout(() => { 
+                    container.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
+                }, 300);
+            });
+        }
 
         // Toggle Password reveal via eye-icon
         function togglePassword(inputId, iconId) {
@@ -1329,6 +1368,7 @@
         function toggleAuthModal(mode = '') {
             closeDrawerMenu();
             const backdrop = document.getElementById('auth-modal-backdrop');
+            if (!backdrop) return;
             const container = backdrop.querySelector('.transform');
             const content = document.getElementById('auth-modal-content');
             const modalCloseBtn = document.getElementById('modal-close-btn');
@@ -1341,16 +1381,18 @@
                     showToast('Access Denied. Please Login or Sign Up first to enter Digilib.', 'error');
                     return;
                 }
-                container.classList.add('scale-95', 'opacity-0');
+                if (container) container.classList.add('scale-95', 'opacity-0');
                 setTimeout(() => { backdrop.classList.add('hidden'); }, 300);
                 return;
             }
 
             // Lockout view close buttons if student session isn't logged in
-            if (!hasSession) {
-                modalCloseBtn.classList.add('hidden');
-            } else {
-                modalCloseBtn.classList.remove('hidden');
+            if (modalCloseBtn) {
+                if (!hasSession) {
+                    modalCloseBtn.classList.add('hidden');
+                } else {
+                    modalCloseBtn.classList.remove('hidden');
+                }
             }
 
             if (mode === 'login') {
@@ -1653,7 +1695,7 @@
             document.body.style.overflow = "hidden";
 
             setTimeout(() => {
-                toggleAuthModal('login');
+                toggleAuthModal('signup'); // Reset directly to signup form on logout
             }, 500);
         }
 
@@ -1830,7 +1872,7 @@
         }
 
         function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "減039;");
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
     </script>
 </body>
