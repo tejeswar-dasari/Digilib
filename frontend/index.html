@@ -1240,7 +1240,7 @@
             }
 
             try {
-                showToast('Sending your resource for admin approval...', 'info');
+                showToast('Uploading Your Resource...', 'info');
                 
                 const response = await fetch(`${BACKEND_URL}/resources`, {
                     method: "POST",
@@ -1250,7 +1250,7 @@
                 if (response.ok) {
                     const savedResource = await response.json();
                     database.unshift(savedResource);
-                    showToast('Wonderful! Your study resource was verified and published to the live stream.', 'success');
+                    showToast('Wonderful! Your study resource was published to the live stream.', 'success');
                 } else {
                     throw new Error("Server rejected request");
                 }
