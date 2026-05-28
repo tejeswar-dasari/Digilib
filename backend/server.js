@@ -42,18 +42,18 @@ mongoose.connect(MONGO_URI, {
 });
 
 // Multer Storage Configuration for study materials & question papers
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/');
-    },
-    filename: function (req, file, cb) {
-        // Safe filename containing original extension but unique timestamp prefix
-        cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '_'));
-    }
+const cloudinary = require("./config/cloudinary");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "digilib_resources",
+    resource_type: "auto",
+  },
 });
 
-const upload = multer({ storage: storage });
-
+const upload = multer({ storage });
 // API Health Check
 app.get('/test', (req, res) => {
     res.json({
@@ -91,10 +91,9 @@ app.post('/resources', upload.single('file'), async (req, res) => {
         let cleanFileName = "";
 
         if (req.file) {
-            // Save the relative path so that frontend can easily append dynamic server domain
-            resourceUrl = `uploads/${req.file.filename}`;
-            cleanFileName = req.file.originalname;
-        }
+    resourceUrl = req.file.path;
+    cleanFileName = req.file.originalname;
+}
 
         const resourceData = {
             name: req.body.name,
@@ -175,18 +174,6 @@ app.delete('/resources/:id', async (req, res) => {
             });
         }
 
-        // Delete uploaded file from uploads folder if it exists
-        if (resource.fileName && resource.url) {
-            const filePath = path.join(
-                __dirname,
-                'uploads',
-                resource.url.replace('uploads/', '')
-            );
-
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-            }
-        }
 
         await Resource.findByIdAndDelete(req.params.id);
 

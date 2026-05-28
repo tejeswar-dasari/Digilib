@@ -847,76 +847,7 @@
             setupRequestFormListener(); // Mount initialization handlers correctly
         });
 
-        // Seed default fallback resources when server is offline
-        function getSeedResources() {
-            return [
-                {
-                    id: "seed-1",
-                    name: "Data Structures & Algorithms Complete YouTube Playlist by Abdul Bari",
-                    type: "Websites & YouTube Links",
-                    branch: "Computer Science (CSE)",
-                    year: "1st Year",
-                    semester: "1st Semester",
-                    format: "YouTube Playlist",
-                    url: "https://www.youtube.com/playlist?list=PL2_aWCzGMAwI3W_yfNzKghPQg67k6-0JD",
-                    clicks: 145,
-                    verified: true
-                },
-                {
-                    id: "seed-2",
-                    name: "Engineering Mathematics-I Previous Year Question Papers (JNTUACEP)",
-                    type: "Previous Year Papers",
-                    branch: "Computer Science (CSE)",
-                    year: "1st Year",
-                    semester: "1st Semester",
-                    format: "PDF Document",
-                    fileName: "Mathematics_I_2024_PYQ.pdf",
-                    url: "https://example.com/mock-math-pyq.pdf",
-                    clicks: 89,
-                    verified: true
-                },
-                {
-                    id: "seed-3",
-                    name: "Python Programming Handnotes - Toppers Edition (Handwritten)",
-                    type: "Study Materials",
-                    branch: "Computer Science (CSE)",
-                    year: "1st Year",
-                    semester: "1st Semester",
-                    format: "Google Drive Folder",
-                    fileName: "Python_Topper_Notes.pdf",
-                    url: "https://drive.google.com/drive/folders/mock-python",
-                    clicks: 212,
-                    verified: true
-                },
-                {
-                    id: "seed-4",
-                    name: "Digital Logic Design Lecture Slides & Reference Material",
-                    type: "Study Materials",
-                    branch: "Computer Science (CSE)",
-                    year: "2nd Year",
-                    semester: "1st Semester",
-                    format: "PDF Document",
-                    fileName: "DLD_Lectures_Complete.pdf",
-                    url: "https://example.com/mock-dld.pdf",
-                    clicks: 56,
-                    verified: true
-                },
-                {
-                    id: "seed-5",
-                    name: "Analog Electronics Circuit & Labs Study Resource",
-                    type: "Study Materials",
-                    branch: "Electronics & Communication (ECE)",
-                    year: "2nd Year",
-                    semester: "1st Semester",
-                    format: "PDF Document",
-                    fileName: "Analog_Circuits_ECE.pdf",
-                    url: "https://example.com/analog-circuits.pdf",
-                    clicks: 72,
-                    verified: true
-                }
-            ];
-        }
-
+        
         // Check local storage for persistent student sessions on launch
         function checkLoggedInUser() {
             const savedStudent = localStorage.getItem("student");
@@ -941,10 +872,10 @@
                 database = data;
                 updateUnlockedResourcesUI();
             } catch (error) {
-                console.warn("Using high-quality offline cache seeds. (Backend server is offline)");
-                database = getSeedResources();
-                updateUnlockedResourcesUI();
-            }
+    console.error("Failed to fetch resources from backend:", error);
+    database = [];
+    updateUnlockedResourcesUI();
+}
         }
 
         // Toggles Dynamic Inputs (URL vs File upload) based on contribution resource type selection
@@ -1151,9 +1082,13 @@
                 const resourceId = item._id || item.id;
 
                 let resourceUrl = item.url;
-                if (resourceUrl && !resourceUrl.startsWith('http') && !resourceUrl.startsWith('blob:')) {
-                    resourceUrl = `${BACKEND_URL}/${resourceUrl}`;
-                }
+                if (
+    resourceUrl &&
+    !resourceUrl.startsWith('http') &&
+    !resourceUrl.startsWith('blob:')
+) {
+    resourceUrl = `${BACKEND_URL}/${resourceUrl}`;
+}
 
                 card.innerHTML = `
                     <div class="space-y-4">
