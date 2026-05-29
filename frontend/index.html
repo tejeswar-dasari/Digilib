@@ -446,7 +446,7 @@
                 </div>
                <div class="mb-4 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl">
     <p class="text-sm font-medium text-amber-700 dark:text-amber-400">
-        📌  Please mention the regulation in the resource title.
+        📌  Please include the Regulation in the Resource Name/Title field.
         Example: <b>[R23] DBMS Study Material</b> or <b>[R20] Data Structures Notes</b>
     </p>
 </div> 
@@ -1344,7 +1344,7 @@
                             <i data-lucide="lock" class="w-6 h-6"></i>
                         </div>
                         <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Student Portal Access</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Please log in with your college credentials to browse resources</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Please log in with your registered credentials to browse resources</p>
                     </div>
                     <form onsubmit="handleAuthSubmit(event, 'login')" class="space-y-4">
                         <div>
@@ -1372,8 +1372,11 @@
                 content.innerHTML = `
                     <div class="text-center mb-4">
                         <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Create Student Profile</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Join your college database to access syllabus streams</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Join DigiLib to access, share, and request study resources.</p>
                     </div>
+                    <p class="text-xs text-amber-600 dark:text-amber-400 text-center mb-3">
+    📌 Use a valid email address. An email can only be registered once. 🔐 Please remember your password for future logins.
+</p>
                     <form onsubmit="handleAuthSubmit(event, 'signup')" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Full Name</label>
@@ -1542,7 +1545,6 @@ if (loginBtn) {
                         });
 
                         const data = await response.json();
-
                        if (!response.ok) {
     showToast(data.message || "Login failed", "error");
 
