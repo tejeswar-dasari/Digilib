@@ -1478,6 +1478,7 @@ let data;
 
 try {
     data = await response.json();
+    console.log("Backend Response:", data);
 } catch {
     showToast("Server error occurred.", "error");
     return;
@@ -1485,6 +1486,10 @@ try {
 
 if (!response.ok) {
     showToast(data.message || "Signup failed", "error");
+
+    signupBtn.disabled = false;
+    signupBtn.innerText = "Register Account";
+
     return;
 }
 
