@@ -103,6 +103,7 @@ app.post('/resources', upload.single('file'), async (req, res) => {
             name: req.body.name,
             type: req.body.type,
             branch: req.body.branch,
+            regulation: req.body.regulation,
             year: req.body.year,
             semester: req.body.semester,
             format: req.body.format,

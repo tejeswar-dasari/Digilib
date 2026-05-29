@@ -18,6 +18,12 @@ const ResourceSchema = new mongoose.Schema({
         trim: true,
         index: true // Optimized index for active academic profile lookups
     },
+    regulation:{
+        type: String,
+        required: true,
+        trim:true,
+        index:true
+    },
     year: {
         type: String,
         required: true,
