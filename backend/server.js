@@ -91,6 +91,9 @@ app.post('/resources', upload.single('file'), async (req, res) => {
         let cleanFileName = "";
 
         if (req.file) {
+    console.log("Uploaded File Details:");
+    console.log(req.file);
+
     resourceUrl = req.file.path;
     cleanFileName = req.file.originalname;
 }
