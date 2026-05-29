@@ -444,6 +444,12 @@
                     </h2>
                     <div class="w-16 h-1.5 bg-brand-600 dark:bg-brand-500 mx-auto rounded-full"></div>
                 </div>
+               <div class="mb-4 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl">
+    <p class="text-sm font-medium text-amber-700 dark:text-amber-400">
+        📌 If your resource belongs to a specific regulation, include it in the title.
+        Example: <b>[R23] Digital Logic Notes</b> or <b>[R20] DBMS PYQ</b>
+    </p>
+</div> 
 
                 <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-lg relative overflow-hidden">
                     <form id="contribute-form" class="space-y-6">
@@ -1839,7 +1845,7 @@ if (submitBtn) {
                     setTimeout(() => {
     document.getElementById('live-requests-feed').scrollIntoView({
         behavior: 'smooth',
-        block: 'start'
+        block: 'center'
     });
 }, 300);
                 });
