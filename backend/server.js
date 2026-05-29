@@ -46,13 +46,14 @@ const cloudinary = require("./config/cloudinary");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
+  cloudinary,
+  params: async (req, file) => ({
     folder: "digilib_resources",
-    resource_type: "auto",
-  },
+    resource_type: "raw",
+    type: "upload",
+    access_mode: "public"
+  }),
 });
-
 const upload = multer({ storage });
 // API Health Check
 app.get('/test', (req, res) => {
