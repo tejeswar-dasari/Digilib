@@ -50,8 +50,8 @@ const storage = new CloudinaryStorage({
   params: async (req, file) => ({
     folder: "digilib_resources",
     resource_type: "raw",
-    type: "upload",
-    access_mode: "public"
+    use_filename: true,
+    unique_filename: false
   }),
 });
 const upload = multer({ storage });
