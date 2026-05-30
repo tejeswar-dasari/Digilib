@@ -304,6 +304,32 @@ app.post('/login', async (req, res) => {
         });
     }
 });
+app.get('/download/:id', async (req, res) => {
+    try {
+        const resource = await Resource.findById(req.params.id);
+
+        if (!resource) {
+            return res.status(404).json({
+                message: 'Resource not found'
+            });
+        }
+
+        const fileName = resource.fileName || "download.pdf";
+
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename="${fileName}"`
+        );
+
+        res.redirect(resource.url);
+
+    } catch (error) {
+        console.error("Download Error:", error);
+        res.status(500).json({
+            message: "Download failed"
+        });
+    }
+});
 
 // Start Server
 const PORT = process.env.PORT || 5000;
