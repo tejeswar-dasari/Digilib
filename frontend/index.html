@@ -1002,7 +1002,6 @@
         if (filterForm) {
             filterForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                console.log("Database size:", database.length);
 
                 currentFilterBranch = document.getElementById('filter-branch').value;
                 currentFilterYear = document.getElementById('filter-year').value;
@@ -1097,9 +1096,7 @@
 ) {
     resourceUrl = `${BACKEND_URL}/${resourceUrl}`;
 }
-if (hasFile) {
-    resourceUrl = `${BACKEND_URL}/download/${resourceId}`;
-}
+
                 card.innerHTML = `
                     <div class="space-y-4">
                         <div class="flex items-center justify-between">
@@ -1125,7 +1122,7 @@ if (hasFile) {
                             <i data-lucide="layers" class="w-3.5 h-3.5"></i>
                             ${formatLabel}
                         </span>
-                       <a href="${BACKEND_URL}/download/${resourceId}" 
+                        <a href="${resourceUrl || '#'}" 
                            target="_blank"
                            onclick="incrementClickCount('${resourceId}')"
                            class="inline-flex items-center gap-1 text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline">
