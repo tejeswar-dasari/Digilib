@@ -1129,13 +1129,14 @@
                             <i data-lucide="layers" class="w-3.5 h-3.5"></i>
                             ${formatLabel}
                         </span>
-                       <a href="${BACKEND_URL}/download/${item._id}"> 
-                           target="_blank"
-                           onclick="incrementClickCount('${resourceId}')"
-                           class="inline-flex items-center gap-1 text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline">
-                            ${item.type === 'Websites & YouTube Links' ? 'Open Resource' : 'Download File'}
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </a>
+                      <a href="${BACKEND_URL}/download/${item._id}"
+   target="_blank"
+   onclick="incrementClickCount('${resourceId}')"
+   class="inline-flex items-center gap-1 text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline">
+
+   Download File
+   <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+</a>
                     </div>
                 `;
                 unlockedGrid.appendChild(card);
