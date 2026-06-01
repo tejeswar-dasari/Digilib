@@ -9,6 +9,7 @@ const fs = require('fs');
 const Resource = require('./models/Resource');
 const User = require('./models/User');
 const bcrypt = require('bcryptjs');
+const axios = require("axios");
 
 const app = express();
 
@@ -88,13 +89,27 @@ app.get('/download/:id', async (req, res) => {
             return res.status(404).send('Resource not found');
         }
 
-        const downloadUrl =
-            resource.url + '?fl_attachment=' + encodeURIComponent(resource.fileName);
+        const response = await axios({
+            url: resource.url,
+            method: 'GET',
+            responseType: 'stream'
+        });
 
-        res.redirect(downloadUrl);
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename="${resource.fileName}"`
+        );
+
+        res.setHeader(
+            'Content-Type',
+            'application/pdf'
+        );
+
+        response.data.pipe(res);
 
     } catch (error) {
-        res.status(500).send(error.message);
+        console.error(error);
+        res.status(500).send('Download failed');
     }
 });
 // ADD NEW RESOURCE
