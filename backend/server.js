@@ -80,6 +80,16 @@ app.get('/resources', async (req, res) => {
         });
     }
 });
+app.get('/download/:id', async (req, res) => {
+    const resource = await Resource.findById(req.params.id);
+
+    res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${resource.fileName}"`
+    );
+
+    res.redirect(resource.url);
+});
 
 // ADD NEW RESOURCE
 app.post('/resources', upload.single('file'), async (req, res) => {
