@@ -81,16 +81,22 @@ app.get('/resources', async (req, res) => {
     }
 });
 app.get('/download/:id', async (req, res) => {
-    const resource = await Resource.findById(req.params.id);
+    try {
+        const resource = await Resource.findById(req.params.id);
 
-    res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${resource.fileName}"`
-    );
+        if (!resource) {
+            return res.status(404).send('Resource not found');
+        }
 
-    res.redirect(resource.url);
+        const downloadUrl =
+            resource.url + '?fl_attachment=' + encodeURIComponent(resource.fileName);
+
+        res.redirect(downloadUrl);
+
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 });
-
 // ADD NEW RESOURCE
 app.post('/resources', upload.single('file'), async (req, res) => {
     try {
