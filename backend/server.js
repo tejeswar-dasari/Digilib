@@ -252,6 +252,13 @@ app.post('/signup', async (req, res) => {
                 message: 'An account with this email address already exists.'
             });
         }
+        const existingRoll = await User.findOne({ roll });
+
+if (existingRoll) {
+    return res.status(400).json({
+        message: 'This Roll Number is already registered.'
+    });
+}
 
         // Encrypt password
         const hashedPassword = await bcrypt.hash(password, 10);

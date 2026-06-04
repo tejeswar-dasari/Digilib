@@ -423,7 +423,7 @@
                             </div>
                         </div>
 
-                        <div id="unlocked-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                       <div id="unlocked-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full overflow-hidden"></div>
 
                     </div>
                 </div>
@@ -1082,7 +1082,7 @@
                 }
 
                 const card = document.createElement('div');
-                card.className = "bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between hover:shadow-md transition-all";
+                card.className = "w-full overflow-hidden bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between hover:shadow-md transition-all";
                 
                 const hasFile = item.fileName !== null && item.fileName !== undefined && item.fileName !== '';
                 const formatLabel = item.format;
@@ -1114,7 +1114,7 @@
                         ${hasFile ? `
                         <div class="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
                             <i data-lucide="file-text" class="w-4 h-4 text-brand-500 shrink-0"></i>
-                            <span class="text-xs text-slate-500 dark:text-slate-400 truncate">${item.fileName}</span>
+                           <span class="text-xs text-slate-500 dark:text-slate-400 truncate min-w-0 flex-1">${item.fileName}</span>
                         </div>` : ''}
                     </div>
                     
@@ -1511,16 +1511,16 @@ if (!response.ok) {
                         showToast(`Welcome to DigiLib, ${data.user.name}!`, "success");
 
                     } catch (netError) {
-                        console.warn("Server offline. Simulating academic registration cache offline.", netError);
-                        
-                        localStorage.setItem("student", JSON.stringify(payloadUser));
-                        updateProfilePanelUI(payloadUser);
-                        
-                        // Disable screen lockout blur
-                        document.body.style.overflow = "auto";
-                        toggleAuthModal(); // Closes screen
-                        showToast(`Welcome to DigiLib, ${payloadUser.name}!`, "success");
-                    }
+    showToast(
+        "Server is temporarily unavailable. Please try again later.",
+        "error"
+    );
+
+    if (signupBtn) {
+        signupBtn.disabled = false;
+        signupBtn.innerText = "Register Account";
+    }
+}
                 }
 
                 else if (type === "login") {
@@ -1565,23 +1565,18 @@ if (loginBtn) {
                         showToast(`Welcome back, ${data.user.name}!`, "success");
 
                     } catch (netError) {
-                        console.warn("Server offline. Logging in as local credentials cache.", netError);
-                        
-                        const simulatedUser = { 
-                            name: email.split('@')[0].toUpperCase(), 
-                            email: email, 
-                            roll: "STU-" + Math.floor(1000 + Math.random() * 9000),
-                            branch: "Computer Science (CSE)",
-                            role: "student" 
-                        };
-                        localStorage.setItem("student", JSON.stringify(simulatedUser));
-                        updateProfilePanelUI(simulatedUser);
-                        
-                        // Disable screen lockout blur
-                        document.body.style.overflow = "auto";
-                        toggleAuthModal();
-                        showToast(`Welcome back, ${simulatedUser.name}!`, "success");
-                    }
+    console.error("Login failed:", netError);
+
+    showToast(
+        "Server is temporarily unavailable. Please try again in a few seconds.",
+        "error"
+    );
+
+    if (loginBtn) {
+        loginBtn.disabled = false;
+        loginBtnText.innerText = "Sign In to DigiLib";
+    }
+}
                 }
 
             } catch (error) {
