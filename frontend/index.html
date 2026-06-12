@@ -1048,7 +1048,7 @@
             
             document.getElementById('unlocked-subtitle').textContent = `Displaying resources for ${currentFilterBranch} • ${currentFilterYear} (${currentFilterSemester})`;
 
-            let filtered = database.filter(item => {
+let filtered = database.filter(item => {
     const matchesBranch = item.branch === currentFilterBranch;
     const matchesYear = item.year === currentFilterYear;
     const matchesSemester = item.semester === currentFilterSemester;
