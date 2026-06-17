@@ -88,6 +88,9 @@
             }
         }
     </style>
+    <link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#2563eb">
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col relative">
 
@@ -133,6 +136,10 @@
                     <i data-lucide="user" class="w-5 h-5"></i>
                     <span class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-indigo-500 border-2 border-white dark:border-slate-950"></span>
                 </button>
+                <button id="installBtn"
+class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-all">
+    Install App
+</button>
 
                 <!-- Auth Buttons (Desktop Only) -->
                 <div class="hidden md:flex items-center gap-3">
@@ -1874,5 +1881,76 @@ if (submitBtn) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
     </script>
+    <script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker
+            .register("sw.js")
+            .then(() => console.log("Service Worker Registered"))
+            .catch(err => console.log(err));
+    });
+}
+</script>
+<script>
+let deferredPrompt;
+
+const installBtn = document.getElementById("installBtn");
+const installBtnMobile = document.getElementById("installBtnMobile");
+
+window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    if (installBtn) {
+        installBtn.classList.remove("hidden");
+    }
+
+    if (installBtnMobile) {
+        installBtnMobile.classList.remove("hidden");
+    }
+});
+
+async function installApp() {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+
+    const choiceResult = await deferredPrompt.userChoice;
+
+    if (choiceResult.outcome === "accepted") {
+        console.log("DigiLib Installed");
+    }
+
+    deferredPrompt = null;
+
+    if (installBtn) {
+        installBtn.classList.add("hidden");
+    }
+
+    if (installBtnMobile) {
+        installBtnMobile.classList.add("hidden");
+    }
+}
+
+if (installBtn) {
+    installBtn.addEventListener("click", installApp);
+}
+
+if (installBtnMobile) {
+    installBtnMobile.addEventListener("click", installApp);
+}
+
+window.addEventListener("appinstalled", () => {
+    console.log("DigiLib Installed Successfully");
+
+    if (installBtn) {
+        installBtn.style.display = "none";
+    }
+
+    if (installBtnMobile) {
+        installBtnMobile.style.display = "none";
+    }
+});
+</script>
 </body>
 </html>
