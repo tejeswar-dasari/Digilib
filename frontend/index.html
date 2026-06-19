@@ -567,9 +567,10 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                             </div>
 
                             <div class="lg:col-span-2">
-                                <button type="submit" class="w-full py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center justify-center gap-2 shadow-lg shadow-brand-500/10 hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                                    <span>Upload &amp; Share</span>
-                                </button>
+                                <button id="upload-btn" type="submit"
+class="w-full py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center justify-center gap-2 shadow-lg shadow-brand-500/10 hover:shadow-xl hover:-translate-y-0.5 transition-all">
+    <span id="upload-btn-text">Upload & Share</span>
+</button>
                             </div>
                         </div>
 
@@ -807,6 +808,7 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
         let userStatsViews = 12;
         let userStatsContributed = 0;
         let localRequestsCache = [];
+        let currentFulfillRequestId = null;
 
         // IMPLEMENTING MISSING SHOW TOAST NOTIFICATION FUNCTION
         function showToast(message, type = 'success') {
@@ -1173,6 +1175,16 @@ let filtered = database.filter(item => {
         if (contributeForm) {
             contributeForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
+                const uploadBtn = document.getElementById("upload-btn");
+const uploadBtnText = document.getElementById("upload-btn-text");
+
+if (uploadBtn) {
+    uploadBtn.disabled = true;
+}
+
+if (uploadBtnText) {
+    uploadBtnText.innerHTML = "⏳ Uploading...";
+}
 
                 const nameVal = document.getElementById('contrib-name').value.trim();
                 const typeVal = document.getElementById('contrib-type').value;
@@ -1240,14 +1252,61 @@ let filtered = database.filter(item => {
                         body: formData
                     });
 
-                    if (response.ok) {
-                        const savedResource = await response.json();
-                        database.unshift(savedResource);
-                        showToast('Wonderful! Your study resource was published to the live stream.', 'success');
-                    } else {
-                        throw new Error("Server rejected request");
-                    }
+                   if (response.ok) {
+    const savedResource = await response.json();
+
+    database.unshift(savedResource);
+
+    if (currentFulfillRequestId) {
+        try {
+            await fetch(
+                `${BACKEND_URL}/requests/${currentFulfillRequestId}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+            localRequestsCache = localRequestsCache.filter(
+                req => req._id !== currentFulfillRequestId
+            );
+
+            renderRequestsBoardUI();
+
+            currentFulfillRequestId = null;
+
+            showToast(
+                "Request fulfilled and removed from board!",
+                "success"
+            );
+
+        } catch (err) {
+            console.error("Request deletion failed:", err);
+        }
+    }
+
+    showToast(
+        'Wonderful! Your study resource was published to the live stream.',
+        'success'
+    );
+    if (uploadBtn) {
+    uploadBtn.disabled = false;
+}
+
+if (uploadBtnText) {
+    uploadBtnText.innerHTML = "Upload & Share";
+}
+
+} else {
+    throw new Error("Server rejected request");
+}
                 } catch (err) {
+                    if (uploadBtn) {
+    uploadBtn.disabled = false;
+}
+
+if (uploadBtnText) {
+    uploadBtnText.innerHTML = "Upload & Share";
+}
                     console.warn("Backend post failed, adding to session cache:", err);
                     
                     // Offline Fallback capability
@@ -1869,13 +1928,25 @@ if (submitBtn) {
 
         // Helper that pre-fills and auto scrolls user to contribution section to fulfill request effortlessly
         function fulfillRequestTrigger(requestId, targetTitle) {
-            document.getElementById('contribute').scrollIntoView({ behavior: 'smooth' });
-            const contribNameInput = document.getElementById('contrib-name');
-            if (contribNameInput) {
-                contribNameInput.value = `Fulfillment: ${targetTitle}`;
-                showToast("Auto-scrolled! Simply drop or upload the file here to fulfill your peer's request.", "success");
-            }
-        }
+
+    currentFulfillRequestId = requestId;
+
+    document.getElementById('contribute')
+        .scrollIntoView({ behavior: 'smooth' });
+
+    const contribNameInput =
+        document.getElementById('contrib-name');
+
+    if (contribNameInput) {
+        contribNameInput.value =
+            `Fulfillment: ${targetTitle}`;
+    }
+
+    showToast(
+        "Upload the requested file to fulfill this request.",
+        "success"
+    );
+}
 
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
