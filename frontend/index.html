@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Digilib - Your Study Resources, All in One Place</title>
+    <!-- Resource hints: warm up connections to third-party origins and the API so requests that follow are faster -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://digilib-backend-v0r2.onrender.com">
+    <link rel="preload" href="hero.jpeg" as="image" fetchpriority="high">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -27,8 +34,8 @@
             }
         }
     </script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Lucide Icons (deferred: only called from DOMContentLoaded onward, safe to load without blocking render) -->
+    <script src="https://unpkg.com/lucide@latest" defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
         body {
@@ -241,6 +248,10 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                             alt="Digilib Hero Image"
                             class="w-full max-w-[320px] sm:max-w-md md:max-w-lg lg:max-w-xl h-auto object-contain mx-auto drop-shadow-2xl"
                             id="main"
+                            width="1280"
+                            height="853"
+                            fetchpriority="high"
+                            decoding="async"
                         >
                     </div>
                 </div>
@@ -567,10 +578,9 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                             </div>
 
                             <div class="lg:col-span-2">
-                                <button id="upload-btn" type="submit"
-class="w-full py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center justify-center gap-2 shadow-lg shadow-brand-500/10 hover:shadow-xl hover:-translate-y-0.5 transition-all">
-    <span id="upload-btn-text">Upload & Share</span>
-</button>
+                                <button type="submit" class="w-full py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center justify-center gap-2 shadow-lg shadow-brand-500/10 hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                                    <span>Upload &amp; Share</span>
+                                </button>
                             </div>
                         </div>
 
@@ -808,7 +818,6 @@ class="w-full py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-se
         let userStatsViews = 12;
         let userStatsContributed = 0;
         let localRequestsCache = [];
-        let currentFulfillRequestId = null;
 
         // IMPLEMENTING MISSING SHOW TOAST NOTIFICATION FUNCTION
         function showToast(message, type = 'success') {
@@ -1122,12 +1131,12 @@ let filtered = database.filter(item => {
                             </span>
                         </div>
                         <h4 class="font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 hover:text-brand-600 transition-colors">
-                            ${item.name}
+                            ${escapeHtml(item.name || '')}
                         </h4>
                         ${hasFile ? `
                         <div class="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
                             <i data-lucide="file-text" class="w-4 h-4 text-brand-500 shrink-0"></i>
-                           <span class="text-xs text-slate-500 dark:text-slate-400 truncate min-w-0 flex-1">${item.fileName}</span>
+                           <span class="text-xs text-slate-500 dark:text-slate-400 truncate min-w-0 flex-1">${escapeHtml(item.fileName || '')}</span>
                         </div>` : ''}
                     </div>
                     
@@ -1175,16 +1184,6 @@ let filtered = database.filter(item => {
         if (contributeForm) {
             contributeForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                const uploadBtn = document.getElementById("upload-btn");
-const uploadBtnText = document.getElementById("upload-btn-text");
-
-if (uploadBtn) {
-    uploadBtn.disabled = true;
-}
-
-if (uploadBtnText) {
-    uploadBtnText.innerHTML = "⏳ Uploading...";
-}
 
                 const nameVal = document.getElementById('contrib-name').value.trim();
                 const typeVal = document.getElementById('contrib-type').value;
@@ -1252,61 +1251,14 @@ if (uploadBtnText) {
                         body: formData
                     });
 
-                   if (response.ok) {
-    const savedResource = await response.json();
-
-    database.unshift(savedResource);
-
-    if (currentFulfillRequestId) {
-        try {
-            await fetch(
-                `${BACKEND_URL}/requests/${currentFulfillRequestId}`,
-                {
-                    method: "DELETE"
-                }
-            );
-
-            localRequestsCache = localRequestsCache.filter(
-                req => req._id !== currentFulfillRequestId
-            );
-
-            renderRequestsBoardUI();
-
-            currentFulfillRequestId = null;
-
-            showToast(
-                "Request fulfilled and removed from board!",
-                "success"
-            );
-
-        } catch (err) {
-            console.error("Request deletion failed:", err);
-        }
-    }
-
-    showToast(
-        'Wonderful! Your study resource was published to the live stream.',
-        'success'
-    );
-    if (uploadBtn) {
-    uploadBtn.disabled = false;
-}
-
-if (uploadBtnText) {
-    uploadBtnText.innerHTML = "Upload & Share";
-}
-
-} else {
-    throw new Error("Server rejected request");
-}
+                    if (response.ok) {
+                        const savedResource = await response.json();
+                        database.unshift(savedResource);
+                        showToast('Wonderful! Your study resource was published to the live stream.', 'success');
+                    } else {
+                        throw new Error("Server rejected request");
+                    }
                 } catch (err) {
-                    if (uploadBtn) {
-    uploadBtn.disabled = false;
-}
-
-if (uploadBtnText) {
-    uploadBtnText.innerHTML = "Upload & Share";
-}
                     console.warn("Backend post failed, adding to session cache:", err);
                     
                     // Offline Fallback capability
@@ -1815,15 +1767,15 @@ if (loginBtn) {
                                 <i data-lucide="help-circle" class="w-3.5 h-3.5 text-amber-500"></i> Peer Request
                             </span>
                             <div class="flex items-center gap-1.5">
-                                <span class="px-2 py-0.5 rounded bg-brand-100 text-brand-600 dark:bg-brand-950 dark:text-brand-400 font-extrabold">${req.branch}</span>
+                                <span class="px-2 py-0.5 rounded bg-brand-100 text-brand-600 dark:bg-brand-950 dark:text-brand-400 font-extrabold">${escapeHtml(req.branch || '')}</span>
                                 ${isOwner ? `
                                 <button onclick="deleteRequestTrigger('${req._id}')" class="text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 p-1 rounded hover:bg-rose-100/50 dark:hover:bg-rose-950/40 transition-all" title="Delete request">
                                     <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                 </button>` : ''}
                             </div>
                         </div>
-                        <h5 class="font-bold text-sm text-slate-900 dark:text-white leading-snug line-clamp-2">${req.resourceTitle}</h5>
-                        ${req.details ? `<p class="text-xs text-slate-500 italic truncate">"${req.details}"</p>` : ''}
+                        <h5 class="font-bold text-sm text-slate-900 dark:text-white leading-snug line-clamp-2">${escapeHtml(req.resourceTitle || '')}</h5>
+                        ${req.details ? `<p class="text-xs text-slate-500 italic truncate">"${escapeHtml(req.details)}"</p>` : ''}
                     </div>
                     <button onclick="fulfillRequestTrigger('${req._id}', '${escapeHtml(req.resourceTitle)}')" class="mt-4 w-full py-2 bg-white dark:bg-slate-900 hover:bg-brand-600 hover:text-white border border-slate-200 dark:border-slate-800 hover:border-brand-600 text-xs font-bold text-slate-700 dark:text-slate-300 rounded-xl transition-all flex items-center justify-center gap-1">
                         Fulfill Request ⚡
@@ -1866,16 +1818,17 @@ if (loginBtn) {
                     e.preventDefault();
                     const submitBtn = this.querySelector('button[type="submit"]');
 
-if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.innerText = "Posting Request...";
-}
-                    
                     const currentStudentStr = localStorage.getItem("student");
                     if(!currentStudentStr) {
                         showToast("Please authenticate/login to broadcast study requests to the campus.", "error");
                         return;
                     }
+
+                    if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Posting Request...";
+}
+
                     const currentStudent = JSON.parse(currentStudentStr);
 
                     const titleVal = document.getElementById('req-title').value.trim();
@@ -1928,25 +1881,13 @@ if (submitBtn) {
 
         // Helper that pre-fills and auto scrolls user to contribution section to fulfill request effortlessly
         function fulfillRequestTrigger(requestId, targetTitle) {
-
-    currentFulfillRequestId = requestId;
-
-    document.getElementById('contribute')
-        .scrollIntoView({ behavior: 'smooth' });
-
-    const contribNameInput =
-        document.getElementById('contrib-name');
-
-    if (contribNameInput) {
-        contribNameInput.value =
-            `Fulfillment: ${targetTitle}`;
-    }
-
-    showToast(
-        "Upload the requested file to fulfill this request.",
-        "success"
-    );
-}
+            document.getElementById('contribute').scrollIntoView({ behavior: 'smooth' });
+            const contribNameInput = document.getElementById('contrib-name');
+            if (contribNameInput) {
+                contribNameInput.value = `Fulfillment: ${targetTitle}`;
+                showToast("Auto-scrolled! Simply drop or upload the file here to fulfill your peer's request.", "success");
+            }
+        }
 
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");

@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const compression = require('compression');
 const Resource = require('./models/Resource');
 const User = require('./models/User');
 const bcrypt = require('bcryptjs');
@@ -16,6 +17,9 @@ const app = express();
 // Enable Cross-Origin Resource Sharing (CORS) for all routes
 app.use(cors());
 
+// Compress all responses (JSON payloads, static assets) with gzip/brotli
+app.use(compression());
+
 // Parse incoming JSON payloads
 app.use(express.json());
 
@@ -24,11 +28,22 @@ if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
 }
 
-// Serve uploaded files statically
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve uploaded files statically (long cache: filenames are unique/timestamped, safe to cache hard)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+    maxAge: '7d',
+    immutable: true
+}));
 
 // Serve frontend assets statically (optional, if hosting from the same server)
-app.use(express.static(path.join(__dirname, "../frontend")));
+// Short cache on HTML so deploys show up quickly; long cache on hashed/static assets
+app.use(express.static(path.join(__dirname, "../frontend"), {
+    maxAge: '1d',
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'no-cache');
+        }
+    }
+}));
 
 // MongoDB Atlas Connection String
 const MONGO_URI = process.env.MONGO_URI;
@@ -72,7 +87,8 @@ app.get('/resources', async (req, res) => {
             return res.status(503).json({ message: 'Database connection is temporarily offline.' });
         }
         // Fetch resources sorted by most recent first
-        const resources = await Resource.find().sort({ createdAt: -1 });
+        // .lean() skips full Mongoose document hydration since this is read-only JSON output
+        const resources = await Resource.find().sort({ createdAt: -1 }).lean();
         res.json(resources);
     } catch (error) {
         res.status(500).json({
@@ -368,7 +384,7 @@ app.get('/requests', async (req, res) => {
         if (mongoose.connection.readyState !== 1) {
             return res.status(503).json({ message: 'Database connection offline' });
         }
-        const requests = await RequestModel.find().sort({ createdAt: -1 });
+        const requests = await RequestModel.find().sort({ createdAt: -1 }).lean();
         res.json(requests);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching requests', error: error.message });
