@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Request Resource - Digilib</title>
+    <!-- Resource hints -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://digilib-backend-v0r2.onrender.com">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            950: '#0b0f19',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+
+        @media (max-width: 767px) {
+            header {
+                padding-top: max(16px, env(safe-area-inset-top, 20px)) !important;
+                height: auto !important;
+            }
+            header > div {
+                height: 4.5rem !important;
+            }
+            #main-content {
+                padding-top: max(110px, calc(85px + env(safe-area-inset-top, 20px))) !important;
+            }
+            #mobile-drawer {
+                padding-top: max(24px, calc(16px + env(safe-area-inset-top, 20px))) !important;
+            }
+            #toast-container {
+                top: max(24px, calc(16px + env(safe-area-inset-top, 20px))) !important;
+            }
+            footer {
+                padding-bottom: calc(60px + env(safe-area-inset-bottom, 16px)) !important;
+            }
+        }
+    </style>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#2563eb">
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col relative">
+
+    <!-- Loading Spinner Overlay -->
+    <div id="pwa-app-loader" class="fixed inset-0 z-[999999] bg-slate-900 flex flex-col items-center justify-center transition-opacity duration-500 ease-in-out">
+        <div class="relative flex flex-col items-center gap-6 p-8 text-center max-w-sm">
+            <div class="relative flex items-center justify-center">
+                <div class="absolute -inset-4 bg-amber-500/30 rounded-3xl blur-xl animate-pulse"></div>
+                <div class="w-20 h-20 rounded-2xl bg-amber-600 flex items-center justify-center text-white shadow-2xl shadow-amber-500/50 relative">
+                    <svg class="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                    </svg>
+                </div>
+            </div>
+            <div>
+                <h1 class="text-3xl font-extrabold text-white tracking-tight">
+                    Digi<span class="text-amber-400">lib</span>
+                </h1>
+                <p class="text-xs font-semibold tracking-widest text-slate-400 uppercase mt-1">Resource Request Portal</p>
+            </div>
+            <div class="flex flex-col items-center gap-3 mt-2">
+                <div class="relative w-12 h-12 flex items-center justify-center">
+                    <div class="w-12 h-12 rounded-full border-4 border-slate-800 border-t-amber-500 animate-spin"></div>
+                </div>
+                <span class="text-xs font-medium text-slate-300 animate-pulse">Loading Requests...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-[99999] flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- Header Navigation -->
+    <header class="fixed top-0 left-0 w-full z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-900 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                        <path d="M6 6h10M6 10h10M6 14h10"/>
+                    </svg>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                    Digi<span class="text-brand-600">lib</span>
+                </span>
+            </a>
+
+            <!-- Desktop Links -->
+            <nav class="hidden md:flex items-center gap-8">
+                <a href="index.html" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Home</a>
+                <a href="index.html#explore" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Services</a>
+                <a href="contribute.html" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Contribute</a>
+                <a href="request.html" class="text-sm font-semibold text-amber-600 dark:text-amber-400">Request Resource</a>
+                <a href="guidelines.html" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Guidelines</a>
+            </nav>
+
+            <!-- Navigation Actions -->
+            <div class="flex items-center gap-2.5">
+                <button id="theme-toggle" class="flex p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all" aria-label="Toggle Dark Mode">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+
+                <button onclick="toggleProfileDropdown()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all relative group" aria-label="User Account Profile">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                    <span class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-amber-500 border-2 border-white dark:border-slate-950"></span>
+                </button>
+
+                <div class="hidden md:flex items-center gap-3">
+                    <button onclick="toggleAuthModal('login')" class="px-5 py-2.5 rounded-xl border border-brand-100 dark:border-slate-800 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-slate-900 text-sm font-bold transition-all">
+                        Login
+                    </button>
+                    <button onclick="toggleAuthModal('signup')" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-md shadow-brand-500/10 transition-all">
+                        Sign Up
+                    </button>
+                </div>
+
+                <button id="mobile-menu-btn" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all md:hidden">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer Menu Overlay -->
+    <div id="mobile-drawer-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0"></div>
+    <div id="mobile-drawer" class="fixed top-0 left-0 right-0 bg-white dark:bg-slate-900 z-50 rounded-b-3xl shadow-2xl p-6 border-b border-slate-150 dark:border-slate-800 transform -translate-y-full transition-transform duration-300 ease-out md:hidden">
+        <div class="flex items-center justify-between pb-8">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600 dark:text-brand-400">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                        <path d="M6 6h10M6 10h10M6 14h10"/>
+                    </svg>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                    Digilib
+                </span>
+            </div>
+            <button id="drawer-close-btn" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-300 transition-all">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div class="flex flex-col gap-6 py-4">
+            <a href="index.html" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Home</a>
+            <a href="index.html#explore" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Services</a>
+            <a href="contribute.html" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Contribute Resource</a>
+            <a href="request.html" class="text-lg font-bold text-amber-600 dark:text-amber-400" onclick="closeDrawerMenu()">Request Resource</a>
+            <a href="guidelines.html" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Guidelines</a>
+        </div>
+
+        <div class="flex flex-col gap-4 mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+            <button onclick="toggleAuthModal('login')" class="w-full py-4 rounded-xl border border-brand-200 dark:border-slate-700 text-brand-600 dark:text-brand-400 font-bold hover:bg-brand-50 dark:hover:bg-slate-800 transition-all text-center">
+                Login
+            </button>
+            <button onclick="toggleAuthModal('signup')" class="w-full py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition-all text-center shadow-lg shadow-brand-500/15">
+                Sign Up
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content" class="flex-grow pt-28 pb-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <!-- Breadcrumb Navigation -->
+            <div class="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 mb-6">
+                <a href="index.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors flex items-center gap-1">
+                    <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                    Home
+                </a>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600"></i>
+                <span class="text-amber-600 dark:text-amber-400 font-bold">Request Resource</span>
+            </div>
+
+            <!-- Header Title -->
+            <div class="text-center space-y-3 mb-10">
+                <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 tracking-wider uppercase gap-1.5">
+                    <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+                    Student Requests Board
+                </span>
+                <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    Can't Find a Material? Request It!
+                </h1>
+                <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
+                    Post the exact textbook, question paper, or lecture notes you need. Fellow peers on DigiLib will see your request and upload it directly for you!
+                </p>
+                <div class="w-20 h-1.5 bg-amber-500 mx-auto rounded-full"></div>
+            </div>
+
+            <!-- Post Request Card -->
+            <div class="bg-gradient-to-br from-amber-50/80 via-white to-orange-50/50 dark:from-slate-900 dark:via-slate-900 dark:to-amber-950/20 border border-amber-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden mb-12">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-500 flex items-center justify-center text-white shadow-md">
+                        <i data-lucide="send" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Post New Resource Request</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Broadcast your requirement to all active engineering students</p>
+                    </div>
+                </div>
+
+                <form id="resource-request-form" class="space-y-4">
+                    <div class="grid md:grid-cols-12 gap-4">
+                        <div class="md:col-span-8">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                                Resource / Subject / Book Name <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="req-title" placeholder="e.g. [R23] Operating Systems Textbook by Galvin or DBMS Unit 3 Notes" required class="w-full px-4 py-3.5 bg-white dark:bg-slate-950 text-slate-900 dark:text-white rounded-xl border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium">
+                        </div>
+
+                        <div class="md:col-span-4">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                                Optional Details / Notes
+                            </label>
+                            <input type="text" id="req-details" placeholder="e.g. Chapter 4 Notes, Semester 2, R23 Regulation..." class="w-full px-4 py-3.5 bg-white dark:bg-slate-950 text-slate-900 dark:text-white rounded-xl border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
+                            💡 Your request will appear on the live board below instantly.
+                        </p>
+                        <button type="submit" id="req-submit-btn" class="w-full sm:w-auto px-8 py-3.5 bg-amber-600 hover:bg-amber-700 transition-all text-white text-sm font-bold rounded-xl shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>Broadcast Resource Request</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Live Campus Requests Stream Board -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-5 mb-6">
+                    <div>
+                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
+                            <span class="w-3 h-3 rounded-full bg-amber-500 animate-ping"></span>
+                            Active Campus Requests Feed
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">If you have any of these requested materials, click Fulfill to upload and share!</p>
+                    </div>
+                    <span id="request-counter-badge" class="self-start sm:self-auto px-3 py-1 text-xs font-extrabold bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 rounded-full border border-amber-200 dark:border-amber-800/50">
+                        0 Active Requests
+                    </span>
+                </div>
+
+                <div id="live-requests-feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div class="col-span-full py-12 flex flex-col items-center justify-center text-center space-y-3">
+                        <div class="w-12 h-12 rounded-full border-4 border-slate-200 dark:border-slate-800 border-t-amber-500 animate-spin"></div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Fetching active campus requests...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-900 py-8 transition-colors duration-300 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+                © DigiLib Academic Library. Built for engineering students.
+            </p>
+            <div class="flex items-center gap-6 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                <a href="index.html" class="hover:text-brand-600 dark:hover:text-brand-400">Home</a>
+                <a href="contribute.html" class="hover:text-brand-600 dark:hover:text-brand-400">Contribute</a>
+                <a href="guidelines.html" class="hover:text-brand-600 dark:hover:text-brand-400">Guidelines</a>
+                <a href="privacy.html" class="hover:text-brand-600 dark:hover:text-brand-400">Privacy Policy</a>
+                <a href="terms.html" class="hover:text-brand-600 dark:hover:text-brand-400">Terms of Use</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Auth Modal -->
+    <div id="auth-modal-backdrop" class="fixed inset-0 bg-slate-950/95 dark:bg-slate-950/98 backdrop-blur-2xl z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl w-full max-w-md p-8 relative shadow-2xl transform scale-95 opacity-0 transition-all duration-300">
+            <button onclick="toggleAuthModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden" id="modal-close-btn">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div id="auth-modal-content"></div>
+        </div>
+    </div>
+
+    <!-- User Profile Dropdown -->
+    <div id="profile-dropdown-backdrop" class="fixed inset-0 z-40 hidden" onclick="toggleProfileDropdown()"></div>
+    <div id="profile-dropdown" class="fixed top-[max(90px,calc(72px+env(safe-area-inset-top,20px)))] right-4 left-4 md:left-auto md:right-16 lg:right-24 z-40 w-auto max-w-sm md:w-[360px] bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-3xl shadow-2xl p-6 hidden transform scale-95 opacity-0 transition-all duration-300">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+            <h4 class="font-extrabold text-slate-900 dark:text-white">Academic Workspace</h4>
+            <span class="text-xs font-bold text-emerald-500 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/50 rounded-full flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Online
+            </span>
+        </div>
+
+        <div class="space-y-6 pt-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-950 flex items-center justify-center text-amber-600 dark:text-amber-400 font-black text-lg">
+                    S
+                </div>
+                <div>
+                    <h5 class="font-bold text-slate-900 dark:text-white" id="profile-user-name">Guest Student</h5>
+                    <p class="text-xs text-slate-500 dark:text-slate-400" id="profile-user-email">jntuacep.student@college.edu</p>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-150 dark:border-slate-800 space-y-2">
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-500 dark:text-slate-400 font-medium">Core Stream:</span>
+                    <span id="profile-user-branch" class="font-bold text-slate-800 dark:text-slate-200">Computer Science (CSE)</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-500 dark:text-slate-400 font-medium">Roll Number:</span>
+                    <span id="profile-user-roll" class="font-bold text-slate-800 dark:text-slate-200">GUEST-001</span>
+                </div>
+            </div>
+
+            <button onclick="handleLogout()" class="w-full py-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-rose-600 dark:text-rose-400 font-bold text-xs transition-all flex items-center justify-center gap-2">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+                Sign Out Student Profile
+            </button>
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        const BACKEND_URL = "https://digilib-backend-v0r2.onrender.com";
+        let localRequestsCache = [];
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-xl border text-xs font-bold transition-all duration-300 transform translate-x-10 opacity-0 ${
+                type === 'success' ? 'bg-emerald-950 text-emerald-200 border-emerald-800' :
+                type === 'error' ? 'bg-rose-950 text-rose-200 border-rose-800' :
+                'bg-slate-900 text-slate-100 border-slate-800'
+            }`;
+
+            const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'alert-triangle' : 'info';
+            toast.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
+
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-x-10', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('translate-x-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        function hidePwaAppLoader() {
+            const loader = document.getElementById("pwa-app-loader");
+            if (loader) {
+                setTimeout(() => {
+                    loader.classList.add("opacity-0", "pointer-events-none");
+                    setTimeout(() => {
+                        if (loader.parentNode) loader.parentNode.removeChild(loader);
+                    }, 500);
+                }, 500);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            lucide.createIcons();
+            hidePwaAppLoader();
+            initTheme();
+            checkLoggedInUser();
+            setupMobileDrawer();
+            setupRequestFormListener();
+            fetchCampusRequests();
+        });
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            if (themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', () => {
+                    document.documentElement.classList.toggle('dark');
+                    const isDark = document.documentElement.classList.contains('dark');
+                    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                });
+            }
+        }
+
+        function setupMobileDrawer() {
+            const btn = document.getElementById('mobile-menu-btn');
+            const drawer = document.getElementById('mobile-drawer');
+            const overlay = document.getElementById('mobile-drawer-overlay');
+            const closeBtn = document.getElementById('drawer-close-btn');
+
+            if (btn && drawer && overlay) {
+                btn.addEventListener('click', () => {
+                    drawer.classList.remove('-translate-y-full');
+                    overlay.classList.remove('hidden');
+                    setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                });
+            }
+
+            if (closeBtn) closeBtn.addEventListener('click', closeDrawerMenu);
+            if (overlay) overlay.addEventListener('click', closeDrawerMenu);
+        }
+
+        function closeDrawerMenu() {
+            const drawer = document.getElementById('mobile-drawer');
+            const overlay = document.getElementById('mobile-drawer-overlay');
+            if (drawer) drawer.classList.add('-translate-y-full');
+            if (overlay) {
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        function checkLoggedInUser() {
+            const savedStudent = localStorage.getItem("student");
+            if (savedStudent) {
+                try {
+                    const user = JSON.parse(savedStudent);
+                    if (user && user.name && user.email) {
+                        document.getElementById('profile-user-name').textContent = user.name;
+                        document.getElementById('profile-user-email').textContent = user.email;
+                        document.getElementById('profile-user-branch').textContent = user.branch || "Computer Science (CSE)";
+                        document.getElementById('profile-user-roll').textContent = user.roll || "STUDENT-01";
+                    }
+                } catch (e) {
+                    console.error("Failed to parse student data:", e);
+                }
+            }
+        }
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profile-dropdown');
+            const backdrop = document.getElementById('profile-dropdown-backdrop');
+            if (dropdown && backdrop) {
+                if (dropdown.classList.contains('hidden')) {
+                    backdrop.classList.remove('hidden');
+                    dropdown.classList.remove('hidden');
+                    setTimeout(() => dropdown.classList.remove('scale-95', 'opacity-0'), 10);
+                } else {
+                    dropdown.classList.add('scale-95', 'opacity-0');
+                    backdrop.classList.add('hidden');
+                    setTimeout(() => dropdown.classList.add('hidden'), 300);
+                }
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem("student");
+            showToast("Logged out successfully.", "info");
+            setTimeout(() => { window.location.href = "index.html"; }, 500);
+        }
+
+        // Fetch pending requests when page mounts
+        async function fetchCampusRequests() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/requests`);
+                if (!response.ok) throw new Error("Server issues");
+                localRequestsCache = await response.json();
+            } catch (err) {
+                console.warn("Backend disconnected, showing safe fallback campus request.");
+                localRequestsCache = [
+                    { _id: "req-mock-1", studentName: "TEJESWAR", branch: "Computer Science (CSE)", resourceTitle: "[R23] Discrete Mathematics Graph Theory Notes", details: "Urgent need for semester exam prep!" }
+                ];
+            }
+            renderRequestsBoardUI();
+        }
+
+        // Render Request cards onto live stream view
+        function renderRequestsBoardUI() {
+            const targetFeed = document.getElementById('live-requests-feed');
+            const countBadge = document.getElementById('request-counter-badge');
+            
+            if (!targetFeed) return;
+
+            const currentStudentStr = localStorage.getItem("student");
+            let currentStudentName = "";
+            if (currentStudentStr) {
+                try {
+                    const parsed = JSON.parse(currentStudentStr);
+                    if (parsed && parsed.name) {
+                        currentStudentName = parsed.name.split(' ')[0].toUpperCase();
+                    }
+                } catch (e) {
+                    console.error("Session serialization error", e);
+                }
+            }
+            
+            if (countBadge) countBadge.textContent = `${localRequestsCache.length} Active Requests`;
+            targetFeed.innerHTML = '';
+
+            if (localRequestsCache.length === 0) {
+                targetFeed.innerHTML = `
+                    <div class="col-span-full py-12 flex flex-col items-center justify-center text-center space-y-3">
+                        <div class="w-14 h-14 bg-amber-50 dark:bg-amber-950/40 text-amber-500 rounded-full flex items-center justify-center">
+                            <i data-lucide="check-circle" class="w-7 h-7"></i>
+                        </div>
+                        <h4 class="font-extrabold text-slate-900 dark:text-white text-base">No Pending Requests</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm">All campus requests have been satisfied! Need something? Use the form above to post a new request.</p>
+                    </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            localRequestsCache.forEach(req => {
+                const isOwner = (req.studentName === currentStudentName) || (currentStudentName === "GUEST") || (req.studentName === "GUEST");
+                const card = document.createElement('div');
+                card.className = "p-5 bg-slate-50 dark:bg-slate-950 border border-slate-200/70 dark:border-slate-800 rounded-2xl flex flex-col justify-between hover:shadow-md transition-all relative group/card";
+                card.innerHTML = `
+                    <div class="space-y-2.5">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold text-amber-600 dark:text-amber-400 tracking-tight flex items-center gap-1">
+                                <i data-lucide="help-circle" class="w-3.5 h-3.5"></i> Student Request
+                            </span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="px-2.5 py-0.5 rounded-full bg-brand-100 text-brand-600 dark:bg-brand-950 dark:text-brand-400 font-extrabold text-[10px]">${escapeHtml(req.branch || 'CSE')}</span>
+                                ${isOwner ? `
+                                <button onclick="deleteRequestTrigger('${req._id}')" class="text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 p-1 rounded hover:bg-rose-100/50 dark:hover:bg-rose-950/40 transition-all" title="Delete request">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                </button>` : ''}
+                            </div>
+                        </div>
+                        <h5 class="font-bold text-sm text-slate-900 dark:text-white leading-snug line-clamp-2">${escapeHtml(req.resourceTitle || '')}</h5>
+                        ${req.details ? `<p class="text-xs text-slate-500 dark:text-slate-400 italic truncate">"${escapeHtml(req.details)}"</p>` : ''}
+                    </div>
+                    <button onclick="fulfillRequestTrigger('${req._id}', '${escapeHtml(req.resourceTitle)}')" class="mt-4 w-full py-2.5 bg-white dark:bg-slate-900 hover:bg-brand-600 hover:text-white border border-slate-200 dark:border-slate-800 hover:border-brand-600 text-xs font-bold text-slate-700 dark:text-slate-300 rounded-xl transition-all flex items-center justify-center gap-1.5 group/btn">
+                        <span>Fulfill Request</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform"></i>
+                    </button>
+                `;
+                targetFeed.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        // Deletes duplicate or resolved requests
+        async function deleteRequestTrigger(id) {
+            try {
+                const response = await fetch(`${BACKEND_URL}/requests/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    localRequestsCache = localRequestsCache.filter(req => (req._id !== id && req.id !== id));
+                    renderRequestsBoardUI();
+                    showToast("Your request was successfully removed from the board.", "success");
+                } else {
+                    throw new Error("Deletion rejected by database");
+                }
+            } catch (err) {
+                console.warn("Backend disconnected. Updating runtime UI directly:", err);
+                localRequestsCache = localRequestsCache.filter(req => (req._id !== id && req.id !== id));
+                renderRequestsBoardUI();
+                showToast("Request cleared from local dashboard.", "info");
+            }
+        }
+
+        function setupRequestFormListener() {
+            const requestFormElement = document.getElementById('resource-request-form');
+            if (requestFormElement) {
+                requestFormElement.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const submitBtn = document.getElementById('req-submit-btn');
+
+                    const currentStudentStr = localStorage.getItem("student");
+                    if (!currentStudentStr) {
+                        showToast("Please login or create an account to post requests.", "error");
+                        toggleAuthModal('login');
+                        return;
+                    }
+
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = `<span>Broadcasting...</span>`;
+                    }
+
+                    const currentStudent = JSON.parse(currentStudentStr);
+                    const titleVal = document.getElementById('req-title').value.trim();
+                    const detailsVal = document.getElementById('req-details').value.trim();
+
+                    const payload = {
+                        studentName: currentStudent.name ? currentStudent.name.split(' ')[0].toUpperCase() : "STUDENT",
+                        branch: currentStudent.branch || "CSE",
+                        resourceTitle: titleVal,
+                        details: detailsVal
+                    };
+
+                    try {
+                        const response = await fetch(`${BACKEND_URL}/requests`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        if (response.ok) {
+                            const savedItem = await response.json();
+                            localRequestsCache.unshift(savedItem);
+                            showToast("Request broadcasted successfully to live campus feed!", "success");
+                        } else { 
+                            throw new Error("Failed to post request"); 
+                        }
+                    } catch (err) {
+                        payload._id = "local-req-" + Date.now();
+                        localRequestsCache.unshift(payload);
+                        showToast("Request posted to local session view.", "info");
+                    }
+
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i><span>Broadcast Resource Request</span>`;
+                        lucide.createIcons();
+                    }
+
+                    this.reset();
+                    renderRequestsBoardUI();
+                    
+                    setTimeout(() => {
+                        const feed = document.getElementById('live-requests-feed');
+                        if (feed) feed.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 300);
+                });
+            }
+        }
+
+        function fulfillRequestTrigger(requestId, targetTitle) {
+            window.location.href = `contribute.html?fulfill=${encodeURIComponent(targetTitle)}`;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Auth Modal helper handlers
+        function toggleAuthModal(mode) {
+            const backdrop = document.getElementById('auth-modal-backdrop');
+            const modalContent = backdrop ? backdrop.querySelector('div') : null;
+            const content = document.getElementById('auth-modal-content');
+            if (!backdrop || !modalContent || !content) return;
+
+            if (backdrop.classList.contains('hidden')) {
+                renderAuthContent(mode, content);
+                backdrop.classList.remove('hidden');
+                setTimeout(() => {
+                    modalContent.classList.remove('scale-95', 'opacity-0');
+                }, 10);
+            } else {
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    backdrop.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        function renderAuthContent(mode, content) {
+            if (mode === 'login') {
+                content.innerHTML = `
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Student Login</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Access your Digilib academic profile</p>
+                    </div>
+                    <form onsubmit="handleAuthSubmit(event, 'login')" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Email</label>
+                            <input id="auth-email-login" type="email" required placeholder="alex@college.edu" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Password</label>
+                            <input id="auth-password-login" type="password" required placeholder="••••••••" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium" />
+                        </div>
+                        <button type="submit" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs transition-all">Log In</button>
+                    </form>
+                `;
+            } else {
+                content.innerHTML = `
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Create Account</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Join Digilib student network</p>
+                    </div>
+                    <form onsubmit="handleAuthSubmit(event, 'signup')" class="space-y-3">
+                        <input id="auth-name" type="text" required placeholder="Full Name" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium" />
+                        <input id="auth-email" type="email" required placeholder="Student Email" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium" />
+                        <input id="auth-roll" type="text" required placeholder="Roll Number" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium" />
+                        <input id="auth-password" type="password" required placeholder="Password" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium" />
+                        <button type="submit" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs transition-all">Sign Up</button>
+                    </form>
+                `;
+            }
+            lucide.createIcons();
+        }
+
+        async function handleAuthSubmit(e, type) {
+            e.preventDefault();
+            if (type === 'login') {
+                const email = document.getElementById('auth-email-login').value.trim();
+                const user = { name: email.split('@')[0], email, branch: 'Computer Science (CSE)', roll: '223A1A0501' };
+                localStorage.setItem("student", JSON.stringify(user));
+                showToast("Logged in successfully!", "success");
+                toggleAuthModal();
+                checkLoggedInUser();
+            } else if (type === 'signup') {
+                const name = document.getElementById('auth-name').value.trim();
+                const email = document.getElementById('auth-email').value.trim();
+                const roll = document.getElementById('auth-roll').value.trim();
+                const user = { name, email, roll, branch: 'Computer Science (CSE)' };
+                localStorage.setItem("student", JSON.stringify(user));
+                showToast("Account registered!", "success");
+                toggleAuthModal();
+                checkLoggedInUser();
+            }
+        }
+    </script>
+</body>
+</html>

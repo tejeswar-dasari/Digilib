@@ -32,7 +32,6 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
-        /* Mobile Safe Padding to avoid overlapping status bar inside webview wrapper */
         @media (max-width: 767px) {
             .admin-header {
                 padding-top: max(20px, env(safe-area-inset-top, 20px)) !important;
@@ -44,9 +43,9 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
 
     <!-- Toast Alert notifications -->
-    <div id="toast-container" class="fixed top-5 right-5 z-[60] flex flex-col gap-3 pointer-events-none"></div>
+    <div id="toast-container" class="fixed top-5 right-5 z-[70] flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- Replaces Native confirm() - Custom Modal confirmation box -->
+    <!-- Confirmation Modal -->
     <div id="confirm-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-850 rounded-2xl w-full max-w-sm p-6 shadow-2xl transform scale-95 opacity-0 transition-all duration-300">
             <div class="flex items-center gap-3 text-red-500 mb-3">
@@ -61,7 +60,85 @@
         </div>
     </div>
 
-    <!-- Replaces Blocking browser prompt() - Lockscreen Secure Authentication Panel -->
+    <!-- Add Resource Modal -->
+    <div id="add-resource-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl p-6 sm:p-8 shadow-2xl my-8 relative">
+            <button onclick="closeAddResourceModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white">
+                    <i data-lucide="plus-circle" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-extrabold text-white">Add New Study Resource</h3>
+                    <p class="text-xs text-slate-400">Select module category and fill in details</p>
+                </div>
+            </div>
+
+            <form id="admin-add-form" onsubmit="handleAdminAddResource(event)" class="space-y-5">
+                <!-- Category Selector -->
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Select Category</label>
+                    <select id="admin-category" onchange="renderDynamicAdminFields()" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                        <option value="School">School (Class 6 - 10)</option>
+                        <option value="Intermediate">Intermediate (MPC, BiPC, CEC...)</option>
+                        <option value="Diploma">Diploma (Polytechnic)</option>
+                        <option value="Books & Novels">Books & Novels</option>
+                        <option value="BTech">B.Tech / Engineering</option>
+                    </select>
+                </div>
+
+                <!-- Dynamic Dynamic Input Container -->
+                <div id="admin-dynamic-fields" class="grid sm:grid-cols-2 gap-4"></div>
+
+                <!-- Common Title / Name -->
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Resource Name / Title</label>
+                    <input type="text" id="admin-res-name" required placeholder="e.g., Class 8 Physics Notes or Clean Code PDF" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-brand-500 font-medium">
+                </div>
+
+                <!-- Format -->
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Resource Format</label>
+                        <select id="admin-res-format" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                            <option value="PDF Document">PDF Document</option>
+                            <option value="YouTube Playlist">YouTube Playlist</option>
+                            <option value="Website URL">Interactive Website</option>
+                            <option value="Drive Link">Google Drive Folder</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Input Mode</label>
+                        <select id="admin-input-mode" onchange="toggleAdminInputMode()" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                            <option value="file">Upload File (PDF/Docs)</option>
+                            <option value="url">Web URL / YouTube Link</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Input Fields (URL vs File) -->
+                <div id="admin-url-container" class="hidden">
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Resource URL</label>
+                    <input type="url" id="admin-res-url" placeholder="https://youtube.com/playlist?list=..." class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-brand-500 font-medium">
+                </div>
+
+                <div id="admin-file-container">
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Select File to Upload</label>
+                    <input type="file" id="admin-res-file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-slate-300 text-xs focus:outline-none">
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="closeAddResourceModal()" class="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 text-xs font-bold transition-all">Cancel</button>
+                    <button type="submit" id="admin-submit-btn" class="px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-lg shadow-brand-500/20 transition-all">Publish Resource</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Lockscreen Panel -->
     <div id="admin-lockscreen" class="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center z-[100] p-4">
         <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6 text-center">
             <div class="w-16 h-16 bg-brand-600 rounded-2xl flex items-center justify-center text-white mx-auto shadow-lg shadow-brand-500/20">
@@ -76,7 +153,7 @@
                 <p id="lockscreen-error-label" class="text-xs text-red-400 hidden font-semibold">Wrong Credentials. Verification failed.</p>
             </div>
             <div class="flex gap-3">
-                <button onclick="window.location.href='veryvery imp.html'" class="flex-1 py-3 bg-slate-800 hover:bg-slate-750 text-slate-300 font-semibold rounded-xl text-sm transition-all">Go Back</button>
+                <button onclick="window.location.href='/'" class="flex-1 py-3 bg-slate-800 hover:bg-slate-750 text-slate-300 font-semibold rounded-xl text-sm transition-all">Go Back</button>
                 <button onclick="authenticateLockscreen()" class="flex-1 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-sm transition-all shadow-lg shadow-brand-500/15">Unlock Server</button>
             </div>
         </div>
@@ -94,28 +171,37 @@
                 </h1>
             </div>
 
-            <button onclick="logoutAdmin()" class="bg-red-600/90 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md">
-                <i data-lucide="log-out" class="w-4 h-4"></i>
-                <span>Logout</span>
-            </button>
+            <div class="flex items-center gap-3">
+                <button onclick="logoutAdmin()" class="bg-red-600/90 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
         </div>
     </header>
 
     <!-- Main Content Grid -->
     <main id="admin-content" class="hidden max-w-7xl mx-auto p-4 sm:p-6 w-full flex-grow">
 
-        <!-- Search Bar -->
-        <div class="mb-6 relative">
-            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-500">
-                <i data-lucide="search" class="w-5 h-5"></i>
+        <!-- Action Bar: Add Resource & Search -->
+        <div class="mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <button onclick="openAddResourceModal()" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center gap-2 shrink-0">
+                <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                <span>➕ Add Resource</span>
+            </button>
+
+            <div class="relative w-full">
+                <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-500">
+                    <i data-lucide="search" class="w-5 h-5"></i>
+                </div>
+                <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Search resources by title, category, branch, class, or type..."
+                    class="w-full p-3.5 pl-12 rounded-xl bg-slate-900 border border-slate-800 outline-none focus:ring-2 focus:ring-brand-500 text-white text-sm transition-all placeholder:text-slate-500"
+                    onkeyup="filterResources()"
+                >
             </div>
-            <input
-                type="text"
-                id="search-input"
-                placeholder="Search resources by title, branch, format, or type..."
-                class="w-full p-4 pl-12 rounded-xl bg-slate-900 border border-slate-800 outline-none focus:ring-2 focus:ring-brand-500 text-white text-sm transition-all placeholder:text-slate-500"
-                onkeyup="filterResources()"
-            >
         </div>
 
         <!-- System Status metrics -->
@@ -159,10 +245,10 @@
     </main>
 
 <script>
-const BACKEND_URL = "https://digilib-backend-v0r2.onrender.com";
+const BACKEND_URL = "";
 let resources = [];
+let pendingDeleteId = null;
 
-// Clean Custom Toast implementation
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
     if (!container) return;
@@ -184,18 +270,12 @@ function showToast(message, type = 'success') {
     container.appendChild(toast);
     lucide.createIcons();
 
-    setTimeout(() => {
-        toast.classList.remove('translate-y-2', 'opacity-0');
-    }, 10);
-
+    setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
     setTimeout(() => {
         toast.classList.add('opacity-0', 'scale-95');
         setTimeout(() => { toast.remove(); }, 300);
     }, 4000);
 }
-
-// Clean Non-Blocking Custom Confirmation dialog window
-let pendingDeleteId = null;
 
 function requestConfirmation(id) {
     pendingDeleteId = id;
@@ -225,26 +305,39 @@ document.getElementById('modal-confirm-btn').addEventListener('click', async () 
     }
 });
 
-// Authenticate System administrator lockscreen entry
-function authenticateLockscreen() {
+// Secure Backend Authentication for Admin
+async function authenticateLockscreen() {
     const pwdInput = document.getElementById('lockscreen-password-input');
     const errorLabel = document.getElementById('lockscreen-error-label');
     const entered = pwdInput.value.trim();
 
-    // Authenticate with either master keys safely
-    if (entered === "Tejeswar2709" || entered === "Tejessen45") {
-        document.getElementById('admin-lockscreen').classList.add('hidden');
-        document.getElementById('admin-content').classList.remove('hidden');
-        errorLabel.classList.add('hidden');
-        localStorage.setItem('adminLoggedIn', 'true');
-        fetchResources();
-    } else {
+    if (!entered) return;
+
+    try {
+        const response = await fetch(`${BACKEND_URL}/admin-login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: entered })
+        });
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            document.getElementById('admin-lockscreen').classList.add('hidden');
+            document.getElementById('admin-content').classList.remove('hidden');
+            errorLabel.classList.add('hidden');
+            localStorage.setItem('adminLoggedIn', 'true');
+            fetchResources();
+        } else {
+            errorLabel.textContent = data.message || "Wrong Credentials. Verification failed.";
+            errorLabel.classList.remove('hidden');
+            pwdInput.focus();
+        }
+    } catch (err) {
+        errorLabel.textContent = "Server verification error.";
         errorLabel.classList.remove('hidden');
-        pwdInput.focus();
     }
 }
 
-// Enter-key submissions handling on lockscreen input field
 document.getElementById('lockscreen-password-input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         authenticateLockscreen();
@@ -264,7 +357,255 @@ window.onload = function() {
         document.getElementById('admin-content').classList.remove('hidden');
         fetchResources();
     }
+    renderDynamicAdminFields();
 };
+
+// Modal handlers for Add Resource
+function openAddResourceModal() {
+    document.getElementById('add-resource-modal').classList.remove('hidden');
+    renderDynamicAdminFields();
+}
+
+function closeAddResourceModal() {
+    document.getElementById('add-resource-modal').classList.add('hidden');
+    document.getElementById('admin-add-form').reset();
+}
+
+function toggleAdminInputMode() {
+    const mode = document.getElementById('admin-input-mode').value;
+    const urlContainer = document.getElementById('admin-url-container');
+    const fileContainer = document.getElementById('admin-file-container');
+
+    if (mode === 'url') {
+        urlContainer.classList.remove('hidden');
+        fileContainer.classList.add('hidden');
+        document.getElementById('admin-res-url').setAttribute('required', 'true');
+        document.getElementById('admin-res-file').removeAttribute('required');
+    } else {
+        urlContainer.classList.add('hidden');
+        fileContainer.classList.remove('hidden');
+        document.getElementById('admin-res-url').removeAttribute('required');
+        document.getElementById('admin-res-file').setAttribute('required', 'true');
+    }
+}
+
+function renderDynamicAdminFields() {
+    const category = document.getElementById('admin-category').value;
+    const container = document.getElementById('admin-dynamic-fields');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    if (category === 'School') {
+        container.innerHTML = `
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Class</label>
+                <select id="admin-class" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                    <option value="Class 6">Class 6</option>
+                    <option value="Class 7">Class 7</option>
+                    <option value="Class 8">Class 8</option>
+                    <option value="Class 9">Class 9</option>
+                    <option value="Class 10">Class 10</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Resource Type</label>
+                <select id="admin-type" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                    <option value="Notes">Notes</option>
+                    <option value="Previous Year Papers">Previous Year Papers</option>
+                    <option value="Study Materials">Study Materials</option>
+                    <option value="Websites">Websites</option>
+                    <option value="YouTube Links">YouTube Links</option>
+                </select>
+            </div>
+        `;
+    } else if (category === 'Intermediate') {
+        container.innerHTML = `
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Stream</label>
+                <select id="admin-stream" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                    <option value="MPC">MPC</option>
+                    <option value="BiPC">BiPC</option>
+                    <option value="CEC">CEC</option>
+                    <option value="MEC">MEC</option>
+                    <option value="HEC">HEC</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Year</label>
+                <select id="admin-year" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                    <option value="1st Year">1st Year</option>
+                    <option value="2nd Year">2nd Year</option>
+                </select>
+            </div>
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Resource Type</label>
+                <select id="admin-type" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                    <option value="Notes">Notes</option>
+                    <option value="Previous Year Papers">Previous Year Papers</option>
+                    <option value="Study Materials">Study Materials</option>
+                    <option value="Websites">Websites</option>
+                    <option value="YouTube Links">YouTube Links</option>
+                </select>
+            </div>
+        `;
+    } else if (category === 'Diploma') {
+        container.innerHTML = `
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Branch</label>
+                <select id="admin-branch" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                    <option value="Computer Science (CSE)">CSE</option>
+                    <option value="Electronics & Communication (ECE)">ECE</option>
+                    <option value="Electrical & Electronics (EEE)">EEE</option>
+                    <option value="Mechanical Engineering (ME)">Mechanical</option>
+                    <option value="Civil Engineering (CE)">Civil</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Year</label>
+                <select id="admin-year" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                    <option value="1st Year">1st Year</option>
+                    <option value="2nd Year">2nd Year</option>
+                    <option value="3rd Year">3rd Year</option>
+                </select>
+            </div>
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Resource Type</label>
+                <select id="admin-type" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                    <option value="Notes">Notes</option>
+                    <option value="Previous Year Papers">Previous Year Papers</option>
+                    <option value="Study Materials">Study Materials</option>
+                    <option value="Websites">Websites</option>
+                    <option value="YouTube Links">YouTube Links</option>
+                </select>
+            </div>
+        `;
+    } else if (category === 'Books & Novels') {
+        container.innerHTML = `
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Genre / Category</label>
+                <select id="admin-genre" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                    <option value="Programming Books">Programming Books</option>
+                    <option value="Engineering Books">Engineering Books</option>
+                    <option value="Novels">Novels</option>
+                    <option value="Motivational Books">Motivational Books</option>
+                    <option value="Competitive Exam Books">Competitive Exam Books</option>
+                    <option value="Psychology">Psychology</option>
+                    <option value="Finance">Finance</option>
+                </select>
+            </div>
+        `;
+    } else {
+        // BTech
+        container.innerHTML = `
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Branch</label>
+                <select id="admin-branch" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                    <option value="Computer Science (CSE)">CSE</option>
+                    <option value="Electronics & Communication (ECE)">ECE</option>
+                    <option value="Electrical & Electronics (EEE)">EEE</option>
+                    <option value="Mechanical Engineering (ME)">Mechanical</option>
+                    <option value="Civil Engineering (CE)">Civil</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Year</label>
+                <select id="admin-year" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                    <option value="1st Year">1st Year</option>
+                    <option value="2nd Year">2nd Year</option>
+                    <option value="3rd Year">3rd Year</option>
+                    <option value="4th Year">4th Year</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Semester</label>
+                <select id="admin-semester" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                    <option value="1st Semester">1st Semester</option>
+                    <option value="2nd Semester">2nd Semester</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Resource Type</label>
+                <select id="admin-type" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                    <option value="Study Materials">Study Materials</option>
+                    <option value="Previous Year Papers">Previous Year Papers</option>
+                    <option value="Websites & YouTube Links">Websites & YouTube Links</option>
+                </select>
+            </div>
+        `;
+    }
+}
+
+async function handleAdminAddResource(e) {
+    e.preventDefault();
+    const submitBtn = document.getElementById('admin-submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Uploading...';
+
+    const category = document.getElementById('admin-category').value;
+    const name = document.getElementById('admin-res-name').value.trim();
+    const format = document.getElementById('admin-res-format').value;
+    const mode = document.getElementById('admin-input-mode').value;
+
+    const formData = new FormData();
+    formData.append('category', category);
+    formData.append('name', name);
+    formData.append('format', format);
+
+    if (category === 'School') {
+        formData.append('classLevel', document.getElementById('admin-class').value);
+        formData.append('type', document.getElementById('admin-type').value);
+    } else if (category === 'Intermediate') {
+        formData.append('stream', document.getElementById('admin-stream').value);
+        formData.append('year', document.getElementById('admin-year').value);
+        formData.append('type', document.getElementById('admin-type').value);
+    } else if (category === 'Diploma') {
+        formData.append('branch', document.getElementById('admin-branch').value);
+        formData.append('year', document.getElementById('admin-year').value);
+        formData.append('type', document.getElementById('admin-type').value);
+    } else if (category === 'Books & Novels') {
+        formData.append('genre', document.getElementById('admin-genre').value);
+        formData.append('type', 'Study Materials');
+    } else {
+        formData.append('branch', document.getElementById('admin-branch').value);
+        formData.append('year', document.getElementById('admin-year').value);
+        formData.append('semester', document.getElementById('admin-semester').value);
+        formData.append('type', document.getElementById('admin-type').value);
+    }
+
+    if (mode === 'url') {
+        formData.append('url', document.getElementById('admin-res-url').value.trim());
+    } else {
+        const fileInput = document.getElementById('admin-res-file');
+        if (!fileInput.files || fileInput.files.length === 0) {
+            showToast('Please select a file to upload.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Publish Resource';
+            return;
+        }
+        formData.append('file', fileInput.files[0]);
+    }
+
+    try {
+        const response = await fetch(`${BACKEND_URL}/resources`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            showToast('Resource published successfully!', 'success');
+            closeAddResourceModal();
+            fetchResources();
+        } else {
+            showToast('Failed to save resource.', 'error');
+        }
+    } catch (err) {
+        showToast('Network error while saving resource.', 'error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Publish Resource';
+    }
+}
 
 async function fetchResources() {
     try {
@@ -282,12 +623,10 @@ async function fetchResources() {
 function updateStats() {
     document.getElementById('total-resources').textContent = resources.length;
     let totalViews = 0;
-    resources.forEach(r => {
-        totalViews += r.clicks || 0;
-    });
+    resources.forEach(r => { totalViews += r.clicks || 0; });
     document.getElementById('total-views').textContent = totalViews;
 
-    const studyCount = resources.filter(r => r.type === "Study Materials").length;
+    const studyCount = resources.filter(r => r.type === "Study Materials" || r.type === "Notes").length;
     document.getElementById('study-count').textContent = studyCount;
 }
 
@@ -314,7 +653,7 @@ function renderResources(data) {
         let actionButton = "";
         let resourceId = resource._id || resource.id;
 
-        if (resource.type === "Websites & YouTube Links") {
+        if (resource.type === "Websites & YouTube Links" || resource.type === "Websites" || resource.type === "YouTube Links") {
             actionButton = `
                 <a href="${resource.url}" target="_blank" class="px-3.5 py-2 rounded-xl bg-indigo-600/10 hover:bg-brand-600 hover:text-white text-indigo-400 font-bold text-xs transition-all flex items-center gap-1">
                     <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
@@ -334,12 +673,29 @@ function renderResources(data) {
             `;
         }
 
+        const category = resource.category || "BTech";
+        let metaDetails = "";
+        if (category === "School") {
+            metaDetails = `<p class="flex justify-between"><span class="font-medium text-slate-500">Class:</span> <span class="font-bold text-slate-300">${resource.classLevel || 'Class 8'}</span></p>`;
+        } else if (category === "Intermediate") {
+            metaDetails = `<p class="flex justify-between"><span class="font-medium text-slate-500">Stream & Year:</span> <span class="font-bold text-slate-300">${resource.stream || 'MPC'} • ${resource.year || '1st Year'}</span></p>`;
+        } else if (category === "Diploma") {
+            metaDetails = `<p class="flex justify-between"><span class="font-medium text-slate-500">Branch & Year:</span> <span class="font-bold text-slate-300">${resource.branch || 'CSE'} • ${resource.year || '1st Year'}</span></p>`;
+        } else if (category === "Books & Novels") {
+            metaDetails = `<p class="flex justify-between"><span class="font-medium text-slate-500">Genre:</span> <span class="font-bold text-slate-300">${resource.genre || 'General'}</span></p>`;
+        } else {
+            metaDetails = `
+                <p class="flex justify-between"><span class="font-medium text-slate-500">Branch:</span> <span class="font-bold text-slate-300 truncate max-w-[160px]">${resource.branch || 'CSE'}</span></p>
+                <p class="flex justify-between"><span class="font-medium text-slate-500">Year / Sem:</span> <span class="font-bold text-slate-300">${resource.year || '1st Year'} (${resource.semester || '1st Semester'})</span></p>
+            `;
+        }
+
         container.innerHTML += `
         <div class="bg-slate-900/50 border border-slate-850 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-800 hover:shadow-md transition-all">
             <div>
                 <div class="flex justify-between items-start gap-2">
                     <span class="bg-brand-500/10 text-brand-400 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full">
-                        ${resource.type}
+                        ${category} • ${resource.type || 'Material'}
                     </span>
                     <span class="text-xs text-slate-500 font-medium flex items-center gap-1 shrink-0">
                         <i data-lucide="eye" class="w-3.5 h-3.5 text-slate-400"></i>
@@ -352,10 +708,8 @@ function renderResources(data) {
                 </h2>
 
                 <div class="mt-4 p-3 bg-slate-950/60 border border-slate-850/50 rounded-xl text-xs text-slate-400 space-y-1.5">
-                    <p class="flex justify-between"><span class="font-medium text-slate-500">Branch:</span> <span class="font-bold text-slate-300 truncate max-w-[160px]">${resource.branch}</span></p>
-                    <p class="flex justify-between"><span class="font-medium text-slate-500">Year:</span> <span class="font-bold text-slate-300">${resource.year}</span></p>
-                    <p class="flex justify-between"><span class="font-medium text-slate-500">Semester:</span> <span class="font-bold text-slate-300">${resource.semester}</span></p>
-                    <p class="flex justify-between"><span class="font-medium text-slate-500">Format:</span> <span class="font-bold text-slate-300">${resource.format}</span></p>
+                    ${metaDetails}
+                    <p class="flex justify-between"><span class="font-medium text-slate-500">Format:</span> <span class="font-bold text-slate-300">${resource.format || 'PDF'}</span></p>
                 </div>
             </div>
 
@@ -379,7 +733,9 @@ function filterResources() {
     const filtered = resources.filter(resource => {
         return (
             (resource.name && resource.name.toLowerCase().includes(query)) ||
+            (resource.category && resource.category.toLowerCase().includes(query)) ||
             (resource.branch && resource.branch.toLowerCase().includes(query)) ||
+            (resource.classLevel && resource.classLevel.toLowerCase().includes(query)) ||
             (resource.type && resource.type.toLowerCase().includes(query))
         );
     });

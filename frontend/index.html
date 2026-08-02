@@ -101,6 +101,39 @@
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col relative">
 
+    <!-- PWA App Opening Loading Spinner Overlay -->
+    <div id="pwa-app-loader" class="fixed inset-0 z-[999999] bg-slate-900 flex flex-col items-center justify-center transition-opacity duration-500 ease-in-out">
+        <div class="relative flex flex-col items-center gap-6 p-8 text-center max-w-sm">
+            <!-- Logo Badge with Pulsing Glow -->
+            <div class="relative flex items-center justify-center">
+                <div class="absolute -inset-4 bg-brand-500/30 rounded-3xl blur-xl animate-pulse"></div>
+                <div class="w-20 h-20 rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-2xl shadow-brand-500/50 relative">
+                    <svg class="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                        <path d="M6 6h10M6 10h10M6 14h10"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- App Title -->
+            <div>
+                <h1 class="text-3xl font-extrabold text-white tracking-tight">
+                    Digi<span class="text-brand-400">lib</span>
+                </h1>
+                <p class="text-xs font-semibold tracking-widest text-slate-400 uppercase mt-1">Digital Academic Library</p>
+            </div>
+
+            <!-- Dual Ring Loading Spinner & Status Text -->
+            <div class="flex flex-col items-center gap-3 mt-2">
+                <div class="relative w-12 h-12 flex items-center justify-center">
+                    <div class="w-12 h-12 rounded-full border-4 border-slate-800 border-t-brand-500 animate-spin"></div>
+                    <div class="absolute w-7 h-7 rounded-full border-4 border-slate-800 border-b-indigo-400 animate-spin" style="animation-direction: reverse; animation-duration: 0.8s;"></div>
+                </div>
+                <span class="text-xs font-medium text-slate-300 animate-pulse">Opening app &amp; syncing resources...</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div id="toast-container"
      class="fixed top-5 right-5 z-[99999] flex flex-col gap-3 pointer-events-none">
@@ -126,8 +159,10 @@
             <nav class="hidden md:flex items-center gap-8">
                 <a href="#" class="text-sm font-semibold text-brand-600 dark:text-brand-400">Home</a>
                 <a href="#explore" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Services</a>
+                <a href="contribute.html" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Contribute</a>
+                <a href="request.html" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Request Resource</a>
+                <a href="guidelines.html" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Guidelines</a>
                 <a href="#faq" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">About Us</a>
-                <a href="#faq" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Contact</a>
             </nav>
 
             <!-- Navigation Actions -->
@@ -195,8 +230,10 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
         <div class="flex flex-col gap-6 py-4">
             <a href="#" class="text-lg font-bold text-brand-600 dark:text-brand-400" onclick="closeDrawerMenu()">Home</a>
             <a href="#explore" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Services</a>
+            <a href="contribute.html" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Contribute Resource</a>
+            <a href="request.html" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Request Resource</a>
+            <a href="guidelines.html" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Guidelines</a>
             <a href="#faq" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">About Us</a>
-            <a href="#faq" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Contact</a>
         </div>
 
         <div class="flex flex-col gap-4 mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
@@ -233,7 +270,7 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                                 Get Started
                                 <i data-lucide="arrow-right" class="w-5 h-5"></i>
                             </a>
-                            <a href="#contribute" class="w-full sm:w-auto px-8 py-4 rounded-xl border-2 border-brand-100 dark:border-slate-800 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-slate-900 font-semibold transition-all flex items-center justify-center gap-2">
+                            <a href="contribute.html" class="w-full sm:w-auto px-8 py-4 rounded-xl border-2 border-brand-100 dark:border-slate-800 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-slate-900 font-semibold transition-all flex items-center justify-center gap-2">
                                 <i data-lucide="plus-circle" class="w-5 h-5"></i>
                                 Contribute
                             </a>
@@ -272,51 +309,63 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                     <div class="w-16 h-1.5 bg-brand-600 dark:bg-brand-500 mx-auto rounded-full"></div>
                 </div>
 
-                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Card 1: Websites & YouTube -->
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Card 1: School -->
                     <div class="group relative bg-slate-50 dark:bg-slate-950 p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 hover:shadow-xl hover:shadow-brand-500/5 hover:-translate-y-1 transition-all duration-300">
                         <div class="w-16 h-16 rounded-2xl bg-brand-100 dark:bg-brand-950/50 flex items-center justify-center text-brand-600 dark:text-brand-400 mb-6 group-hover:scale-110 transition-transform relative">
-                            <i data-lucide="globe" class="w-8 h-8"></i>
-                            <div class="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-lg bg-red-500 flex items-center justify-center text-white scale-90">
-                                <i data-lucide="play" class="w-3.5 h-3.5 fill-white"></i>
-                            </div>
+                            <i data-lucide="school" class="w-8 h-8"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Websites &amp; YouTube</h3>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">School</h3>
                         <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
-                            Explore trusted educational websites, coding platforms, and curated YouTube channels.
+                            Class 6th, 7th, 8th, 9th &amp; 10th Notes, Previous Year Papers, Study Materials, and Learning Links.
                         </p>
-                        <a href="#filters" onclick="setResourceFilterType('Websites & YouTube Links')" class="inline-flex items-center gap-2 text-sm font-bold text-brand-600 dark:text-brand-400 group/link" style="padding-top: 15px;">
-                            Explore Links 
+                        <a href="#filters" onclick="switchModule('School')" class="inline-flex items-center gap-2 text-sm font-bold text-brand-600 dark:text-brand-400 group/link">
+                            Explore School 
                             <i data-lucide="arrow-right" class="w-4 h-4 group-hover/link:translate-x-1 transition-transform"></i>
                         </a>
                     </div>
 
-                    <!-- Card 2: Previous Year Papers -->
+                    <!-- Card 2: Intermediate & Diploma -->
                     <div class="group relative bg-slate-50 dark:bg-slate-950 p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-xl hover:shadow-emerald-500/5 hover:-translate-y-1 transition-all duration-300">
                         <div class="w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-950/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-6 group-hover:scale-110 transition-transform">
-                            <i data-lucide="file-text" class="w-8 h-8"></i>
+                            <i data-lucide="award" class="w-8 h-8"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Previous Year Papers</h3>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Intermediate &amp; Diploma</h3>
                         <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
-                            Practice with previous year question papers and understand important exam patterns and topics.
+                            MPC, BiPC, CEC, MEC, HEC Intermediate streams and Polytechnic Diploma Engineering branches.
                         </p>
-                        <a href="#filters" onclick="setResourceFilterType('Previous Year Papers')" class="inline-flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 group/link">
-                            Explore Papers 
+                        <a href="#filters" onclick="switchModule('Intermediate')" class="inline-flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 group/link">
+                            Explore Inter &amp; Diploma 
                             <i data-lucide="arrow-right" class="w-4 h-4 group-hover/link:translate-x-1 transition-transform"></i>
                         </a>
                     </div>
 
-                    <!-- Card 3: Study Materials -->
+                    <!-- Card 3: B.Tech / Engineering -->
+                    <div class="group relative bg-slate-50 dark:bg-slate-950 p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-1 transition-all duration-300">
+                        <div class="w-16 h-16 rounded-2xl bg-indigo-100 dark:bg-indigo-950/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="graduation-cap" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">B.Tech / Engineering</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
+                            CSE, ECE, EEE, Mechanical &amp; Civil Engineering unit notes, mid/semester PYQs, study guides &amp; links.
+                        </p>
+                        <a href="#filters" onclick="switchModule('BTech')" class="inline-flex items-center gap-2 text-sm font-bold text-indigo-600 dark:text-indigo-400 group/link">
+                            Explore B.Tech 
+                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover/link:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+
+                    <!-- Card 4: Books & Novels -->
                     <div class="group relative bg-slate-50 dark:bg-slate-950 p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-500 hover:shadow-xl hover:shadow-amber-500/5 hover:-translate-y-1 transition-all duration-300">
                         <div class="w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-950/35 flex items-center justify-center text-amber-600 dark:text-amber-500 mb-6 group-hover:scale-110 transition-transform">
-                            <i data-lucide="book-open" class="w-8 h-8"></i>
+                            <i data-lucide="book-open-check" class="w-8 h-8"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Study Materials</h3>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Books &amp; Novels</h3>
                         <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
-                            Access verified slides, topper handnotes, and textbook references for better preparation.
+                            Programming, Engineering Textbooks, Novels, Motivational, Competitive Exam &amp; Finance Books.
                         </p>
-                        <a href="#filters" onclick="setResourceFilterType('Study Materials')" class="inline-flex items-center gap-2 text-sm font-bold text-amber-600 dark:text-amber-500 group/link" style="padding-top: 20px;">
-                            Get Materials 
+                        <a href="#filters" onclick="switchModule('Books & Novels')" class="inline-flex items-center gap-2 text-sm font-bold text-amber-600 dark:text-amber-500 group/link">
+                            Explore Books 
                             <i data-lucide="arrow-right" class="w-4 h-4 group-hover/link:translate-x-1 transition-transform"></i>
                         </a>
                     </div>
@@ -330,169 +379,172 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Section Heading -->
                 <div class="text-center space-y-3 mb-10">
-                    <!-- Small Badge -->
                     <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold bg-brand-100 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 tracking-wider uppercase">
-                        Academic Access
+                        Academic &amp; Learning Access
                     </span>
-                    <!-- Main Heading -->
                     <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                         Unlock Resources
                     </h2>
-                    <!-- Description -->
                     <p class="text-slate-500 dark:text-slate-400 text-sm max-w-2xl mx-auto">
-                        Select your branch, academic year, and semester to access personalized study resources.
+                        Choose your preferred learning module below to browse study materials, papers, and books.
                     </p>
-                    <!-- Bottom Line -->
                     <div class="w-16 h-1.5 bg-brand-600 dark:bg-brand-500 mx-auto rounded-full"></div>
+                </div>
+
+                <!-- Module Switcher Tabs -->
+                <div class="flex flex-wrap justify-center gap-2 mb-8 bg-white dark:bg-slate-900 p-2 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-md">
+                    <button onclick="switchModule('School')" id="module-btn-school" class="module-tab-btn px-5 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-2 bg-brand-600 text-white shadow-md">
+                        <i data-lucide="school" class="w-4 h-4"></i>
+                        <span>🏫 School</span>
+                    </button>
+                    <button onclick="switchModule('Intermediate')" id="module-btn-intermediate" class="module-tab-btn px-5 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-2">
+                        <i data-lucide="award" class="w-4 h-4"></i>
+                        <span>🎓 Intermediate &amp; Diploma</span>
+                    </button>
+                    <button onclick="switchModule('BTech')" id="module-btn-btech" class="module-tab-btn px-5 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-2">
+                        <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                        <span>🏛️ B.Tech / Engineering</span>
+                    </button>
+                    <button onclick="switchModule('Books & Novels')" id="module-btn-books" class="module-tab-btn px-5 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-2">
+                        <i data-lucide="book-open" class="w-4 h-4"></i>
+                        <span>📚 Books &amp; Novels</span>
+                    </button>
                 </div>
                 
                 <div class="bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-lg relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-2xl"></div>
 
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-brand-600 animate-pulse"></span>
-                            <span class="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400">
-                                Active Academic Filter Profile
+                    <!-- Panel 1: School -->
+                    <div id="panel-school" class="space-y-6">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+                            <span class="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-600 animate-pulse"></span>
+                                School Module (Class 6 - 10)
                             </span>
+                            <div class="flex flex-wrap gap-2" id="school-class-buttons">
+                                <button onclick="setSchoolClass('Class 6')" class="sch-class-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">Class 6</button>
+                                <button onclick="setSchoolClass('Class 7')" class="sch-class-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">Class 7</button>
+                                <button onclick="setSchoolClass('Class 8')" class="sch-class-btn px-3.5 py-1.5 rounded-lg text-xs font-bold bg-brand-600 text-white shadow-sm">Class 8</button>
+                                <button onclick="setSchoolClass('Class 9')" class="sch-class-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">Class 9</button>
+                                <button onclick="setSchoolClass('Class 10')" class="sch-class-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">Class 10</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-3">Resource Sub-Category</label>
+                            <div class="flex flex-wrap gap-2.5">
+                                <button onclick="setSchoolType('All')" class="sch-type-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white">All</button>
+                                <button onclick="setSchoolType('Notes')" class="sch-type-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Notes</button>
+                                <button onclick="setSchoolType('Previous Year Papers')" class="sch-type-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Previous Year Papers</button>
+                                <button onclick="setSchoolType('Study Materials')" class="sch-type-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Study Materials</button>
+                                <button onclick="setSchoolType('Websites')" class="sch-type-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Websites</button>
+                                <button onclick="setSchoolType('YouTube Links')" class="sch-type-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">YouTube Links</button>
+                            </div>
                         </div>
                     </div>
 
-                    <form id="filter-form" class="grid md:grid-cols-12 gap-6 items-end">
-                        <div class="md:col-span-4 space-y-2">
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Your Branch</label>
-                            <div class="relative">
-                                <select id="filter-branch" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
+                    <!-- Panel 2: Intermediate & Diploma -->
+                    <div id="panel-intermediate" class="space-y-6 hidden">
+                        <div class="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+                            <button onclick="setInterDiplomaSubTab('Intermediate')" id="subtab-inter" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm">
+                                🎓 Intermediate (11th &amp; 12th)
+                            </button>
+                            <button onclick="setInterDiplomaSubTab('Diploma')" id="subtab-diploma" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400">
+                                📜 Diploma (Polytechnic)
+                            </button>
+                        </div>
+
+                        <!-- Inter Subview -->
+                        <div id="inter-subview" class="grid md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Stream</label>
+                                <select id="inter-stream-select" onchange="updateUnlockedResourcesUI()" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-medium text-sm text-slate-800 dark:text-slate-200">
+                                    <option value="MPC">MPC (Maths, Physics, Chem)</option>
+                                    <option value="BiPC">BiPC (Biology, Physics, Chem)</option>
+                                    <option value="CEC">CEC (Civics, Economics, Commerce)</option>
+                                    <option value="MEC">MEC (Maths, Economics, Commerce)</option>
+                                    <option value="HEC">HEC (History, Economics, Civics)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Year</label>
+                                <select id="inter-year-select" onchange="updateUnlockedResourcesUI()" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-medium text-sm text-slate-800 dark:text-slate-200">
+                                    <option value="1st Year">1st Year</option>
+                                    <option value="2nd Year">2nd Year</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Resource Type</label>
+                                <select id="inter-type-select" onchange="updateUnlockedResourcesUI()" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-medium text-sm text-slate-800 dark:text-slate-200">
+                                    <option value="All">All Types</option>
+                                    <option value="Notes">Notes</option>
+                                    <option value="Previous Year Papers">Previous Year Papers</option>
+                                    <option value="Study Materials">Study Materials</option>
+                                    <option value="Websites">Websites</option>
+                                    <option value="YouTube Links">YouTube Links</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Diploma Subview -->
+                        <div id="diploma-subview" class="grid md:grid-cols-3 gap-4 hidden">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Branch</label>
+                                <select id="diploma-branch-select" onchange="updateUnlockedResourcesUI()" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-medium text-sm text-slate-800 dark:text-slate-200">
                                     <option value="Computer Science (CSE)">Computer Science (CSE)</option>
                                     <option value="Electronics & Communication (ECE)">Electronics &amp; Communication (ECE)</option>
                                     <option value="Electrical & Electronics (EEE)">Electrical &amp; Electronics (EEE)</option>
                                     <option value="Mechanical Engineering (ME)">Mechanical Engineering (ME)</option>
                                     <option value="Civil Engineering (CE)">Civil Engineering (CE)</option>
                                 </select>
-                                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                                </div>
                             </div>
-                        </div>
-                        
-
-                        <div class="md:col-span-3 space-y-2">
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Academic Year</label>
-                            <div class="relative">
-                                <select id="filter-year" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
-                                    <option value="1st Year">1st Year (Common Syllabus)</option>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Year</label>
+                                <select id="diploma-year-select" onchange="updateUnlockedResourcesUI()" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-medium text-sm text-slate-800 dark:text-slate-200">
+                                    <option value="1st Year">1st Year</option>
                                     <option value="2nd Year">2nd Year</option>
                                     <option value="3rd Year">3rd Year</option>
-                                    <option value="4th Year">4th Year</option>
                                 </select>
-                                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                                </div>
                             </div>
-                        </div>
-
-                        <div class="md:col-span-3 space-y-2">
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Semester</label>
-                            <div class="relative">
-                                <select id="filter-semester" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
-                                    <option value="1st Semester">1st Semester</option>
-                                    <option value="2nd Semester">2nd Semester</option>
-                                </select>
-                                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <button type="submit" class="w-full py-4 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center justify-center gap-3 shadow-lg shadow-brand-500/10 hover:shadow-xl transition-all">
-                                <i data-lucide="lock" class="w-5 h-5"></i>
-                                <span>Access Resources</span>
-                            </button>
-                        </div>
-                    </form>
-
-                </div>
-
-                <!-- Dynamic Real-time Showcase Drawer -->
-                <div id="resources-showcase-container" class="mt-12 hidden">
-                    <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
-                        
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-6 mb-6">
                             <div>
-                                <h3 class="text-2xl font-bold text-slate-900 dark:text-white" id="unlocked-title">
-                                    Unlocked Resources
-                                </h3>
-                                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1" id="unlocked-subtitle">
-                                    Displaying resources for CSE, 1st Year (1st Semester)
-                                </p>
-                            </div>
-                            <div class="flex flex-wrap gap-2 bg-slate-50 dark:bg-slate-950 p-1.5 rounded-xl border border-slate-100 dark:border-slate-800" id="showcase-tabs">
-                                <button onclick="filterShowcaseTab('All')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-brand-600 dark:bg-brand-500 text-white shadow-sm transition-all">
-                                    All
-                                </button>
-                                <button onclick="filterShowcaseTab('Websites & YouTube Links')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all">
-                                    Websites &amp; YT
-                                </button>
-                                <button onclick="filterShowcaseTab('Previous Year Papers')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all">
-                                    PYQ Papers
-                                </button>
-                                <button onclick="filterShowcaseTab('Study Materials')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all">
-                                    Study Materials
-                                </button>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Resource Type</label>
+                                <select id="diploma-type-select" onchange="updateUnlockedResourcesUI()" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-medium text-sm text-slate-800 dark:text-slate-200">
+                                    <option value="All">All Types</option>
+                                    <option value="Notes">Notes</option>
+                                    <option value="Previous Year Papers">Previous Year Papers</option>
+                                    <option value="Study Materials">Study Materials</option>
+                                    <option value="Websites">Websites</option>
+                                    <option value="YouTube Links">YouTube Links</option>
+                                </select>
                             </div>
                         </div>
-
-                       <div id="unlocked-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full overflow-hidden"></div>
-
                     </div>
-                </div>
 
-            </div>
-        </section>
+                    <!-- Panel 3: Books & Novels -->
+                    <div id="panel-books" class="space-y-6 hidden">
+                        <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
+                            <span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-500">
+                                📚 Books &amp; Literature Library
+                            </span>
+                        </div>
+                        <div class="flex flex-wrap gap-2.5" id="books-genre-buttons">
+                            <button onclick="setBookGenre('Programming Books')" class="book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-amber-600 text-white shadow-sm">Programming Books</button>
+                            <button onclick="setBookGenre('Engineering Books')" class="book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Engineering Books</button>
+                            <button onclick="setBookGenre('Novels')" class="book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Novels</button>
+                            <button onclick="setBookGenre('Motivational Books')" class="book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Motivational Books</button>
+                            <button onclick="setBookGenre('Competitive Exam Books')" class="book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Competitive Exam Books</button>
+                            <button onclick="setBookGenre('Psychology')" class="book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Psychology</button>
+                            <button onclick="setBookGenre('Finance')" class="book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Finance</button>
+                        </div>
+                    </div>
 
-        <!-- Crowdsourced Database / Contribute Resource Section -->
-        <section id="contribute" class="py-10 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 transition-colors duration-300">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                <div class="text-center space-y-3 mb-12">
-                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold bg-brand-100 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 tracking-wider uppercase">
-                        verified Contributions
-                    </span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                        Contribute Resource
-                    </h2>
-                    <div class="w-16 h-1.5 bg-brand-600 dark:bg-brand-500 mx-auto rounded-full"></div>
-                </div>
-               <div class="mb-4 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl">
-    <p class="text-sm font-medium text-amber-700 dark:text-amber-400">
-        📌  Please include the Regulation in the Resource Name/Title field.
-        Example: <b>[R23] DBMS Study Material</b> or <b>[R20] Data Structures Notes</b>
-    </p>
-</div> 
-
-                <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-lg relative overflow-hidden">
-                    <form id="contribute-form" class="space-y-6">
-                        
-                        <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                            <div class="space-y-2">
-                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Resource Type</label>
+                    <!-- Panel 4: BTech -->
+                    <div id="panel-btech" class="space-y-6 hidden">
+                        <form id="filter-form" class="grid md:grid-cols-12 gap-6 items-end">
+                            <div class="md:col-span-4 space-y-2">
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Your Branch</label>
                                 <div class="relative">
-                                    <select id="contrib-type" class="w-full pl-4 pr-10 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
-                                        <option value="Websites & YouTube Links">Websites &amp; YouTube Links</option>
-                                        <option value="Previous Year Papers">Previous Year Papers</option>
-                                        <option value="Study Materials">Study Materials</option>
-                                    </select>
-                                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                                        <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="space-y-2">
-                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Branch</label>
-                                <div class="relative">
-                                    <select id="contrib-branch" class="w-full pl-4 pr-10 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
+                                    <select id="filter-branch" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer">
                                         <option value="Computer Science (CSE)">Computer Science (CSE)</option>
                                         <option value="Electronics & Communication (ECE)">Electronics &amp; Communication (ECE)</option>
                                         <option value="Electrical & Electronics (EEE)">Electrical &amp; Electronics (EEE)</option>
@@ -505,11 +557,11 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                                 </div>
                             </div>
 
-                            <div class="space-y-2">
-                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Year</label>
+                            <div class="md:col-span-3 space-y-2">
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Academic Year</label>
                                 <div class="relative">
-                                    <select id="contrib-year" class="w-full pl-4 pr-10 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
-                                        <option value="1st Year">1st Year</option>
+                                    <select id="filter-year" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer">
+                                        <option value="1st Year">1st Year (Common Syllabus)</option>
                                         <option value="2nd Year">2nd Year</option>
                                         <option value="3rd Year">3rd Year</option>
                                         <option value="4th Year">4th Year</option>
@@ -520,11 +572,10 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                                 </div>
                             </div>
 
-                            <!-- Semester dropdown -->
-                            <div class="space-y-2">
+                            <div class="md:col-span-3 space-y-2">
                                 <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Semester</label>
                                 <div class="relative">
-                                    <select id="contrib-semester" class="w-full pl-4 pr-10 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
+                                    <select id="filter-semester" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer">
                                         <option value="1st Semester">1st Semester</option>
                                         <option value="2nd Semester">2nd Semester</option>
                                     </select>
@@ -534,59 +585,115 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                                 </div>
                             </div>
 
-                            <div class="space-y-2">
-                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Format</label>
-                                <div class="relative">
-                                    <select id="contrib-format" class="w-full pl-4 pr-10 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer transition-all">
-                                        <option value="YouTube Playlist">YouTube Playlist</option>
-                                        <option value="PDF Document">PDF Document</option>
-                                        <option value="Drive Link">Google Drive Folder</option>
-                                        <option value="Website URL">Interactive Website</option>
-                                    </select>
-                                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                                        <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Dynamic Row For Input Fields -->
-                        <div class="grid lg:grid-cols-12 gap-6 items-end">
-                            <div class="lg:col-span-5 space-y-2">
-                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Resource Name / Title</label>
-                                <input id="contrib-name" type="text" placeholder="e.g., Data Structures Playlist by Abdul Bari" required class="w-full px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 text-sm dark:text-slate-200 font-medium transition-all" />
-                            </div>
-
-                            <!-- Dynamic Block for URL Input (Websites/YT Links) -->
-                            <div id="url-field-container" class="lg:col-span-5 space-y-2">
-                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Resource URL</label>
-                                <input id="contrib-url" type="url" placeholder="https://youtube.com/playlist?list=..." required class="w-full px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 text-sm dark:text-slate-200 font-medium transition-all" />
-                            </div>
-
-                            <!-- Dynamic Block for File Upload Input (Papers/Study Materials) -->
-                            <div id="file-field-container" class="lg:col-span-5 space-y-2 hidden animate-fade-in">
-                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Upload Study File (PDF/Docs/PPT)</label>
-                                <div class="relative flex items-center justify-center w-full">
-                                    <label class="flex flex-col items-center justify-center w-full h-[52px] border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 rounded-xl cursor-pointer bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-950 transition-all">
-                                        <div class="flex items-center gap-3 px-4">
-                                            <i data-lucide="upload-cloud" class="w-5 h-5 text-slate-400"></i>
-                                            <span id="file-label-text" class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]">Select study document...</span>
-                                        </div>
-                                        <input id="contrib-file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" class="hidden" />
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="lg:col-span-2">
-                                <button type="submit" class="w-full py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center justify-center gap-2 shadow-lg shadow-brand-500/10 hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                                    <span>Upload &amp; Share</span>
+                            <div class="md:col-span-2">
+                                <button type="submit" class="w-full py-4 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center justify-center gap-3 shadow-lg shadow-brand-500/10 hover:shadow-xl transition-all">
+                                    <i data-lucide="lock" class="w-5 h-5"></i>
+                                    <span>Access</span>
                                 </button>
                             </div>
-                        </div>
+                        </form>
+                    </div>
 
-                    </form>
                 </div>
 
+                <!-- Dynamic Real-time Showcase Drawer -->
+                <div id="resources-showcase-container" class="mt-12">
+                    <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
+                        
+                        <div class="flex flex-col gap-6 border-b border-slate-100 dark:border-slate-800 pb-6 mb-6">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div>
+                                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2.5" id="unlocked-title">
+                                        <span>Unlocked Resources</span>
+                                        <span id="resource-search-badge" class="hidden px-2.5 py-0.5 text-xs font-extrabold bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-400 rounded-full border border-brand-200 dark:border-brand-800/50"></span>
+                                    </h3>
+                                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1" id="unlocked-subtitle">
+                                        Displaying study resources
+                                    </p>
+                                </div>
+                                <div class="flex flex-wrap gap-2 bg-slate-50 dark:bg-slate-950 p-1.5 rounded-xl border border-slate-100 dark:border-slate-800" id="showcase-tabs">
+                                    <button onclick="filterShowcaseTab('All')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-brand-600 dark:bg-brand-500 text-white shadow-sm transition-all">
+                                        All
+                                    </button>
+                                    <button onclick="filterShowcaseTab('Notes')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all">
+                                        Notes
+                                    </button>
+                                    <button onclick="filterShowcaseTab('Previous Year Papers')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all">
+                                        PYQ Papers
+                                    </button>
+                                    <button onclick="filterShowcaseTab('Study Materials')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all">
+                                        Materials
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Real-time Search Input Bar -->
+                            <div class="space-y-2 pt-2">
+                                <div class="relative flex items-center group">
+                                    <i data-lucide="search" class="w-5 h-5 absolute left-4 text-slate-400 group-focus-within:text-brand-500 transition-colors pointer-events-none"></i>
+                                    <input 
+                                        type="text" 
+                                        id="resource-search-input" 
+                                        placeholder="Search unlocked materials by book, subject, PYQ, unit notes, or author (e.g. Operating Systems, Galvin)..." 
+                                        oninput="onResourceSearchInput(this.value)"
+                                        class="w-full pl-12 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white dark:focus:bg-slate-900 transition-all shadow-inner"
+                                    >
+                                    <button 
+                                        id="clear-resource-search" 
+                                        onclick="clearResourceSearch()" 
+                                        class="hidden absolute right-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-all"
+                                        title="Clear search"
+                                    >
+                                        <i data-lucide="x" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+
+                                <div class="flex flex-wrap items-center gap-2 text-xs pt-1">
+                                    <span class="text-slate-400 font-bold flex items-center gap-1">
+                                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+                                        Popular Searches:
+                                    </span>
+                                    <button onclick="setSearchKeyword('Operating Systems')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold transition-all">Operating Systems</button>
+                                    <button onclick="setSearchKeyword('Galvin')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold transition-all">Galvin</button>
+                                    <button onclick="setSearchKeyword('Mathematics')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold transition-all">Mathematics</button>
+                                    <button onclick="setSearchKeyword('R23')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold transition-all">R23</button>
+                                    <button onclick="setSearchKeyword('PYQ')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold transition-all">PYQ Papers</button>
+                                </div>
+                            </div>
+                        </div>
+
+                       <div id="unlocked-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full overflow-hidden"></div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Crowdsourced Database / Contribute Resource Banner Section -->
+        <section id="contribute-banner" class="py-12 bg-gradient-to-r from-brand-600 via-indigo-600 to-brand-700 text-white transition-colors duration-300 relative overflow-hidden">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.12),transparent)] pointer-events-none"></div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="flex flex-col lg:flex-row items-center justify-between gap-8 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 sm:p-10 shadow-2xl">
+                    <div class="space-y-3 text-center lg:text-left max-w-2xl">
+                        <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-extrabold bg-white/20 text-white tracking-wider uppercase backdrop-blur-sm">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i>
+                            Community Upload Portal
+                        </span>
+                        <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight leading-snug">
+                            Have Study Materials or Question Papers to Share?
+                        </h2>
+                        <p class="text-brand-100 text-sm sm:text-base leading-relaxed">
+                            Upload your unit notes, previous year question papers, or helpful study links. Help thousands of fellow engineering students across colleges succeed!
+                        </p>
+                    </div>
+
+                    <a href="contribute.html" class="shrink-0 px-8 py-4 rounded-2xl bg-white text-brand-700 hover:bg-brand-50 font-extrabold text-sm sm:text-base shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center gap-2.5 group">
+                        <i data-lucide="plus-circle" class="w-5 h-5 text-brand-600 group-hover:rotate-90 transition-transform"></i>
+                        <span>Contribute Resource</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
             </div>
         </section>
 
@@ -628,41 +735,25 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                         </div>
                     </div>
 
-                    <div class="bg-gradient-to-br from-amber-50/60 to-orange-50/40 dark:from-slate-900 dark:to-amber-950/10 border border-amber-100/80 dark:border-slate-800/80 rounded-3xl p-8 flex flex-col gap-6 relative overflow-hidden">
-                        <div>
-                            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                                <i data-lucide="help-circle" class="text-amber-500 w-6 h-6"></i>
+                    <div class="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-orange-500/10 dark:from-slate-900 dark:to-amber-950/20 border border-amber-200/80 dark:border-slate-800 rounded-3xl p-8 flex flex-col justify-between gap-6 relative overflow-hidden">
+                        <div class="space-y-3">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                                <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+                                Resource Requests
+                            </span>
+                            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white leading-snug">
                                 Can't Find a Material? Request It!
                             </h3>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                                Post what resource you need. Other peers on this platform can view it below and upload it directly for you!
+                            <p class="text-sm text-slate-600 dark:text-slate-400">
+                                Post what book, paper, or unit notes you need on our dedicated campus request board. Fellow engineering peers will be notified and can fulfill it for you!
                             </p>
                         </div>
 
-                        <form id="resource-request-form" class="space-y-3">
-                            <input type="text" id="req-title" placeholder="What material/book do you need? (e.g. Operating Systems Textbook by Galvin)" required class="w-full px-4 py-3 bg-white dark:bg-slate-950 text-slate-900 dark:text-white rounded-xl border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                            <input type="text" id="req-details" placeholder="Optional details (e.g.,Semester,Chapter 4 Notes,R-23...)" class="w-full px-4 py-3 bg-white dark:bg-slate-950 text-slate-900 dark:text-white rounded-xl border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                            <button type="submit" class="w-full py-3 bg-amber-600 hover:bg-amber-700 transition-all text-white text-sm font-bold rounded-xl shadow-md flex items-center justify-center gap-2">
-                                <i data-lucide="send" class="w-4 h-4"></i>
-                                Post Resource Request
-                            </button>
-                        </form>
+                        <a href="request.html" class="w-full py-3.5 px-6 bg-amber-600 hover:bg-amber-700 transition-all text-white text-sm font-bold rounded-xl shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 group">
+                            <span>Open Request Portal</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                        </a>
                     </div>
-                </div>
-
-                <div class="mt-12 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm">
-                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 mb-6">
-                        <div>
-                            <h4 class="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
-                                Requested Resource Names
-                            </h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">If you have any of these files, hit fulfill to upload and share it!</p>
-                        </div>
-                        <span id="request-counter-badge" class="px-2.5 py-1 text-xs font-bold bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-full">0 Active Requests</span>
-                    </div>
-
-                    <div id="live-requests-feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
                 </div>
 
             </div>
@@ -809,7 +900,7 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
 
     <!-- Full Mock/Live Database setup -->
     <script>
-        const BACKEND_URL = "https://digilib-backend-v0r2.onrender.com";
+        const BACKEND_URL = "";
         let database = [];
         let activeTab = 'All';
         let currentFilterBranch = 'Computer Science (CSE)';
@@ -818,6 +909,32 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
         let userStatsViews = 12;
         let userStatsContributed = 0;
         let localRequestsCache = [];
+        let currentResourceSearchQuery = '';
+
+        function onResourceSearchInput(val) {
+            currentResourceSearchQuery = (val || '').trim().toLowerCase();
+            const clearBtn = document.getElementById('clear-resource-search');
+            if (clearBtn) {
+                if (currentResourceSearchQuery.length > 0) {
+                    clearBtn.classList.remove('hidden');
+                } else {
+                    clearBtn.classList.add('hidden');
+                }
+            }
+            updateUnlockedResourcesUI(true);
+        }
+
+        function clearResourceSearch() {
+            const searchInput = document.getElementById('resource-search-input');
+            if (searchInput) searchInput.value = '';
+            onResourceSearchInput('');
+        }
+
+        function setSearchKeyword(keyword) {
+            const searchInput = document.getElementById('resource-search-input');
+            if (searchInput) searchInput.value = keyword;
+            onResourceSearchInput(keyword);
+        }
 
         // IMPLEMENTING MISSING SHOW TOAST NOTIFICATION FUNCTION
         function showToast(message, type = 'success') {
@@ -855,8 +972,22 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             }, 4000);
         }
 
+        function hidePwaAppLoader() {
+            const loader = document.getElementById("pwa-app-loader");
+            if (loader) {
+                setTimeout(() => {
+                    loader.classList.add("opacity-0", "pointer-events-none");
+                    setTimeout(() => {
+                        if (loader.parentNode) loader.parentNode.removeChild(loader);
+                    }, 500);
+                }, 700);
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
             lucide.createIcons();
+
+            hidePwaAppLoader();
 
             const loggedInUser = localStorage.getItem("student");
             if (!loggedInUser) {
@@ -916,7 +1047,8 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
 
             if (contribType) {
                 contribType.addEventListener('change', function() {
-                    if (contribType.value === "Websites & YouTube Links") {
+                    const isUrlType = (contribType.value === "Websites" || contribType.value === "YouTube Links" || contribType.value === "Websites & YouTube Links");
+                    if (isUrlType) {
                         urlFieldContainer.classList.remove('hidden');
                         fileFieldContainer.classList.add('hidden');
                         contribUrl.setAttribute('required', 'true');
@@ -995,8 +1127,104 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
         if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeDrawerMenu);
         if (mobileDrawerOverlay) mobileDrawerOverlay.addEventListener('click', closeDrawerMenu);
 
-        function setResourceFilterType(type) {
+        let currentModule = 'School'; // 'School', 'Intermediate', 'Books & Novels', 'BTech'
+        let currentSchoolClass = 'Class 8';
+        let currentSchoolType = 'All';
+        let currentInterDiplomaSubTab = 'Intermediate';
+        let currentBookGenre = 'Programming Books';
+
+        function switchModule(moduleName) {
+            currentModule = moduleName;
+            
+            // Highlight module button
+            document.querySelectorAll('.module-tab-btn').forEach(btn => {
+                btn.className = "module-tab-btn px-5 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-2";
+            });
+
+            const activeBtnId = moduleName === 'School' ? 'module-btn-school' :
+                                moduleName === 'Intermediate' ? 'module-btn-intermediate' :
+                                moduleName === 'Books & Novels' ? 'module-btn-books' : 'module-btn-btech';
+            const activeBtn = document.getElementById(activeBtnId);
+            if (activeBtn) {
+                activeBtn.className = "module-tab-btn px-5 py-3 rounded-xl text-sm font-bold bg-brand-600 text-white shadow-md flex items-center gap-2";
+            }
+
+            // Hide panels
+            document.getElementById('panel-school').classList.add('hidden');
+            document.getElementById('panel-intermediate').classList.add('hidden');
+            document.getElementById('panel-books').classList.add('hidden');
+            document.getElementById('panel-btech').classList.add('hidden');
+
+            // Show current panel
+            const panelId = moduleName === 'School' ? 'panel-school' :
+                            moduleName === 'Intermediate' ? 'panel-intermediate' :
+                            moduleName === 'Books & Novels' ? 'panel-books' : 'panel-btech';
+            const targetPanel = document.getElementById(panelId);
+            if (targetPanel) targetPanel.classList.remove('hidden');
+
             document.getElementById('filters').scrollIntoView({ behavior: 'smooth' });
+            updateUnlockedResourcesUI();
+        }
+
+        function setSchoolClass(cls) {
+            currentSchoolClass = cls;
+            document.querySelectorAll('.sch-class-btn').forEach(btn => {
+                if (btn.textContent.trim() === cls) {
+                    btn.className = "sch-class-btn px-3.5 py-1.5 rounded-lg text-xs font-bold bg-brand-600 text-white shadow-sm";
+                } else {
+                    btn.className = "sch-class-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800";
+                }
+            });
+            updateUnlockedResourcesUI();
+        }
+
+        function setSchoolType(type) {
+            currentSchoolType = type;
+            document.querySelectorAll('.sch-type-btn').forEach(btn => {
+                if (btn.textContent.trim() === type) {
+                    btn.className = "sch-type-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white";
+                } else {
+                    btn.className = "sch-type-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300";
+                }
+            });
+            updateUnlockedResourcesUI();
+        }
+
+        function setInterDiplomaSubTab(sub) {
+            currentInterDiplomaSubTab = sub;
+            const btnInter = document.getElementById('subtab-inter');
+            const btnDiploma = document.getElementById('subtab-diploma');
+            const interView = document.getElementById('inter-subview');
+            const diplomaView = document.getElementById('diploma-subview');
+
+            if (sub === 'Intermediate') {
+                btnInter.className = "px-4 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm";
+                btnDiploma.className = "px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400";
+                interView.classList.remove('hidden');
+                diplomaView.classList.add('hidden');
+            } else {
+                btnDiploma.className = "px-4 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm";
+                btnInter.className = "px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400";
+                diplomaView.classList.remove('hidden');
+                interView.classList.add('hidden');
+            }
+            updateUnlockedResourcesUI();
+        }
+
+        function setBookGenre(genre) {
+            currentBookGenre = genre;
+            document.querySelectorAll('.book-genre-btn').forEach(btn => {
+                if (btn.textContent.trim() === genre) {
+                    btn.className = "book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-amber-600 text-white shadow-sm";
+                } else {
+                    btn.className = "book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300";
+                }
+            });
+            updateUnlockedResourcesUI();
+        }
+
+        function setResourceFilterType(type) {
+            switchModule('BTech');
             activeTab = type;
             updateUnlockedResourcesUI();
         }
@@ -1006,10 +1234,7 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             const tabButtons = document.querySelectorAll('.tab-btn');
             tabButtons.forEach(btn => {
                 const btnText = (btn.textContent || "").trim();
-                if (btnText === tabName || 
-                    (tabName === 'Websites & YouTube Links' && btnText.includes('Websites')) ||
-                    (tabName === 'Previous Year Papers' && btnText.includes('PYQ')) ||
-                    (tabName === 'Study Materials' && btnText.includes('Study'))) {
+                if (btnText === tabName) {
                     btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-brand-600 dark:bg-brand-500 text-white shadow-sm transition-all";
                 } else {
                     btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all";
@@ -1028,17 +1253,10 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                 currentFilterSemester = document.getElementById('filter-semester').value;
 
                 const container = document.getElementById('resources-showcase-container');
-
-                // SHOW SECTION
                 container.classList.remove('hidden');
-
-                // UPDATE UI
                 updateUnlockedResourcesUI();
-
-                // SUCCESS MESSAGE
                 showToast('Resources unlocked successfully!', 'success');
 
-                // SCROLL DOWN TO UNLOCKED SHOWCASE AUTOMATICALLY
                 setTimeout(() => {
                     container.scrollIntoView({
                         behavior: 'smooth',
@@ -1064,33 +1282,156 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             const unlockedGrid = document.getElementById('unlocked-grid');
             if (!unlockedGrid) return;
             
-            document.getElementById('unlocked-subtitle').textContent = `Displaying resources for ${currentFilterBranch} • ${currentFilterYear} (${currentFilterSemester})`;
+            const subtitleEl = document.getElementById('unlocked-subtitle');
+            const searchBadge = document.getElementById('resource-search-badge');
 
-let filtered = database.filter(item => {
-    const matchesBranch = item.branch === currentFilterBranch;
-    const matchesYear = item.year === currentFilterYear;
-    const matchesSemester = item.semester === currentFilterSemester;
+            let filtered = [];
 
-    return matchesBranch && matchesYear && matchesSemester;
-});
+            if (currentModule === 'School') {
+                subtitleEl.textContent = `Displaying School Resources • ${currentSchoolClass} ${currentSchoolType !== 'All' ? '(' + currentSchoolType + ')' : ''}`;
+                filtered = database.filter(item => {
+                    const isSchool = item.category === 'School' || (!item.category && item.classLevel);
+                    const matchClass = !item.classLevel || item.classLevel === currentSchoolClass;
+                    const matchType = currentSchoolType === 'All' || item.type === currentSchoolType;
+                    return isSchool && matchClass && matchType;
+                });
+            } else if (currentModule === 'Intermediate') {
+                if (currentInterDiplomaSubTab === 'Intermediate') {
+                    const stream = document.getElementById('inter-stream-select')?.value || 'MPC';
+                    const yr = document.getElementById('inter-year-select')?.value || '1st Year';
+                    const tp = document.getElementById('inter-type-select')?.value || 'All';
+                    subtitleEl.textContent = `Displaying Intermediate • ${stream} • ${yr}`;
+                    filtered = database.filter(item => {
+                        const isInter = item.category === 'Intermediate';
+                        const matchStream = !item.stream || item.stream === stream;
+                        const matchYear = !item.year || item.year === yr;
+                        const matchType = tp === 'All' || item.type === tp;
+                        return isInter && matchStream && matchYear && matchType;
+                    });
+                } else {
+                    const branch = document.getElementById('diploma-branch-select')?.value || 'Computer Science (CSE)';
+                    const yr = document.getElementById('diploma-year-select')?.value || '1st Year';
+                    const tp = document.getElementById('diploma-type-select')?.value || 'All';
+                    subtitleEl.textContent = `Displaying Polytechnic Diploma • ${branch} • ${yr}`;
+                    filtered = database.filter(item => {
+                        const isDiploma = item.category === 'Diploma';
+                        const matchBranch = !item.branch || item.branch === branch;
+                        const matchYear = !item.year || item.year === yr;
+                        const matchType = tp === 'All' || item.type === tp;
+                        return isDiploma && matchBranch && matchYear && matchType;
+                    });
+                }
+            } else if (currentModule === 'Books & Novels') {
+                subtitleEl.textContent = `Displaying Library • Genre: ${currentBookGenre}`;
+                filtered = database.filter(item => {
+                    const isBook = item.category === 'Books & Novels';
+                    const matchGenre = !item.genre || item.genre === currentBookGenre;
+                    return isBook && matchGenre;
+                });
+            } else {
+                subtitleEl.textContent = `Displaying resources for ${currentFilterBranch} • ${currentFilterYear} (${currentFilterSemester})`;
+                filtered = database.filter(item => {
+                    const isBtech = !item.category || item.category === 'BTech';
+                    const matchesBranch = item.branch === currentFilterBranch;
+                    const matchesYear = item.year === currentFilterYear;
+                    const matchesSemester = item.semester === currentFilterSemester;
+                    return isBtech && matchesBranch && matchesYear && matchesSemester;
+                });
+            }
 
             if (activeTab !== 'All') {
-                filtered = filtered.filter(item => item.type === activeTab);
+                filtered = filtered.filter(item => item.type === activeTab || item.category === activeTab);
+            }
+
+            // Apply Real-Time Search Filtering
+            if (currentResourceSearchQuery) {
+                const searchFn = (item) => {
+                    const nameStr = (item.name || '').toLowerCase();
+                    const fileStr = (item.fileName || '').toLowerCase();
+                    const typeStr = (item.type || '').toLowerCase();
+                    const branchStr = (item.branch || '').toLowerCase();
+                    const catStr = (item.category || '').toLowerCase();
+                    const formatStr = (item.format || '').toLowerCase();
+                    const streamStr = (item.stream || '').toLowerCase();
+                    const classStr = (item.classLevel || '').toLowerCase();
+                    const subjectStr = (item.subject || '').toLowerCase();
+                    const yearStr = (item.year || '').toLowerCase();
+
+                    return nameStr.includes(currentResourceSearchQuery) ||
+                           fileStr.includes(currentResourceSearchQuery) ||
+                           typeStr.includes(currentResourceSearchQuery) ||
+                           branchStr.includes(currentResourceSearchQuery) ||
+                           catStr.includes(currentResourceSearchQuery) ||
+                           formatStr.includes(currentResourceSearchQuery) ||
+                           streamStr.includes(currentResourceSearchQuery) ||
+                           classStr.includes(currentResourceSearchQuery) ||
+                           subjectStr.includes(currentResourceSearchQuery) ||
+                           yearStr.includes(currentResourceSearchQuery);
+                };
+
+                let searchFiltered = filtered.filter(searchFn);
+
+                if (searchFiltered.length > 0) {
+                    filtered = searchFiltered;
+                    subtitleEl.textContent = `Showing ${filtered.length} matching item(s) for "${currentResourceSearchQuery}"`;
+                } else {
+                    // Check if query matches items anywhere in the global database
+                    let globalSearchFiltered = database.filter(searchFn);
+                    if (globalSearchFiltered.length > 0) {
+                        filtered = globalSearchFiltered;
+                        subtitleEl.textContent = `Found ${filtered.length} matching resource(s) for "${currentResourceSearchQuery}" across all categories`;
+                    } else {
+                        filtered = [];
+                        subtitleEl.textContent = `No resources found matching "${currentResourceSearchQuery}"`;
+                    }
+                }
+
+                if (searchBadge) {
+                    searchBadge.classList.remove('hidden');
+                    searchBadge.textContent = `${filtered.length} Result${filtered.length === 1 ? '' : 's'}`;
+                }
+            } else {
+                if (searchBadge) {
+                    searchBadge.classList.add('hidden');
+                }
             }
 
             unlockedGrid.innerHTML = '';
             if (filtered.length === 0) {
-                unlockedGrid.innerHTML = `
-                    <div class="col-span-full py-12 flex flex-col items-center justify-center text-center space-y-4">
-                        <div class="w-16 h-16 bg-slate-100 dark:bg-slate-950 text-slate-400 rounded-full flex items-center justify-center">
-                            <i data-lucide="info" class="w-8 h-8"></i>
+                if (currentResourceSearchQuery) {
+                    unlockedGrid.innerHTML = `
+                        <div class="col-span-full py-12 flex flex-col items-center justify-center text-center space-y-4">
+                            <div class="w-16 h-16 bg-amber-50 dark:bg-amber-950/40 text-amber-500 rounded-2xl flex items-center justify-center border border-amber-200 dark:border-amber-800/50 shadow-sm">
+                                <i data-lucide="search-x" class="w-8 h-8"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <h4 class="font-black text-slate-900 dark:text-white text-lg">No materials found for "${escapeHtml(currentResourceSearchQuery)}"</h4>
+                                <p class="text-slate-500 dark:text-slate-400 text-xs max-w-md mx-auto">We couldn't find any uploaded textbook, note, or PYQ matching this search query in Digilib.</p>
+                            </div>
+                            <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+                                <a href="request.html" class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-lg shadow-amber-500/20 flex items-center gap-1.5">
+                                    <i data-lucide="send" class="w-4 h-4"></i>
+                                    Request "${escapeHtml(currentResourceSearchQuery)}"
+                                </a>
+                                <button onclick="clearResourceSearch()" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold transition-all">
+                                    Clear Search Filter
+                                </button>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="font-bold text-slate-900 dark:text-white">No exact resources found</h4>
-                            <p class="text-slate-500 text-xs mt-1 max-w-sm">Be the first to contribute notes or learning links for this filter profile below!</p>
+                    `;
+                } else {
+                    unlockedGrid.innerHTML = `
+                        <div class="col-span-full py-12 flex flex-col items-center justify-center text-center space-y-4">
+                            <div class="w-16 h-16 bg-slate-100 dark:bg-slate-950 text-slate-400 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-slate-800">
+                                <i data-lucide="info" class="w-8 h-8"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 dark:text-white">No exact resources found</h4>
+                                <p class="text-slate-500 text-xs mt-1 max-w-sm">Be the first to contribute notes or learning links for this filter profile below!</p>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
                 lucide.createIcons();
                 return;
             }
@@ -1196,8 +1537,10 @@ let filtered = database.filter(item => {
                 let fileNameVal = null;
                 let isDuplicate = false;
 
+                const isUrlType = (typeVal === "Websites" || typeVal === "YouTube Links" || typeVal === "Websites & YouTube Links");
+
                 // Handle validations & assignments based on dynamically selected type
-                if (typeVal === "Websites & YouTube Links") {
+                if (isUrlType) {
                     const urlVal = document.getElementById('contrib-url').value.trim();
                     resourceUrl = urlVal;
 
@@ -1237,7 +1580,7 @@ let filtered = database.filter(item => {
                 formData.append("semester", semesterVal);
                 formData.append("format", formatVal);
 
-                if (typeVal === "Websites & YouTube Links") {
+                if (isUrlType) {
                     formData.append("url", resourceUrl);
                 } else {
                     formData.append("file", document.getElementById('contrib-file').files[0]);
@@ -1376,7 +1719,10 @@ let filtered = database.filter(item => {
                             <input id="auth-email-input" type="email" required placeholder="alex@college.edu" class="w-full px-4 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Password</label>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Password</label>
+                                <a href="#" onclick="toggleAuthModal('forgot')" class="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline">Forgot Password?</a>
+                            </div>
                             <div class="relative flex items-center">
                                 <input id="auth-password-login" type="password" required placeholder="••••••••" class="w-full pl-4 pr-12 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
                                 <button type="button" onclick="togglePassword('auth-password-login', 'eye-login')" class="absolute right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none">
@@ -1455,6 +1801,54 @@ let filtered = database.filter(item => {
                     </form>
                     <p class="text-xs text-center text-slate-500 dark:text-slate-400 mt-4">
                         Already have an academic profile? <a href="#" onclick="toggleAuthModal('login')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline">Log In</a>
+                    </p>
+                `;
+            } else if (mode === 'forgot') {
+                content.innerHTML = `
+                    <div class="text-center mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500 flex items-center justify-center text-white mx-auto shadow-md mb-3">
+                            <i data-lucide="key-round" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Reset Account Password</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Enter your registered email and specify a new password</p>
+                    </div>
+                    <form onsubmit="handleAuthSubmit(event, 'reset')" class="space-y-3.5">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Registered Email Address</label>
+                            <input id="auth-email-reset" type="email" required placeholder="alex@college.edu" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Roll Number (Optional Verification)</label>
+                            <input id="auth-roll-reset" type="text" placeholder="e.g. 223A1A0501" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">New Password</label>
+                            <div class="relative flex items-center">
+                                <input id="auth-password-reset" type="password" required placeholder="••••••••" class="w-full pl-4 pr-12 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                                <button type="button" onclick="togglePassword('auth-password-reset', 'eye-reset-1')" class="absolute right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none">
+                                    <i data-lucide="eye" id="eye-reset-1" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Confirm New Password</label>
+                            <div class="relative flex items-center">
+                                <input id="auth-password-confirm-reset" type="password" required placeholder="••••••••" class="w-full pl-4 pr-12 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                                <button type="button" onclick="togglePassword('auth-password-confirm-reset', 'eye-reset-2')" class="absolute right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none">
+                                    <i data-lucide="eye" id="eye-reset-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button id="reset-btn" type="submit" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-md transition-all mt-2">
+                            Update &amp; Save Password
+                        </button>
+                    </form>
+                    <p class="text-xs text-center text-slate-500 dark:text-slate-400 mt-4">
+                        Remembered password? <a href="#" onclick="toggleAuthModal('login')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline">Return to Log In</a>
                     </p>
                 `;
             }
@@ -1599,6 +1993,55 @@ if (loginBtn) {
         loginBtnText.innerText = "Sign In to DigiLib";
     }
 }
+                }
+
+                else if (type === "reset") {
+                    const resetBtn = document.getElementById("reset-btn");
+                    if (resetBtn) {
+                        resetBtn.disabled = true;
+                        resetBtn.innerText = "Updating Password...";
+                    }
+
+                    const email = document.getElementById("auth-email-reset").value.trim();
+                    const roll = document.getElementById("auth-roll-reset") ? document.getElementById("auth-roll-reset").value.trim() : "";
+                    const newPassword = document.getElementById("auth-password-reset").value;
+                    const confirmPassword = document.getElementById("auth-password-confirm-reset").value;
+
+                    if (!email || !newPassword || !confirmPassword) {
+                        showToast("Please fill in all required fields.", "error");
+                        if (resetBtn) { resetBtn.disabled = false; resetBtn.innerText = "Update & Save Password"; }
+                        return;
+                    }
+
+                    if (newPassword !== confirmPassword) {
+                        showToast("Validation Error: Passwords do not match.", "error");
+                        if (resetBtn) { resetBtn.disabled = false; resetBtn.innerText = "Update & Save Password"; }
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`${BACKEND_URL}/reset-password`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ email, roll, newPassword })
+                        });
+
+                        const data = await response.json();
+                        if (!response.ok) {
+                            showToast(data.message || "Failed to reset password.", "error");
+                            if (resetBtn) { resetBtn.disabled = false; resetBtn.innerText = "Update & Save Password"; }
+                            return;
+                        }
+
+                        showToast(data.message || "Password updated successfully!", "success");
+                        setTimeout(() => {
+                            toggleAuthModal('login');
+                        }, 500);
+                    } catch (netError) {
+                        console.error("Password reset error:", netError);
+                        showToast("Server is temporarily unavailable. Please try again later.", "error");
+                        if (resetBtn) { resetBtn.disabled = false; resetBtn.innerText = "Update & Save Password"; }
+                    }
                 }
 
             } catch (error) {
@@ -1881,12 +2324,7 @@ if (loginBtn) {
 
         // Helper that pre-fills and auto scrolls user to contribution section to fulfill request effortlessly
         function fulfillRequestTrigger(requestId, targetTitle) {
-            document.getElementById('contribute').scrollIntoView({ behavior: 'smooth' });
-            const contribNameInput = document.getElementById('contrib-name');
-            if (contribNameInput) {
-                contribNameInput.value = `Fulfillment: ${targetTitle}`;
-                showToast("Auto-scrolled! Simply drop or upload the file here to fulfill your peer's request.", "success");
-            }
+            window.location.href = `contribute.html?fulfill=${encodeURIComponent(targetTitle)}`;
         }
 
         function escapeHtml(str) {

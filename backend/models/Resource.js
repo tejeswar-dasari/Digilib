@@ -1,4 +1,4 @@
-const mongoose = require('mongoose'); // Corrected Capital 'C' in 'Const' to prevent fatal ReferenceError crashes
+const mongoose = require('mongoose');
 
 const ResourceSchema = new mongoose.Schema({
     name: {
@@ -6,33 +6,62 @@ const ResourceSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    type: {
+    category: {
         type: String,
-        required: true,
-        enum: ['Websites & YouTube Links', 'Previous Year Papers', 'Study Materials'],
-        index: true // Optimized index for fast service-type tab filtering
+        default: "BTech",
+        trim: true,
+        index: true // Optimized index for category-level lookups (School, Intermediate, Diploma, Books & Novels, BTech)
+    },
+    classLevel: {
+        type: String,
+        default: "",
+        trim: true,
+        index: true // e.g. "Class 6", "Class 7", "Class 8", "Class 9", "Class 10"
+    },
+    stream: {
+        type: String,
+        default: "",
+        trim: true,
+        index: true // e.g. "MPC", "BiPC", "CEC", "MEC", "HEC"
     },
     branch: {
         type: String,
-        required: true,
+        default: "Computer Science (CSE)",
         trim: true,
-        index: true // Optimized index for active academic profile lookups
+        index: true
     },
     year: {
         type: String,
-        required: true,
+        default: "1st Year",
         trim: true,
-        index: true // Optimized index for year-specific syllabus filtering
+        index: true
     },
     semester: {
         type: String,
+        default: "1st Semester",
+        trim: true,
+        index: true
+    },
+    type: {
+        type: String,
         required: true,
         trim: true,
-        index: true // Optimized index for semester filtering
+        index: true // e.g. "Notes", "Previous Year Papers", "Study Materials", "Websites", "YouTube Links", "Websites & YouTube Links"
+    },
+    genre: {
+        type: String,
+        default: "",
+        trim: true,
+        index: true // e.g. "Programming Books", "Engineering Books", "Novels", "Motivational Books", "Competitive Exam Books", "Psychology", "Finance"
+    },
+    subject: {
+        type: String,
+        default: "",
+        trim: true
     },
     format: {
         type: String,
-        required: true,
+        default: "PDF Document",
         trim: true
     },
     url: {
@@ -50,5 +79,11 @@ const ResourceSchema = new mongoose.Schema({
         default: 0
     }
 }, { timestamps: true });
+
+// Compound indexes for optimal performance and sub-second filtering speeds
+ResourceSchema.index({ category: 1, classLevel: 1, type: 1 });
+ResourceSchema.index({ category: 1, stream: 1, year: 1, type: 1 });
+ResourceSchema.index({ category: 1, branch: 1, year: 1, type: 1 });
+ResourceSchema.index({ category: 1, genre: 1 });
 
 module.exports = mongoose.model('Resource', ResourceSchema);
