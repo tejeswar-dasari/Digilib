@@ -149,6 +149,27 @@
                 </p>
             </div>
 
+            <!-- FULFILLMENT BANNER (shown if redirected from a request) -->
+            <div id="fulfillment-banner" class="hidden bg-emerald-500/10 border-2 border-emerald-500/30 rounded-2xl p-5 text-emerald-900 dark:text-emerald-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 font-bold">
+                        <i data-lucide="check-square" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold flex items-center gap-2">
+                            <span>Fulfilling Requested Material:</span>
+                            <span id="fulfill-title-display" class="underline"></span>
+                        </h3>
+                        <p class="text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">
+                            Upload the document or paste link below. Once uploaded, this request will automatically disappear from open requests!
+                        </p>
+                    </div>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-emerald-600 text-white font-extrabold text-[10px] uppercase tracking-wider shrink-0">
+                    Active Fulfill Mode
+                </span>
+            </div>
+
             <!-- 4 Module Cards Selector -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                 <!-- Card 1: School -->
@@ -496,10 +517,49 @@
     <script src="js/shared.js"></script>
     <script>
         let currentModule = 'school';
+        let activeFulfillId = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             selectModule('school');
+            checkFulfillmentParams();
         });
+
+        function checkFulfillmentParams() {
+            const params = new URLSearchParams(window.location.search);
+            const fulfillId = params.get('fulfillId');
+            const title = params.get('title');
+            const branch = params.get('branch') || '';
+
+            if (fulfillId && title) {
+                activeFulfillId = fulfillId;
+                const banner = document.getElementById('fulfillment-banner');
+                const titleEl = document.getElementById('fulfill-title-display');
+                if (banner && titleEl) {
+                    titleEl.textContent = title;
+                    banner.classList.remove('hidden');
+                }
+
+                // Determine module to prefill
+                const branchLower = branch.toLowerCase();
+                if (branchLower.includes('b.tech') || branchLower.includes('btech')) {
+                    selectModule('btech');
+                    const btechName = document.getElementById('btech-cnt-name');
+                    if (btechName) btechName.value = title;
+                } else if (branchLower.includes('inter') || branchLower.includes('diploma') || branchLower.includes('polytechnic')) {
+                    selectModule('inter');
+                    const interName = document.getElementById('inter-cnt-name');
+                    if (interName) interName.value = title;
+                } else if (branchLower.includes('book') || branchLower.includes('novel')) {
+                    selectModule('books');
+                    const booksTitle = document.getElementById('books-cnt-title');
+                    if (booksTitle) booksTitle.value = title;
+                } else {
+                    selectModule('school');
+                    const schName = document.getElementById('sch-cnt-name');
+                    if (schName) schName.value = title;
+                }
+            }
+        }
 
         function selectModule(mod) {
             currentModule = mod;
@@ -604,13 +664,39 @@
                 if (res.ok) {
                     showToast('Material uploaded & published successfully!', 'success');
                     e.target.reset();
+
+                    if (activeFulfillId) {
+                        try {
+                            await fetch(`/requests/${activeFulfillId}`, { method: 'DELETE' });
+                            showToast('Request fulfilled and removed from community list!', 'success');
+                        } catch (err) {}
+                        setTimeout(() => {
+                            window.location.href = 'request.html';
+                        }, 1500);
+                    }
                 } else {
                     showToast('Uploaded successfully!', 'success');
                     e.target.reset();
+                    if (activeFulfillId) {
+                        try {
+                            await fetch(`/requests/${activeFulfillId}`, { method: 'DELETE' });
+                        } catch (e) {}
+                        setTimeout(() => {
+                            window.location.href = 'request.html';
+                        }, 1500);
+                    }
                 }
             } catch (err) {
                 showToast('Uploaded successfully!', 'success');
                 e.target.reset();
+                if (activeFulfillId) {
+                    try {
+                        await fetch(`/requests/${activeFulfillId}`, { method: 'DELETE' });
+                    } catch (e) {}
+                    setTimeout(() => {
+                        window.location.href = 'request.html';
+                    }, 1500);
+                }
             }
         }
     </script>

@@ -77,7 +77,32 @@ if (MONGO_URI) {
     mongoose.connect(MONGO_URI, {
         serverSelectionTimeoutMS: 5000
     })
-    .then(() => console.log('MongoDB Connected successfully to database: digilib'))
+    .then(async () => {
+        console.log('MongoDB Connected successfully to database: digilib');
+        try {
+            const resCount = await Resource.countDocuments();
+            if (resCount === 0) {
+                console.log('Seeding initial sample resources into MongoDB...');
+                await Resource.insertMany(memoryResources.map(r => {
+                    const copy = { ...r };
+                    delete copy._id;
+                    return copy;
+                }));
+            }
+            const userCount = await User.countDocuments();
+            if (userCount === 0) {
+                console.log('Seeding initial admin users into MongoDB...');
+                await User.insertMany(memoryUsers.map(u => {
+                    const copy = { ...u };
+                    delete copy._id;
+                    return copy;
+                }));
+            }
+            invalidateResourceCache();
+        } catch (seedErr) {
+            console.warn('Auto-seed warning:', seedErr.message);
+        }
+    })
     .catch(err => {
         console.warn('MongoDB Connection Warning:', err.message);
         console.warn('App operating with in-memory store fallback.');
@@ -485,6 +510,11 @@ function invalidateResourceCache() {
     resourceApiCache.clear();
 }
 
+function escapeRegex(text) {
+    if (!text) return '';
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
+
 // GET RESOURCES (Supports full query parameters, query caching, and index projection)
 app.get('/resources', async (req, res) => {
     try {
@@ -499,14 +529,14 @@ app.get('/resources', async (req, res) => {
         const { category, classLevel, stream, branch, year, semester, type, genre } = req.query;
 
         let query = {};
-        if (category) query.category = category;
-        if (classLevel) query.classLevel = classLevel;
-        if (stream) query.stream = stream;
-        if (branch) query.branch = branch;
-        if (year) query.year = year;
-        if (semester) query.semester = semester;
-        if (type && type !== 'All') query.type = type;
-        if (genre) query.genre = genre;
+        if (category) query.category = { $regex: `^${escapeRegex(category)}$`, $options: 'i' };
+        if (classLevel) query.classLevel = { $regex: `^${escapeRegex(classLevel)}$`, $options: 'i' };
+        if (stream) query.stream = { $regex: `^${escapeRegex(stream)}$`, $options: 'i' };
+        if (branch) query.branch = { $regex: escapeRegex(branch), $options: 'i' };
+        if (year) query.year = { $regex: escapeRegex(year), $options: 'i' };
+        if (semester) query.semester = { $regex: escapeRegex(semester), $options: 'i' };
+        if (type && type !== 'All') query.type = { $regex: escapeRegex(type), $options: 'i' };
+        if (genre) query.genre = { $regex: escapeRegex(genre), $options: 'i' };
 
         let result = [];
         if (mongoose.connection.readyState === 1) {
@@ -514,22 +544,22 @@ app.get('/resources', async (req, res) => {
                 .select('_id name category classLevel stream branch year semester type genre subject format url fileName clicks createdAt')
                 .sort({ createdAt: -1 })
                 .lean();
+            setCachedResources(cacheKey, result);
         } else {
             // Memory array filtering fallback
             result = memoryResources.filter(item => {
-                if (category && item.category !== category) return false;
-                if (classLevel && item.classLevel !== classLevel) return false;
-                if (stream && item.stream !== stream) return false;
-                if (branch && item.branch !== branch) return false;
-                if (year && item.year !== year) return false;
-                if (semester && item.semester !== semester) return false;
-                if (type && type !== 'All' && item.type !== type) return false;
-                if (genre && item.genre !== genre) return false;
+                if (category && (item.category || '').toLowerCase() !== category.toLowerCase()) return false;
+                if (classLevel && (item.classLevel || '').toLowerCase() !== classLevel.toLowerCase()) return false;
+                if (stream && (item.stream || '').toLowerCase() !== stream.toLowerCase()) return false;
+                if (branch && !(item.branch || '').toLowerCase().includes(branch.toLowerCase()) && !branch.toLowerCase().includes((item.branch || '').toLowerCase())) return false;
+                if (year && !(item.year || '').toLowerCase().includes(year.toLowerCase())) return false;
+                if (semester && !(item.semester || '').toLowerCase().includes(semester.toLowerCase())) return false;
+                if (type && type !== 'All' && !(item.type || '').toLowerCase().includes(type.toLowerCase())) return false;
+                if (genre && !(item.genre || '').toLowerCase().includes(genre.toLowerCase())) return false;
                 return true;
             });
         }
 
-        setCachedResources(cacheKey, result);
         res.setHeader('X-Cache', 'MISS');
         res.setHeader('Cache-Control', 'public, max-age=15, stale-while-revalidate=60');
         res.json(result);
@@ -566,17 +596,38 @@ app.get('/download/:id', async (req, res) => {
             }
         }
 
-        // External URL download stream
+        // External URL download or redirect stream
         if (resource.url && resource.url.startsWith('http')) {
-            const response = await axios({
-                url: resource.url,
-                method: 'GET',
-                responseType: 'stream'
-            });
+            const typeStr = (resource.type || '').toLowerCase();
+            const formatStr = (resource.format || '').toLowerCase();
+            const urlStr = resource.url.toLowerCase();
 
-            res.setHeader('Content-Disposition', `attachment; filename="${resource.fileName || 'document.pdf'}"`);
-            res.setHeader('Content-Type', 'application/pdf');
-            return response.data.pipe(res);
+            const isWebsiteOrMedia = typeStr.includes('website') || 
+                                    typeStr.includes('youtube') ||
+                                    formatStr.includes('website') ||
+                                    formatStr.includes('youtube') ||
+                                    urlStr.includes('youtube.com') ||
+                                    urlStr.includes('youtu.be');
+
+            if (isWebsiteOrMedia) {
+                return res.redirect(resource.url);
+            }
+
+            try {
+                const response = await axios({
+                    url: resource.url,
+                    method: 'GET',
+                    responseType: 'stream'
+                });
+
+                const fileNameToUse = resource.fileName || path.basename(resource.url) || 'document.pdf';
+                res.setHeader('Content-Disposition', `attachment; filename="${fileNameToUse}"`);
+                res.setHeader('Content-Type', 'application/pdf');
+                return response.data.pipe(res);
+            } catch (dlError) {
+                // Fallback to direct redirect if proxy stream fails
+                return res.redirect(resource.url);
+            }
         }
 
         res.status(404).send('File unavailable');
@@ -589,6 +640,10 @@ app.get('/download/:id', async (req, res) => {
 // ADD NEW RESOURCE
 app.post('/resources', upload.single('file'), async (req, res) => {
     try {
+        if (!req.body.name || !req.body.name.trim()) {
+            return res.status(400).json({ message: 'Resource name is required.' });
+        }
+
         let resourceUrl = req.body.url || "#";
         let cleanFileName = "";
 

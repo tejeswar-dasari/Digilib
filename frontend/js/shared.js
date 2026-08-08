@@ -580,3 +580,149 @@ window.getResourceActionInfo = getResourceActionInfo;
 window.getResourceBadgeInfo = getResourceBadgeInfo;
 window.renderStandardResourceCard = renderStandardResourceCard;
 
+// Shared Matcher Utilities for Resilient Filtering across all pages
+function matchMaterialType(resType, filterType) {
+    if (!filterType || filterType === 'All') return true;
+    if (!resType) return true;
+    const r = resType.toLowerCase();
+    const f = filterType.toLowerCase();
+    if (r === f) return true;
+    if (f === 'notes' && (r.includes('note') || r.includes('pdf'))) return true;
+    if (f === 'previous year papers' || f === 'mid papers' || f === 'semester papers' || f === 'previous papers') {
+        if (r.includes('pyq') || r.includes('paper') || r.includes('previous') || r.includes('mid') || r.includes('question') || r.includes('board')) return true;
+    }
+    if (f === 'study materials' && (r.includes('material') || r.includes('guide') || r.includes('book'))) return true;
+    if (f === 'websites' && (r.includes('website') || r.includes('link') || r.includes('portal'))) return true;
+    if (f === 'youtube links' || f === 'youtube channels') {
+        if (r.includes('youtube') || r.includes('video') || r.includes('channel')) return true;
+    }
+    return r.includes(f) || f.includes(r);
+}
+window.matchMaterialType = matchMaterialType;
+
+function matchBtechSemester(item, semVal) {
+    if (!semVal || semVal === 'All') return true;
+    const itemSem = (item.semester || '').toLowerCase();
+    const itemYear = (item.year || '').toLowerCase();
+    const itemName = (item.name || '').toLowerCase();
+
+    if (semVal === '1-1' || semVal === '1.1') {
+        if (itemSem.includes('1-1') || itemSem.includes('1.1') || itemSem.includes('1st sem') || (itemYear.includes('1st') && itemSem.includes('1st')) || itemName.includes('1-1') || itemName.includes('1st sem')) return true;
+    } else if (semVal === '1-2' || semVal === '1.2') {
+        if (itemSem.includes('1-2') || itemSem.includes('1.2') || itemSem.includes('2nd sem') || (itemYear.includes('1st') && itemSem.includes('2nd')) || itemName.includes('1-2') || itemName.includes('2nd sem')) return true;
+    } else if (semVal === '2-1' || semVal === '2.1') {
+        if (itemSem.includes('2-1') || itemSem.includes('2.1') || (itemYear.includes('2nd') && itemSem.includes('1st')) || itemName.includes('2-1')) return true;
+    } else if (semVal === '2-2' || semVal === '2.2') {
+        if (itemSem.includes('2-2') || itemSem.includes('2.2') || (itemYear.includes('2nd') && itemSem.includes('2nd')) || itemName.includes('2-2')) return true;
+    } else if (semVal === '3-1' || semVal === '3.1') {
+        if (itemSem.includes('3-1') || itemSem.includes('3.1') || (itemYear.includes('3rd') && itemSem.includes('1st')) || itemName.includes('3-1')) return true;
+    } else if (semVal === '3-2' || semVal === '3.2') {
+        if (itemSem.includes('3-2') || itemSem.includes('3.2') || (itemYear.includes('3rd') && itemSem.includes('2nd')) || itemName.includes('3-2')) return true;
+    } else if (semVal === '4-1' || semVal === '4.1') {
+        if (itemSem.includes('4-1') || itemSem.includes('4.1') || (itemYear.includes('4th') && itemSem.includes('1st')) || itemName.includes('4-1')) return true;
+    } else if (semVal === '4-2' || semVal === '4.2') {
+        if (itemSem.includes('4-2') || itemSem.includes('4.2') || (itemYear.includes('4th') && itemSem.includes('2nd')) || itemName.includes('4-2')) return true;
+    }
+
+    return itemSem.includes(semVal.toLowerCase()) || itemName.includes(semVal.toLowerCase());
+}
+window.matchBtechSemester = matchBtechSemester;
+
+function matchBtechRegulation(item, regVal) {
+    if (!regVal || regVal === 'All') return true;
+    const reg = regVal.toLowerCase();
+    const itemReg = (item.regulation || '').toLowerCase();
+    const itemName = (item.name || '').toLowerCase();
+    const itemYear = (item.year || '').toLowerCase();
+    const itemDesc = (item.details || item.description || '').toLowerCase();
+
+    return itemReg.includes(reg) || itemName.includes(reg) || itemYear.includes(reg) || itemDesc.includes(reg);
+}
+window.matchBtechRegulation = matchBtechRegulation;
+
+function matchBtechBranch(item, branch) {
+    if (!branch || branch === 'All') return true;
+    const itemBranch = (item.branch || '').toLowerCase();
+    const targetBranch = branch.toLowerCase().replace(' branch', '').trim();
+
+    if (!itemBranch) return true;
+
+    if (targetBranch.includes('computer science') || targetBranch.includes('cse')) {
+        return itemBranch.includes('computer science') || itemBranch.includes('cse');
+    }
+    if (targetBranch.includes('electronics') || targetBranch.includes('ece')) {
+        return itemBranch.includes('electronics') || itemBranch.includes('ece');
+    }
+    if (targetBranch.includes('electrical') || targetBranch.includes('eee')) {
+        return itemBranch.includes('electrical') || itemBranch.includes('eee');
+    }
+    if (targetBranch.includes('mechanical') || targetBranch.includes('me')) {
+        return itemBranch.includes('mechanical') || itemBranch.includes('me');
+    }
+    if (targetBranch.includes('civil') || targetBranch.includes('ce')) {
+        return itemBranch.includes('civil') || itemBranch.includes('ce');
+    }
+    if (targetBranch.includes('ai') || targetBranch.includes('ml') || targetBranch.includes('ds')) {
+        return itemBranch.includes('ai') || itemBranch.includes('ml') || itemBranch.includes('ds') || itemBranch.includes('cse');
+    }
+
+    return itemBranch.includes(targetBranch) || targetBranch.includes(itemBranch);
+}
+window.matchBtechBranch = matchBtechBranch;
+
+// Request Permissions Helper: Checks if current user is Admin OR original requester
+function canUserDeleteRequest(req) {
+    if (!req) return false;
+    const isAdmin = localStorage.getItem('digilib_is_admin') === 'true';
+    if (isAdmin) return true;
+
+    const userEmail = (localStorage.getItem('digilib_user_email') || '').toLowerCase().trim();
+    const userName = (localStorage.getItem('digilib_user_name') || '').toLowerCase().trim();
+
+    if (userEmail && req.userEmail && req.userEmail.toLowerCase().trim() === userEmail) return true;
+    if (userName && req.studentName && req.studentName.toLowerCase().trim() === userName) return true;
+    
+    // Default admin check for initial seed user
+    if (userEmail === 'tejeswartejeswar56@gmail.com' || userEmail === 'admin@digilib.com') return true;
+
+    return false;
+}
+window.canUserDeleteRequest = canUserDeleteRequest;
+
+// Auto-updates request count badges across all page navbars
+async function updateNavRequestCount() {
+    try {
+        const res = await fetch('/requests');
+        if (res.ok) {
+            const requests = await res.json();
+            const count = Array.isArray(requests) ? requests.length : 0;
+            const badges = document.querySelectorAll('#nav-request-count, .nav-req-count');
+            badges.forEach(badge => {
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            });
+        }
+    } catch (e) {}
+}
+window.updateNavRequestCount = updateNavRequestCount;
+
+// Fulfill Request Action: Redirects user to contribution page prefilled with requested material
+function fulfillRequest(reqId, resourceTitle, branch) {
+    const params = new URLSearchParams();
+    if (reqId) params.set('fulfillId', reqId);
+    if (resourceTitle) params.set('title', resourceTitle);
+    if (branch) params.set('branch', branch);
+    window.location.href = `contribute.html?${params.toString()}`;
+}
+window.fulfillRequest = fulfillRequest;
+
+document.addEventListener('DOMContentLoaded', () => {
+    checkAdminStatus();
+    updateNavRequestCount();
+});
+
+

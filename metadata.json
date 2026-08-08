@@ -1,0 +1,6 @@
+{
+  "name": "Digilib",
+  "description": "Digital academic library and study resources portal with notes, previous year papers, study materials, and book catalog.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

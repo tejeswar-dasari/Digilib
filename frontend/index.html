@@ -163,7 +163,10 @@
                 <a href="intermediate.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Inter &amp; Diploma</a>
                 <a href="btech.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">B.Tech</a>
                 <a href="books.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Books &amp; Novels</a>
-                <a href="request.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Request</a>
+                <a href="request.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors flex items-center gap-1.5">
+                    <span>Request</span>
+                    <span id="nav-request-count" class="px-1.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950 hidden">0</span>
+                </a>
                 <a href="contribute.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Contribute</a>
                 <a href="admin.html" id="nav-admin-link" class="hidden text-amber-500 font-bold hover:text-amber-400 transition-colors">Admin</a>
             </nav>
@@ -631,7 +634,7 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
 
     <!-- Full Mock/Live Database setup -->
     <script>
-        const BACKEND_URL = "https://digilib-backend-v0r2.onrender.com";
+        const BACKEND_URL = "";
         let database = [];
         let activeTab = 'All';
         let currentFilterBranch = 'Computer Science (CSE)';

@@ -637,26 +637,17 @@
             const sortVal = document.getElementById('bt-sort-select')?.value || 'newest';
 
             let filtered = allBtechResources.filter(res => {
-                // Preselected Branch filter
-                if (selectedBtechBranch) {
-                    const sel = selectedBtechBranch.toLowerCase().replace(' branch', '').trim();
-                    const resBranch = (res.branch || '').toLowerCase();
-                    if (sel === 'ai & ml' || sel === 'ai' || sel === 'ai&ml' || sel === 'ml') {
-                        if (!resBranch.includes('ai') && !resBranch.includes('ml') && !resBranch.includes('ds')) return false;
-                    } else if (sel === 'mechanical' || sel === 'me') {
-                        if (!resBranch.includes('mechanical') && !resBranch.includes('me')) return false;
-                    } else if (sel === 'civil' || sel === 'ce') {
-                        if (!resBranch.includes('civil') && !resBranch.includes('ce')) return false;
-                    } else {
-                        if (!resBranch.includes(sel)) return false;
-                    }
-                }
+                // Branch filter via shared matcher
+                const branchMatcher = window.matchBtechBranch || (typeof matchBtechBranch !== 'undefined' ? matchBtechBranch : null);
+                if (branchMatcher && !branchMatcher(res, selectedBtechBranch)) return false;
 
-                // Semester filter
-                if (semVal !== 'All' && (!res.semester || !res.semester.includes(semVal))) return false;
+                // Semester filter via shared matcher
+                const semMatcher = window.matchBtechSemester || (typeof matchBtechSemester !== 'undefined' ? matchBtechSemester : null);
+                if (semMatcher && !semMatcher(res, semVal)) return false;
 
-                // Regulation filter
-                if (regVal !== 'All' && (!res.year || !res.year.includes(regVal))) return false;
+                // Regulation filter via shared matcher
+                const regMatcher = window.matchBtechRegulation || (typeof matchBtechRegulation !== 'undefined' ? matchBtechRegulation : null);
+                if (regMatcher && !regMatcher(res, regVal)) return false;
 
                 // Material Type filter via shared matcher
                 const matcher = window.matchMaterialType || (typeof matchMaterialType !== 'undefined' ? matchMaterialType : null);
