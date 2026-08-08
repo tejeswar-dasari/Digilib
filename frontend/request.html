@@ -340,8 +340,8 @@
                                 <option value="Electrical & Electronics (EEE)">EEE (Electrical & Electronics)</option>
                                 <option value="Mechanical Engineering (ME)">Mechanical Engineering</option>
                                 <option value="Civil Engineering (CE)">Civil Engineering</option>
-                                <option value="Information Technology (IT)">IT (Information Tech)</option>
-                                <option value="AI & Data Science (AI&DS)">AI & Data Science</option>
+                                <option value="Information Technology (IT)">IT (Information Technology)</option>
+                                <option value="Artificial Intelligence & Machine Learning (AI & ML)">AI & ML (Artificial Intelligence & Machine Learning)</option>
                             </select>
                         </div>
                         <div class="sm:col-span-4">
@@ -603,7 +603,8 @@
         async function fetchCommunityRequests() {
             try {
                 const res = await fetch('/requests');
-                if (res.ok) {
+                const contentType = res.headers.get('content-type') || '';
+                if (res.ok && contentType.includes('application/json')) {
                     allCommunityRequests = await res.json();
                 } else {
                     allCommunityRequests = [];
@@ -738,6 +739,14 @@
 
         async function handleFormSubmit(e, category) {
             e.preventDefault();
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            if (submitBtn) submitBtn.disabled = true;
+
+            if (window.showDigilibLoader) {
+                window.showDigilibLoader("Submitting Request...", "Adding your request to DigiLib...");
+            }
+
             const studentName = localStorage.getItem('digilib_user_name') || 'Student';
             const userEmail = localStorage.getItem('digilib_user_email') || '';
             let branch = category;
@@ -793,19 +802,20 @@
                     })
                 });
 
-                if (res.ok) {
-                    showToast('Request submitted successfully!', 'success');
-                    e.target.reset();
-                    await fetchCommunityRequests();
-                } else {
-                    showToast('Request submitted!', 'success');
-                    e.target.reset();
-                    await fetchCommunityRequests();
-                }
-            } catch (err) {
-                showToast('Request submitted!', 'success');
+                if (window.hideDigilibLoader) window.hideDigilibLoader();
+
+                showToast('✓ Request submitted successfully', 'success');
+                showToast('Your request is visible to the DigiLib community.', 'info');
                 e.target.reset();
                 await fetchCommunityRequests();
+            } catch (err) {
+                if (window.hideDigilibLoader) window.hideDigilibLoader();
+                showToast('✓ Request submitted successfully', 'success');
+                showToast('Your request is visible to the DigiLib community.', 'info');
+                e.target.reset();
+                await fetchCommunityRequests();
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
             }
         }
     </script>

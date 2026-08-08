@@ -241,9 +241,9 @@
                 </div>
 
                 <!-- Standardized Secondary Filters Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3.5 items-center">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
                     <!-- 1. Stream / Branch Filter -->
-                    <div class="lg:col-span-4">
+                    <div>
                         <label id="inter-stream-filter-label" class="block text-[10px] font-black uppercase text-slate-400 mb-1">STREAM</label>
                         <select id="inter-stream-filter" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
                             <option value="All">All Streams</option>
@@ -256,7 +256,7 @@
                     </div>
 
                     <!-- 2. Material Type Dropdown -->
-                    <div class="lg:col-span-4">
+                    <div>
                         <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Material Type</label>
                         <select id="inter-type-filter" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
                             <option value="All">All Resources</option>
@@ -270,15 +270,6 @@
                             <option value="Websites">Websites</option>
                             <option value="YouTube Channels">YouTube Channels</option>
                         </select>
-                    </div>
-
-                    <!-- 3. Search Input -->
-                    <div class="lg:col-span-4 relative">
-                        <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Search Resources</label>
-                        <div class="relative">
-                            <input type="text" id="inter-search-input" placeholder="Search title, stream, topic..." class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 outline-none transition-all">
-                            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-                        </div>
                     </div>
                 </div>
 
@@ -295,17 +286,34 @@
                     </button>
                 </div>
 
-                <!-- Resources Grid Section -->
-                <div id="inter-results-section" class="scroll-mt-24">
-                    <div class="flex items-center justify-between gap-4 mb-4">
-                        <span id="inter-count-badge" class="text-xs font-extrabold text-slate-500 uppercase tracking-wider min-w-0 truncate">Select your filters and click 'Access Resources'</span>
-                        <div class="flex items-center gap-2 text-xs font-bold text-slate-500 shrink-0">
-                            <span>Sort By:</span>
-                            <select id="inter-sort-select" onchange="renderInterResourcesIfLoaded()" class="bg-transparent border-none font-bold text-slate-700 dark:text-slate-300 outline-none cursor-pointer">
-                                <option value="newest">Newest First</option>
-                                <option value="clicks">Most Downloaded</option>
-                                <option value="name">Title A-Z</option>
-                            </select>
+                <!-- Unlocked Resources Section -->
+                <div id="unlocked-resources" class="scroll-mt-24 pt-4 space-y-4 border-t border-slate-100 dark:border-slate-800">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <h3 class="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                <i data-lucide="unlock" class="w-5 h-5 text-emerald-500"></i>
+                                Unlocked Resources
+                            </h3>
+                            <span id="inter-count-badge" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Select your filters and click 'Access Resources'</span>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+                            <!-- Search Resources Input in Unlocked Resources Section -->
+                            <div class="relative w-full sm:w-64">
+                                <input type="text" id="inter-search-input" oninput="renderInterResourcesIfLoaded()" placeholder="Search title, stream, topic..." class="w-full pl-8 pr-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 outline-none">
+                                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                            </div>
+
+                            <!-- Sort Dropdown -->
+                            <div class="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 shrink-0">
+                                <span class="text-slate-400 font-normal">Sort:</span>
+                                <select id="inter-sort-select" onchange="renderInterResourcesIfLoaded()" class="bg-transparent border-none font-bold text-slate-800 dark:text-slate-200 outline-none cursor-pointer">
+                                    <option value="newest">Newest First</option>
+                                    <option value="oldest">Oldest First</option>
+                                    <option value="clicks">Most Downloaded</option>
+                                    <option value="name">Title A-Z</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -370,8 +378,9 @@
         }
 
         function selectInterCategory(cat, updateHistory = true, isInitialLoad = false) {
-            if (!isInitialLoad && window.showPageLoader) {
-                window.showPageLoader('Opening Inter & Diploma...', 'DIGITAL ACADEMIC LIBRARY');
+            if (!isInitialLoad && window.showDigilibLoader) {
+                const label = cat === 'Diploma' ? 'Opening Diploma Resources...' : 'Opening Intermediate Resources...';
+                window.showDigilibLoader(label, 'DIGITAL ACADEMIC LIBRARY');
             }
 
             selectedInterCategory = cat;
@@ -403,8 +412,6 @@
                         <option value="Diploma EEE">Diploma EEE</option>
                         <option value="Diploma Civil">Diploma Civil</option>
                         <option value="Diploma Mechanical">Diploma Mechanical</option>
-                        <option value="Diploma Automobile">Diploma Automobile</option>
-                        <option value="Diploma Mining">Diploma Mining</option>
                     `;
                 } else {
                     streamSelect.innerHTML = `
@@ -439,14 +446,14 @@
 
             if (filterView) filterView.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-            if (!isInitialLoad && window.hidePageLoader) {
-                setTimeout(() => { window.hidePageLoader(); }, 150);
+            if (!isInitialLoad && window.hideDigilibLoader) {
+                setTimeout(() => { window.hideDigilibLoader(); }, 150);
             }
         }
 
         function showInterSelectionView(updateHistory = true, isInitialLoad = false) {
-            if (!isInitialLoad && window.showPageLoader) {
-                window.showPageLoader('Opening Inter & Diploma...', 'DIGITAL ACADEMIC LIBRARY');
+            if (!isInitialLoad && window.showDigilibLoader) {
+                window.showDigilibLoader('Opening Inter & Diploma...', 'DIGITAL ACADEMIC LIBRARY');
             }
 
             selectedInterCategory = null;
@@ -462,8 +469,8 @@
 
             if (window.lucide) lucide.createIcons();
 
-            if (!isInitialLoad && window.hidePageLoader) {
-                setTimeout(() => { window.hidePageLoader(); }, 150);
+            if (!isInitialLoad && window.hideDigilibLoader) {
+                setTimeout(() => { window.hideDigilibLoader(); }, 150);
             }
         }
 
@@ -484,8 +491,9 @@
 
             if (countBadge) countBadge.textContent = 'Fetching matching resources from MongoDB...';
 
-            if (window.showPageLoader) {
-                window.showPageLoader('Fetching resources...', 'DIGITAL ACADEMIC LIBRARY');
+            const catLabel = selectedInterCategory === 'Diploma' ? 'Diploma Resources...' : 'Intermediate Resources...';
+            if (window.showDigilibLoader) {
+                window.showDigilibLoader(`Opening ${catLabel}`, 'DIGITAL ACADEMIC LIBRARY');
             }
 
             try {
@@ -502,7 +510,7 @@
             } finally {
                 hasAccessedInterResources = true;
                 renderInterResources();
-                if (window.hidePageLoader) window.hidePageLoader();
+                if (window.hideDigilibLoader) window.hideDigilibLoader();
 
                 if (btn) btn.disabled = false;
                 if (text) text.textContent = 'Access Resources';
@@ -511,7 +519,7 @@
                 if (window.lucide) lucide.createIcons();
 
                 // Auto-scroll to unlocked resources section
-                const resultsSection = document.getElementById('inter-results-section') || document.getElementById('inter-resources-grid');
+                const resultsSection = document.getElementById('unlocked-resources') || document.getElementById('inter-resources-grid');
                 if (resultsSection) {
                     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
@@ -565,12 +573,8 @@
             });
 
             // Sorting
-            if (sortVal === 'clicks') {
-                filtered.sort((a, b) => (b.clicks || 0) - (a.clicks || 0));
-            } else if (sortVal === 'name') {
-                filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-            } else {
-                filtered.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            if (window.sortResources) {
+                filtered = window.sortResources(filtered, sortVal);
             }
 
             const countBadge = document.getElementById('inter-count-badge');
@@ -580,16 +584,16 @@
             if (!grid) return;
 
             if (filtered.length === 0) {
-                grid.innerHTML = `
-                    <div class="sm:col-span-2 lg:col-span-3 text-center py-12 bg-slate-50 dark:bg-slate-950/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
-                        <i data-lucide="folder-open" class="w-10 h-10 text-slate-400 mx-auto mb-2"></i>
-                        <p class="text-sm font-bold text-slate-700 dark:text-slate-300">No resources found for ${selectedInterCategory || 'this program'}</p>
-                        <p class="text-xs text-slate-500 mt-1">Try adjusting your filters or search terms.</p>
-                        <a href="request.html" class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold">
-                            Request Material
-                        </a>
-                    </div>
-                `;
+                const emptyRenderer = window.renderEmptyResourceState || (typeof renderEmptyResourceState !== 'undefined' ? renderEmptyResourceState : null);
+                if (emptyRenderer) {
+                    grid.innerHTML = emptyRenderer(selectedInterCategory || 'Intermediate', searchVal);
+                } else {
+                    grid.innerHTML = `
+                        <div class="sm:col-span-2 lg:col-span-3 text-center py-12 bg-slate-50 dark:bg-slate-950/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+                            <p class="text-sm font-bold text-slate-700 dark:text-slate-300">No resources found</p>
+                        </div>
+                    `;
+                }
                 if (window.lucide) lucide.createIcons();
                 return;
             }

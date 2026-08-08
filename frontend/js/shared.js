@@ -1,4 +1,102 @@
-// Shared DigiLib Utilities & Helpers
+// Reusable Global DigiLib Loading Component
+function showDigilibLoader(titleText = 'Opening Resources...', subtitleText = 'DIGITAL ACADEMIC LIBRARY') {
+    let loader = document.getElementById('digilib-global-loader');
+    if (!loader) {
+        loader = document.createElement('div');
+        loader.id = 'digilib-global-loader';
+        loader.className = 'fixed inset-0 z-[999999] bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center transition-opacity duration-300 opacity-0 pointer-events-none';
+        loader.innerHTML = `
+            <div class="relative flex flex-col items-center max-w-sm w-full space-y-6">
+                <!-- Outer Animated Ring & Logo -->
+                <div class="relative w-24 h-24 flex items-center justify-center">
+                    <div class="absolute inset-0 rounded-full border-4 border-brand-500/20 border-t-brand-500 border-r-amber-500 animate-spin"></div>
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-amber-500 p-0.5 shadow-2xl shadow-brand-500/30 flex items-center justify-center animate-pulse">
+                        <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-white">
+                            <svg class="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Content -->
+                <div class="space-y-2">
+                    <h3 id="digilib-loader-title" class="text-xl font-black text-white tracking-tight">Opening Resources...</h3>
+                    <p id="digilib-loader-subtitle" class="text-xs font-bold uppercase tracking-widest text-amber-400/90">DIGITAL ACADEMIC LIBRARY</p>
+                </div>
+
+                <!-- Animated Loading Bar -->
+                <div class="w-48 h-1.5 bg-slate-800 rounded-full overflow-hidden relative">
+                    <div class="absolute inset-y-0 left-0 bg-gradient-to-r from-brand-500 via-amber-400 to-brand-500 rounded-full w-full animate-[pulse_1s_infinite]"></div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(loader);
+    }
+
+    const titleEl = document.getElementById('digilib-loader-title');
+    const subEl = document.getElementById('digilib-loader-subtitle');
+    if (titleEl) titleEl.textContent = titleText;
+    if (subEl) subEl.textContent = subtitleText;
+
+    loader.classList.remove('pointer-events-none', 'opacity-0');
+    loader.classList.add('opacity-100');
+}
+window.showDigilibLoader = showDigilibLoader;
+
+function hideDigilibLoader() {
+    const loader = document.getElementById('digilib-global-loader');
+    if (loader) {
+        loader.classList.remove('opacity-100');
+        loader.classList.add('opacity-0', 'pointer-events-none');
+    }
+}
+window.hideDigilibLoader = hideDigilibLoader;
+
+// Clean Standard Empty Resource State Renderer
+function renderEmptyResourceState(requestCategory = 'General', requestTitle = '') {
+    const params = new URLSearchParams();
+    if (requestCategory) params.set('branch', requestCategory);
+    if (requestTitle) params.set('title', requestTitle);
+    const reqUrl = `request.html?${params.toString()}`;
+
+    return `
+        <div class="sm:col-span-2 lg:col-span-3 text-center py-16 px-6 bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
+            <div class="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 dark:text-amber-400 flex items-center justify-center mx-auto shadow-inner">
+                <i data-lucide="folder-search" class="w-8 h-8"></i>
+            </div>
+            <div class="space-y-1">
+                <h3 class="text-lg font-black text-slate-900 dark:text-white">No Resources Available</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">We couldn't find materials matching your filters.</p>
+            </div>
+            <div class="pt-2">
+                <a href="${reqUrl}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs shadow-md shadow-brand-500/20 hover:-translate-y-0.5 transition-all">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span>Request This Material</span>
+                </a>
+            </div>
+        </div>
+    `;
+}
+window.renderEmptyResourceState = renderEmptyResourceState;
+
+// Sort Helper for Resource Lists
+function sortResources(list, sortBy = 'newest') {
+    if (!Array.isArray(list)) return [];
+    const copy = [...list];
+    if (sortBy === 'oldest') {
+        return copy.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+    }
+    if (sortBy === 'clicks') {
+        return copy.sort((a, b) => (b.clicks || 0) - (a.clicks || 0));
+    }
+    if (sortBy === 'name') {
+        return copy.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    }
+    // Default: newest
+    return copy.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+}
+window.sortResources = sortResources;
 
 // High-Speed Resource Fetcher with Client SWR Memory Cache
 window.DigiLibResourceCache = window.DigiLibResourceCache || new Map();
@@ -8,7 +106,13 @@ async function fetchFastResources(url) {
         const cached = window.DigiLibResourceCache.get(url);
         // Revalidate asynchronously in background if older than 30s
         if (Date.now() - cached.timestamp > 30000) {
-            fetch(url).then(r => r.ok ? r.json() : null).then(data => {
+            fetch(url).then(async r => {
+                const contentType = r.headers.get('content-type') || '';
+                if (r.ok && contentType.includes('application/json')) {
+                    try { return await r.json(); } catch(e) { return null; }
+                }
+                return null;
+            }).then(data => {
                 if (data && Array.isArray(data)) {
                     window.DigiLibResourceCache.set(url, { data, timestamp: Date.now() });
                 }
@@ -19,10 +123,17 @@ async function fetchFastResources(url) {
 
     try {
         const res = await fetch(url);
-        if (res.ok) {
-            const data = await res.json();
-            window.DigiLibResourceCache.set(url, { data, timestamp: Date.now() });
-            return data;
+        const contentType = res.headers.get('content-type') || '';
+        if (res.ok && contentType.includes('application/json')) {
+            try {
+                const data = await res.json();
+                if (Array.isArray(data)) {
+                    window.DigiLibResourceCache.set(url, { data, timestamp: Date.now() });
+                    return data;
+                }
+            } catch (jsonErr) {
+                console.warn("JSON parse warning for resources fetch:", jsonErr);
+            }
         }
     } catch (e) {
         if (window.DigiLibResourceCache.has(url)) {
@@ -647,6 +758,12 @@ function matchBtechBranch(item, branch) {
 
     if (!itemBranch) return true;
 
+    if (targetBranch.includes('information technology') || targetBranch === 'it' || targetBranch.includes('it (')) {
+        return itemBranch.includes('information technology') || itemBranch.includes('it');
+    }
+    if (targetBranch.includes('ai & ml') || targetBranch.includes('artificial intelligence') || targetBranch.includes('machine learning') || targetBranch.includes('ai/ml')) {
+        return itemBranch.includes('ai & ml') || itemBranch.includes('ai') || itemBranch.includes('ml') || itemBranch.includes('artificial intelligence');
+    }
     if (targetBranch.includes('computer science') || targetBranch.includes('cse')) {
         return itemBranch.includes('computer science') || itemBranch.includes('cse');
     }
@@ -656,14 +773,11 @@ function matchBtechBranch(item, branch) {
     if (targetBranch.includes('electrical') || targetBranch.includes('eee')) {
         return itemBranch.includes('electrical') || itemBranch.includes('eee');
     }
-    if (targetBranch.includes('mechanical') || targetBranch.includes('me')) {
-        return itemBranch.includes('mechanical') || itemBranch.includes('me');
+    if (targetBranch.includes('mechanical')) {
+        return itemBranch.includes('mechanical') || itemBranch.includes('mech');
     }
-    if (targetBranch.includes('civil') || targetBranch.includes('ce')) {
-        return itemBranch.includes('civil') || itemBranch.includes('ce');
-    }
-    if (targetBranch.includes('ai') || targetBranch.includes('ml') || targetBranch.includes('ds')) {
-        return itemBranch.includes('ai') || itemBranch.includes('ml') || itemBranch.includes('ds') || itemBranch.includes('cse');
+    if (targetBranch.includes('civil')) {
+        return itemBranch.includes('civil');
     }
 
     return itemBranch.includes(targetBranch) || targetBranch.includes(itemBranch);

@@ -759,14 +759,26 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
         // FETCH ALL RESOURCES FROM BACKEND OR FALL BACK TO LOCAL DATA
         async function fetchResources() {
             try {
+                if (window.fetchFastResources) {
+                    const fastData = await window.fetchFastResources(`${BACKEND_URL}/resources`);
+                    if (Array.isArray(fastData)) {
+                        database = fastData;
+                        updateUnlockedResourcesUI();
+                        checkNewlyUploadedParam();
+                        return;
+                    }
+                }
                 const response = await fetch(`${BACKEND_URL}/resources`);
-                if (!response.ok) throw new Error("Database network issues");
+                const contentType = response.headers.get('content-type') || '';
+                if (!response.ok || !contentType.includes('application/json')) {
+                    throw new Error("Invalid response format from backend");
+                }
                 const data = await response.json();
-                database = data;
+                database = Array.isArray(data) ? data : [];
                 updateUnlockedResourcesUI();
                 checkNewlyUploadedParam();
             } catch (error) {
-                console.error("Failed to fetch resources from backend:", error);
+                console.warn("Notice: Fetching resources from backend failed, fallback initialized:", error.message);
                 database = [];
                 updateUnlockedResourcesUI();
                 checkNewlyUploadedParam();
@@ -2160,7 +2172,8 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
         async function fetchCampusRequests() {
             try {
                 const response = await fetch(`${BACKEND_URL}/requests`);
-                if (!response.ok) throw new Error("Server issues");
+                const contentType = response.headers.get('content-type') || '';
+                if (!response.ok || !contentType.includes('application/json')) throw new Error("Server issues");
                 localRequestsCache = await response.json();
             } catch (err) {
                 console.warn("Backend disconnected, showing safe mock campus requests.");

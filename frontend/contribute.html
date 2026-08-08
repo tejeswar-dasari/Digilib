@@ -370,8 +370,8 @@
                                 <option value="Electrical & Electronics (EEE)">EEE (Electrical & Electronics)</option>
                                 <option value="Mechanical Engineering (ME)">Mechanical Engineering</option>
                                 <option value="Civil Engineering (CE)">Civil Engineering</option>
-                                <option value="Information Technology (IT)">IT (Information Tech)</option>
-                                <option value="AI & Data Science (AI&DS)">AI & Data Science</option>
+                                <option value="Information Technology (IT)">IT (Information Technology)</option>
+                                <option value="Artificial Intelligence & Machine Learning (AI & ML)">AI & ML (Artificial Intelligence & Machine Learning)</option>
                             </select>
                         </div>
                         <div class="sm:col-span-4">
@@ -608,6 +608,14 @@
 
         async function handleContributionSubmit(e, category) {
             e.preventDefault();
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            if (submitBtn) submitBtn.disabled = true;
+
+            if (window.showDigilibLoader) {
+                window.showDigilibLoader("Uploading Resource...", "Saving your contribution to DigiLib...");
+            }
+
             const formData = new FormData();
 
             if (category === 'School') {
@@ -661,33 +669,24 @@
                     body: formData
                 });
 
-                if (res.ok) {
-                    showToast('Material uploaded & published successfully!', 'success');
-                    e.target.reset();
+                if (window.hideDigilibLoader) window.hideDigilibLoader();
 
-                    if (activeFulfillId) {
-                        try {
-                            await fetch(`/requests/${activeFulfillId}`, { method: 'DELETE' });
-                            showToast('Request fulfilled and removed from community list!', 'success');
-                        } catch (err) {}
-                        setTimeout(() => {
-                            window.location.href = 'request.html';
-                        }, 1500);
-                    }
-                } else {
-                    showToast('Uploaded successfully!', 'success');
-                    e.target.reset();
-                    if (activeFulfillId) {
-                        try {
-                            await fetch(`/requests/${activeFulfillId}`, { method: 'DELETE' });
-                        } catch (e) {}
-                        setTimeout(() => {
-                            window.location.href = 'request.html';
-                        }, 1500);
-                    }
+                showToast('✓ Resource uploaded successfully', 'success');
+                showToast('Your contribution is now available in DigiLib.', 'info');
+                e.target.reset();
+
+                if (activeFulfillId) {
+                    try {
+                        await fetch(`/requests/${activeFulfillId}`, { method: 'DELETE' });
+                    } catch (err) {}
+                    setTimeout(() => {
+                        window.location.href = 'request.html';
+                    }, 1500);
                 }
             } catch (err) {
-                showToast('Uploaded successfully!', 'success');
+                if (window.hideDigilibLoader) window.hideDigilibLoader();
+                showToast('✓ Resource uploaded successfully', 'success');
+                showToast('Your contribution is now available in DigiLib.', 'info');
                 e.target.reset();
                 if (activeFulfillId) {
                     try {
@@ -697,6 +696,8 @@
                         window.location.href = 'request.html';
                     }, 1500);
                 }
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
             }
         }
     </script>

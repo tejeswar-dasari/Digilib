@@ -639,7 +639,8 @@ async function handleAdminAddResource(e) {
 async function fetchResources() {
     try {
         const response = await fetch(`${BACKEND_URL}/resources`);
-        if (!response.ok) throw new Error();
+        const contentType = response.headers.get('content-type') || '';
+        if (!response.ok || !contentType.includes('application/json')) throw new Error();
         resources = await response.json();
         renderResources(resources);
         updateStats();
