@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Intermediate & Polytechnic Diploma Hub - Digilib</title>
+    <!-- Resource hints -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            950: '#0b0f19',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        @media (max-width: 767px) {
+            header {
+                padding-top: max(16px, env(safe-area-inset-top, 20px)) !important;
+                height: auto !important;
+            }
+            #main-content {
+                padding-top: max(110px, calc(85px + env(safe-area-inset-top, 20px))) !important;
+            }
+            footer {
+                padding-bottom: calc(60px + env(safe-area-inset-bottom, 16px)) !important;
+            }
+        }
+    </style>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#059669">
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col relative">
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed top-5 right-5 z-[99999] flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- Header Navigation -->
+    <header class="fixed top-0 left-0 w-full z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-900 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h10"/></svg>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Digi<span class="text-brand-600">lib</span></span>
+            </a>
+
+            <nav class="hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                <a href="index.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Home</a>
+                <a href="school.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">School</a>
+                <a href="intermediate.html" class="text-emerald-600 dark:text-emerald-400 font-bold transition-colors">Inter & Diploma</a>
+                <a href="btech.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">B.Tech</a>
+                <a href="books.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Books & Novels</a>
+                <a href="request.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Request</a>
+                <a href="contribute.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Contribute</a>
+                <a href="admin.html" id="nav-admin-link" class="hidden text-amber-500 font-bold hover:text-amber-400 transition-colors">Admin</a>
+            </nav>
+
+            <div class="flex items-center gap-2.5">
+                <button id="theme-toggle" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition-all" aria-label="Toggle Dark Mode">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+                <button onclick="toggleProfileDropdown()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition-all">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                </button>
+                <button onclick="toggleMobileDrawer()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition-all lg:hidden">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer -->
+    <div id="mobile-drawer-overlay" onclick="toggleMobileDrawer()" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0"></div>
+    <div id="mobile-drawer" class="fixed top-0 left-0 right-0 bg-white dark:bg-slate-900 z-50 rounded-b-3xl shadow-2xl p-6 border-b border-slate-200 dark:border-slate-800 transform -translate-y-full transition-transform duration-300 ease-out lg:hidden">
+        <div class="flex items-center justify-between pb-6 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xl font-extrabold text-slate-900 dark:text-white">Digilib Navigation</span>
+            <button onclick="toggleMobileDrawer()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <div class="flex flex-col gap-4 py-5 text-base font-semibold text-slate-700 dark:text-slate-200">
+            <a href="index.html" onclick="toggleMobileDrawer()">Home</a>
+            <a href="school.html" onclick="toggleMobileDrawer()">School</a>
+            <a href="intermediate.html" class="text-emerald-600 font-bold" onclick="toggleMobileDrawer()">Inter & Diploma</a>
+            <a href="btech.html" onclick="toggleMobileDrawer()">B.Tech</a>
+            <a href="books.html" onclick="toggleMobileDrawer()">Books & Novels</a>
+            <a href="request.html" onclick="toggleMobileDrawer()">Request Resource</a>
+            <a href="contribute.html" onclick="toggleMobileDrawer()">Contribute Resource</a>
+            <a href="admin.html" class="text-amber-500 font-bold admin-only-link hidden" onclick="toggleMobileDrawer()">Admin Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content" class="flex-grow pt-28 pb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 text-white p-8 sm:p-12 shadow-2xl">
+                <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="relative z-10 max-w-3xl space-y-4">
+                    <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-white/15 text-white backdrop-blur-md uppercase tracking-wider">
+                        <i data-lucide="award" class="w-4 h-4"></i>
+                        Higher Secondary & Polytechnic
+                    </span>
+                    <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+                        Intermediate & Polytechnic Library
+                    </h1>
+                    <p class="text-white/80 text-sm sm:text-base leading-relaxed">
+                        Access MPC, BiPC, CEC, MEC stream notes, board previous papers, polytechnic C-20/C-16 lab manuals, solved question banks, and video lectures!
+                    </p>
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <a href="#inter-resources" class="px-5 py-3 rounded-xl bg-white text-emerald-700 hover:bg-emerald-50 text-xs font-extrabold shadow-lg transition-all flex items-center gap-2">
+                            <i data-lucide="book-open" class="w-4 h-4"></i>
+                            Browse Inter & Diploma Resources
+                        </a>
+                        <a href="request.html" class="px-5 py-3 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/20 text-xs font-extrabold transition-all flex items-center gap-2">
+                            <i data-lucide="help-circle" class="w-4 h-4"></i>
+                            Request Material
+                        </a>
+                        <a href="contribute.html" class="px-5 py-3 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/20 text-xs font-extrabold transition-all flex items-center gap-2">
+                            <i data-lucide="upload" class="w-4 h-4"></i>
+                            Contribute Notes
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INTERMEDIATE & DIPLOMA SELECTION VIEW (2 Cards) -->
+            <section id="inter-selection-view" class="space-y-6">
+                <div class="flex items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
+                            <i data-lucide="layout-grid" class="w-6 h-6 text-emerald-600"></i>
+                            Select Academic Program
+                        </h2>
+                        <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">Choose between Intermediate streams or Polytechnic Engineering Diploma.</p>
+                    </div>
+                    <a href="index.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 transition-all shrink-0">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                        <span>Back to Home</span>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                    <!-- Intermediate Card -->
+                    <div onclick="selectInterCategory('Intermediate')" class="group bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-8 shadow-md hover:shadow-2xl hover:border-emerald-500/50 transition-all duration-300 cursor-pointer flex flex-col justify-between space-y-6 hover:-translate-y-1">
+                        <div class="space-y-4">
+                            <div class="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-md">
+                                <i data-lucide="award" class="w-8 h-8"></i>
+                            </div>
+                            <div>
+                                <span class="inline-block text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">Class 11 & 12 Academic Stream</span>
+                                <h3 class="text-2xl font-black text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Intermediate</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">MPC, BiPC, CEC, MEC & HEC stream notes, Telangana & AP Board previous papers, textbooks, model solutions & video playlists.</p>
+                            </div>
+                        </div>
+                        <button type="button" class="w-full py-3 px-5 rounded-2xl bg-slate-50 dark:bg-slate-800 group-hover:bg-emerald-600 group-hover:text-white text-xs font-extrabold text-slate-700 dark:text-slate-200 transition-all flex items-center justify-between shadow-sm">
+                            <span>Open Intermediate</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Polytechnic Diploma Card -->
+                    <div onclick="selectInterCategory('Diploma')" class="group bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-8 shadow-md hover:shadow-2xl hover:border-emerald-500/50 transition-all duration-300 cursor-pointer flex flex-col justify-between space-y-6 hover:-translate-y-1">
+                        <div class="space-y-4">
+                            <div class="w-16 h-16 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center group-hover:scale-110 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-md">
+                                <i data-lucide="layers" class="w-8 h-8"></i>
+                            </div>
+                            <div>
+                                <span class="inline-block text-[10px] font-black uppercase tracking-wider text-teal-600 dark:text-teal-400 mb-1">Technical Engineering Diploma</span>
+                                <h3 class="text-2xl font-black text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">Polytechnic Diploma</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">Polytechnic CME/CSE, ECE, EEE, Civil & Mechanical lab manuals, C-20 / C-16 curriculum notes, industrial training guides & PYQs.</p>
+                            </div>
+                        </div>
+                        <button type="button" class="w-full py-3 px-5 rounded-2xl bg-slate-50 dark:bg-slate-800 group-hover:bg-teal-600 group-hover:text-white text-xs font-extrabold text-slate-700 dark:text-slate-200 transition-all flex items-center justify-between shadow-sm">
+                            <span>Open Diploma</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RESOURCE BROWSING SECTION (Shown after selecting category) -->
+            <section id="inter-filter-view" class="hidden bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+                <!-- Header with Back Button -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-6">
+                    <div class="flex items-center gap-3">
+                        <button onclick="showInterSelectionView()" type="button" class="p-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-all cursor-pointer shrink-0" title="Back to Selection">
+                            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                        </button>
+                        <div>
+                            <h2 class="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                                <span id="selected-inter-title" class="text-emerald-600 dark:text-emerald-400 font-black">Intermediate</span>
+                                <span>Resources</span>
+                            </h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Filter resources by stream or material category</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Standardized Secondary Filters Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3.5 items-center">
+                    <!-- 1. Stream / Branch Filter -->
+                    <div class="lg:col-span-4">
+                        <label id="inter-stream-filter-label" class="block text-[10px] font-black uppercase text-slate-400 mb-1">STREAM</label>
+                        <select id="inter-stream-filter" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+                            <option value="All">All Streams</option>
+                            <option value="MPC">MPC (Maths, Physics, Chem)</option>
+                            <option value="BiPC">BiPC (Biology, Physics, Chem)</option>
+                            <option value="CEC">CEC (Commerce, Econ, Civics)</option>
+                            <option value="MEC">MEC (Maths, Econ, Commerce)</option>
+                            <option value="HEC">HEC (History, Econ, Civics)</option>
+                        </select>
+                    </div>
+
+                    <!-- 2. Material Type Dropdown -->
+                    <div class="lg:col-span-4">
+                        <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Material Type</label>
+                        <select id="inter-type-filter" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+                            <option value="All">All Resources</option>
+                            <option value="Notes">Notes</option>
+                            <option value="Previous Year Papers">Previous Year Papers</option>
+                            <option value="Study Materials">Study Materials</option>
+                            <option value="Lab Manuals">Lab Manuals</option>
+                            <option value="Assignments">Assignments</option>
+                            <option value="Question Banks">Question Banks</option>
+                            <option value="Books">Books</option>
+                            <option value="Websites">Websites</option>
+                            <option value="YouTube Channels">YouTube Channels</option>
+                        </select>
+                    </div>
+
+                    <!-- 3. Search Input -->
+                    <div class="lg:col-span-4 relative">
+                        <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Search Resources</label>
+                        <div class="relative">
+                            <input type="text" id="inter-search-input" placeholder="Search title, stream, topic..." class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 outline-none transition-all">
+                            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Access Resources Button Row -->
+                <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-end">
+                    <button type="button" id="btn-inter-access" onclick="handleInterAccessResources()" onmouseenter="window.prefetchResources && (window.prefetchResources('/resources?category=Intermediate'), window.prefetchResources('/resources?category=Diploma'))" class="w-full sm:w-auto min-w-[220px] h-11 px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 whitespace-nowrap">
+                        <span id="inter-btn-icon-wrap" class="w-4 h-4 flex items-center justify-center shrink-0">
+                            <i data-lucide="database" class="w-4 h-4 shrink-0"></i>
+                        </span>
+                        <span id="inter-btn-text" class="shrink-0 text-center">Access Resources</span>
+                        <span id="inter-btn-arrow-wrap" class="w-4 h-4 flex items-center justify-center shrink-0 transition-opacity">
+                            <i data-lucide="arrow-right" class="w-4 h-4 shrink-0"></i>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Resources Grid Section -->
+                <div id="inter-results-section" class="scroll-mt-24">
+                    <div class="flex items-center justify-between gap-4 mb-4">
+                        <span id="inter-count-badge" class="text-xs font-extrabold text-slate-500 uppercase tracking-wider min-w-0 truncate">Select your filters and click 'Access Resources'</span>
+                        <div class="flex items-center gap-2 text-xs font-bold text-slate-500 shrink-0">
+                            <span>Sort By:</span>
+                            <select id="inter-sort-select" onchange="renderInterResourcesIfLoaded()" class="bg-transparent border-none font-bold text-slate-700 dark:text-slate-300 outline-none cursor-pointer">
+                                <option value="newest">Newest First</option>
+                                <option value="clicks">Most Downloaded</option>
+                                <option value="name">Title A-Z</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="inter-resources-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <div class="sm:col-span-2 lg:col-span-3 text-center py-16 px-6 bg-slate-50/60 dark:bg-slate-950/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 space-y-3">
+                            <div class="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-sm">
+                                <i data-lucide="filter" class="w-7 h-7"></i>
+                            </div>
+                            <h3 class="text-base font-extrabold text-slate-800 dark:text-slate-200">Select your filters and click 'Access Resources' to view matching resources.</h3>
+                            <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">Choose stream or subject filters above, then click the Access Resources button.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">
+                    DL
+                </div>
+                <span class="text-lg font-extrabold text-white">Digilib Inter & Diploma</span>
+            </div>
+            <p class="text-xs text-slate-500">© 2026 Digilib. Academic digital resource portal.</p>
+            <div class="flex gap-4 text-xs font-bold">
+                <a href="index.html" class="hover:text-white transition-colors">Main Portal</a>
+                <a href="school.html" class="hover:text-white transition-colors">School</a>
+                <a href="btech.html" class="hover:text-white transition-colors">B.Tech</a>
+                <a href="books.html" class="hover:text-white transition-colors">Books</a>
+                <a href="request.html" class="hover:text-white transition-colors">Request</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Shared Utilities -->
+    <script src="js/shared.js"></script>
+    <script>
+        let allInterResources = [];
+        let selectedInterCategory = null;
+        let hasAccessedInterResources = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initInterView();
+        });
+
+        function initInterView() {
+            const params = new URLSearchParams(window.location.search);
+            const typeParam = params.get('type');
+            if (typeParam) {
+                const normalized = typeParam.toLowerCase().includes('diploma') ? 'Diploma' : 'Intermediate';
+                selectInterCategory(normalized, false, true);
+            } else {
+                showInterSelectionView(false, true);
+            }
+            if (window.hidePageLoader) {
+                setTimeout(() => { window.hidePageLoader(); }, 100);
+            }
+        }
+
+        function selectInterCategory(cat, updateHistory = true, isInitialLoad = false) {
+            if (!isInitialLoad && window.showPageLoader) {
+                window.showPageLoader('Opening Inter & Diploma...', 'DIGITAL ACADEMIC LIBRARY');
+            }
+
+            selectedInterCategory = cat;
+            if (updateHistory) {
+                const newUrl = window.location.pathname + '?type=' + encodeURIComponent(cat);
+                window.history.pushState({ type: cat }, '', newUrl);
+            }
+
+            const selectionView = document.getElementById('inter-selection-view');
+            const filterView = document.getElementById('inter-filter-view');
+            const titleEl = document.getElementById('selected-inter-title');
+            const streamLabel = document.getElementById('inter-stream-filter-label');
+            const streamSelect = document.getElementById('inter-stream-filter');
+
+            if (selectionView) selectionView.classList.add('hidden');
+            if (filterView) filterView.classList.remove('hidden');
+            if (titleEl) titleEl.textContent = cat === 'Diploma' ? 'Polytechnic Diploma' : 'Intermediate';
+
+            if (streamLabel) {
+                streamLabel.textContent = cat === 'Diploma' ? 'BRANCH' : 'STREAM';
+            }
+
+            if (streamSelect) {
+                if (cat === 'Diploma') {
+                    streamSelect.innerHTML = `
+                        <option value="All">All Branches</option>
+                        <option value="Diploma CSE">Diploma CSE</option>
+                        <option value="Diploma ECE">Diploma ECE</option>
+                        <option value="Diploma EEE">Diploma EEE</option>
+                        <option value="Diploma Civil">Diploma Civil</option>
+                        <option value="Diploma Mechanical">Diploma Mechanical</option>
+                        <option value="Diploma Automobile">Diploma Automobile</option>
+                        <option value="Diploma Mining">Diploma Mining</option>
+                    `;
+                } else {
+                    streamSelect.innerHTML = `
+                        <option value="All">All Streams</option>
+                        <option value="MPC">MPC (Maths, Physics, Chem)</option>
+                        <option value="BiPC">BiPC (Biology, Physics, Chem)</option>
+                        <option value="CEC">CEC (Commerce, Econ, Civics)</option>
+                        <option value="MEC">MEC (Maths, Econ, Commerce)</option>
+                        <option value="HEC">HEC (History, Econ, Civics)</option>
+                    `;
+                }
+            }
+
+            // Reset accessed state so user can access resources
+            hasAccessedInterResources = false;
+            const grid = document.getElementById('inter-resources-grid');
+            if (grid) {
+                grid.innerHTML = `
+                    <div class="sm:col-span-2 lg:col-span-3 text-center py-16 px-6 bg-slate-50/60 dark:bg-slate-950/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 space-y-3">
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-sm">
+                            <i data-lucide="filter" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-base font-extrabold text-slate-800 dark:text-slate-200">Select your filters and click 'Access Resources' for ${cat === 'Diploma' ? 'Polytechnic Diploma' : 'Intermediate'}.</h3>
+                        <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">Choose ${cat === 'Diploma' ? 'branch' : 'stream'} or material type filters above, then click the Access Resources button.</p>
+                    </div>
+                `;
+            }
+            const countBadge = document.getElementById('inter-count-badge');
+            if (countBadge) countBadge.textContent = "Select your filters and click 'Access Resources'";
+
+            if (window.lucide) lucide.createIcons();
+
+            if (filterView) filterView.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            if (!isInitialLoad && window.hidePageLoader) {
+                setTimeout(() => { window.hidePageLoader(); }, 150);
+            }
+        }
+
+        function showInterSelectionView(updateHistory = true, isInitialLoad = false) {
+            if (!isInitialLoad && window.showPageLoader) {
+                window.showPageLoader('Opening Inter & Diploma...', 'DIGITAL ACADEMIC LIBRARY');
+            }
+
+            selectedInterCategory = null;
+            if (updateHistory) {
+                window.history.pushState({}, '', window.location.pathname);
+            }
+
+            const selectionView = document.getElementById('inter-selection-view');
+            const filterView = document.getElementById('inter-filter-view');
+
+            if (selectionView) selectionView.classList.remove('hidden');
+            if (filterView) filterView.classList.add('hidden');
+
+            if (window.lucide) lucide.createIcons();
+
+            if (!isInitialLoad && window.hidePageLoader) {
+                setTimeout(() => { window.hidePageLoader(); }, 150);
+            }
+        }
+
+        window.addEventListener('popstate', () => {
+            initInterView();
+        });
+
+        async function handleInterAccessResources() {
+            const btn = document.getElementById('btn-inter-access');
+            const iconWrap = document.getElementById('inter-btn-icon-wrap');
+            const text = document.getElementById('inter-btn-text');
+            const arrowWrap = document.getElementById('inter-btn-arrow-wrap');
+            const countBadge = document.getElementById('inter-count-badge');
+
+            if (btn) btn.disabled = true;
+            if (text) text.textContent = 'Accessing Resources...';
+            if (arrowWrap) arrowWrap.style.opacity = '0';
+
+            if (countBadge) countBadge.textContent = 'Fetching matching resources from MongoDB...';
+
+            if (window.showPageLoader) {
+                window.showPageLoader('Fetching resources...', 'DIGITAL ACADEMIC LIBRARY');
+            }
+
+            try {
+                const reqCat = selectedInterCategory || 'Intermediate';
+                if (window.fetchFastResources) {
+                    allInterResources = await window.fetchFastResources(`/resources?category=${encodeURIComponent(reqCat)}`);
+                } else {
+                    const res = await fetch(`/resources?category=${encodeURIComponent(reqCat)}`);
+                    allInterResources = res.ok ? await res.json() : [];
+                }
+            } catch (err) {
+                console.error(err);
+                allInterResources = [];
+            } finally {
+                hasAccessedInterResources = true;
+                renderInterResources();
+                if (window.hidePageLoader) window.hidePageLoader();
+
+                if (btn) btn.disabled = false;
+                if (text) text.textContent = 'Access Resources';
+                if (iconWrap) iconWrap.innerHTML = `<i data-lucide="database" class="w-4 h-4 shrink-0"></i>`;
+                if (arrowWrap) arrowWrap.style.opacity = '1';
+                if (window.lucide) lucide.createIcons();
+
+                // Auto-scroll to unlocked resources section
+                const resultsSection = document.getElementById('inter-results-section') || document.getElementById('inter-resources-grid');
+                if (resultsSection) {
+                    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        }
+
+        function renderInterResourcesIfLoaded() {
+            if (hasAccessedInterResources) {
+                renderInterResources();
+            }
+        }
+
+        function renderInterResources() {
+            if (!hasAccessedInterResources) return;
+
+            const streamVal = document.getElementById('inter-stream-filter')?.value || 'All';
+            const typeVal = document.getElementById('inter-type-filter')?.value || 'All';
+            const searchVal = (document.getElementById('inter-search-input')?.value || '').toLowerCase().trim();
+            const sortVal = document.getElementById('inter-sort-select')?.value || 'newest';
+
+            let filtered = allInterResources.filter(res => {
+                // Category match
+                if (selectedInterCategory && res.category && res.category !== selectedInterCategory) {
+                    return false;
+                }
+
+                // Stream filter
+                if (streamVal !== 'All') {
+                    const resStream = (res.stream || '').toLowerCase();
+                    const target = streamVal.toLowerCase();
+                    const targetShort = target.replace('diploma ', '').trim();
+                    const match = resStream.includes(target) || (targetShort && resStream.includes(targetShort));
+                    if (!match) return false;
+                }
+
+                // Material Type filter via shared matcher
+                const matcher = window.matchMaterialType || (typeof matchMaterialType !== 'undefined' ? matchMaterialType : null);
+                if (matcher && !matcher(res.type, typeVal)) return false;
+
+                // Search query
+                if (searchVal) {
+                    const matchName = (res.name || '').toLowerCase().includes(searchVal);
+                    const matchStream = (res.stream || '').toLowerCase().includes(searchVal);
+                    const matchSubj = (res.subject || '').toLowerCase().includes(searchVal);
+                    const matchType = (res.type || '').toLowerCase().includes(searchVal);
+                    const matchDesc = (res.description || '').toLowerCase().includes(searchVal);
+                    const matchTopic = (res.topic || '').toLowerCase().includes(searchVal);
+                    if (!matchName && !matchStream && !matchSubj && !matchType && !matchDesc && !matchTopic) return false;
+                }
+                return true;
+            });
+
+            // Sorting
+            if (sortVal === 'clicks') {
+                filtered.sort((a, b) => (b.clicks || 0) - (a.clicks || 0));
+            } else if (sortVal === 'name') {
+                filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            } else {
+                filtered.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            }
+
+            const countBadge = document.getElementById('inter-count-badge');
+            if (countBadge) countBadge.textContent = `Showing ${filtered.length} Resources`;
+
+            const grid = document.getElementById('inter-resources-grid');
+            if (!grid) return;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="sm:col-span-2 lg:col-span-3 text-center py-12 bg-slate-50 dark:bg-slate-950/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+                        <i data-lucide="folder-open" class="w-10 h-10 text-slate-400 mx-auto mb-2"></i>
+                        <p class="text-sm font-bold text-slate-700 dark:text-slate-300">No resources found for ${selectedInterCategory || 'this program'}</p>
+                        <p class="text-xs text-slate-500 mt-1">Try adjusting your filters or search terms.</p>
+                        <a href="request.html" class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold">
+                            Request Material
+                        </a>
+                    </div>
+                `;
+                if (window.lucide) lucide.createIcons();
+                return;
+            }
+
+            const cardRenderer = window.renderStandardResourceCard || (typeof renderStandardResourceCard !== 'undefined' ? renderStandardResourceCard : null);
+            grid.innerHTML = filtered.map(item => cardRenderer ? cardRenderer(item) : '').join('');
+            if (window.lucide) lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

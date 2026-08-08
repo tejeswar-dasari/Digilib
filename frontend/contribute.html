@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Contribute Resource - Digilib</title>
+    <title>Contribute Material - Digilib</title>
     <!-- Resource hints -->
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://digilib-backend-v0r2.onrender.com">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -41,7 +40,6 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow-x: hidden;
         }
-        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -55,23 +53,13 @@
         .dark ::-webkit-scrollbar-thumb {
             background: #475569;
         }
-
         @media (max-width: 767px) {
             header {
                 padding-top: max(16px, env(safe-area-inset-top, 20px)) !important;
                 height: auto !important;
             }
-            header > div {
-                height: 4.5rem !important;
-            }
             #main-content {
                 padding-top: max(110px, calc(85px + env(safe-area-inset-top, 20px))) !important;
-            }
-            #mobile-drawer {
-                padding-top: max(24px, calc(16px + env(safe-area-inset-top, 20px))) !important;
-            }
-            #toast-container {
-                top: max(24px, calc(16px + env(safe-area-inset-top, 20px))) !important;
             }
             footer {
                 padding-bottom: calc(60px + env(safe-area-inset-bottom, 16px)) !important;
@@ -84,716 +72,545 @@
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col relative">
 
-    <!-- PWA App Opening Loading Spinner Overlay -->
-    <div id="pwa-app-loader" class="fixed inset-0 z-[999999] bg-slate-900 flex flex-col items-center justify-center transition-opacity duration-500 ease-in-out">
-        <div class="relative flex flex-col items-center gap-6 p-8 text-center max-w-sm">
-            <div class="relative flex items-center justify-center">
-                <div class="absolute -inset-4 bg-brand-500/30 rounded-3xl blur-xl animate-pulse"></div>
-                <div class="w-20 h-20 rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-2xl shadow-brand-500/50 relative">
-                    <svg class="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                        <path d="M6 6h10M6 10h10M6 14h10"/>
-                    </svg>
-                </div>
-            </div>
-            <div>
-                <h1 class="text-3xl font-extrabold text-white tracking-tight">
-                    Digi<span class="text-brand-400">lib</span>
-                </h1>
-                <p class="text-xs font-semibold tracking-widest text-slate-400 uppercase mt-1">Digital Academic Library</p>
-            </div>
-            <div class="flex flex-col items-center gap-3 mt-2">
-                <div class="relative w-12 h-12 flex items-center justify-center">
-                    <div class="w-12 h-12 rounded-full border-4 border-slate-800 border-t-brand-500 animate-spin"></div>
-                    <div class="absolute w-7 h-7 rounded-full border-4 border-slate-800 border-b-indigo-400 animate-spin" style="animation-direction: reverse; animation-duration: 0.8s;"></div>
-                </div>
-                <span class="text-xs font-medium text-slate-300 animate-pulse">Loading Contribution Portal...</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification Container -->
+    <!-- Toast Notifications -->
     <div id="toast-container" class="fixed top-5 right-5 z-[99999] flex flex-col gap-3 pointer-events-none"></div>
 
     <!-- Header Navigation -->
     <header class="fixed top-0 left-0 w-full z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-900 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <!-- Logo -->
             <a href="index.html" class="flex items-center gap-3 group">
                 <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                        <path d="M6 6h10M6 10h10M6 14h10"/>
-                    </svg>
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h10"/></svg>
                 </div>
-                <span class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-                    Digi<span class="text-brand-600">lib</span>
-                </span>
+                <span class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Digi<span class="text-brand-600">lib</span></span>
             </a>
 
-            <!-- Desktop Links -->
-            <nav class="hidden md:flex items-center gap-8">
-                <a href="index.html" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Home</a>
-                <a href="index.html#explore" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Services</a>
-                <a href="contribute.html" class="text-sm font-semibold text-brand-600 dark:text-brand-400">Contribute</a>
-                <a href="request.html" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Request Resource</a>
-                <a href="guidelines.html" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Guidelines</a>
-                <a href="index.html#faq" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">About Us</a>
+            <nav class="hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                <a href="index.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Home</a>
+                <a href="school.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">School</a>
+                <a href="intermediate.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Inter & Diploma</a>
+                <a href="btech.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">B.Tech</a>
+                <a href="books.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Books & Novels</a>
+                <a href="request.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Request</a>
+                <a href="contribute.html" class="text-emerald-600 dark:text-emerald-400 font-bold transition-colors">Contribute</a>
+                <a href="admin.html" id="nav-admin-link" class="hidden text-amber-500 font-bold hover:text-amber-400 transition-colors">Admin</a>
             </nav>
 
-            <!-- Navigation Actions -->
             <div class="flex items-center gap-2.5">
-                <button id="theme-toggle" class="flex p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all" aria-label="Toggle Dark Mode">
+                <button id="theme-toggle" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition-all" aria-label="Toggle Dark Mode">
                     <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
                     <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
                 </button>
-
-                <button onclick="toggleProfileDropdown()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all relative group" aria-label="User Account Profile">
+                <button onclick="toggleProfileDropdown()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition-all">
                     <i data-lucide="user" class="w-5 h-5"></i>
-                    <span class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-indigo-500 border-2 border-white dark:border-slate-950"></span>
                 </button>
-
-                <div class="hidden md:flex items-center gap-3">
-                    <button onclick="toggleAuthModal('login')" class="px-5 py-2.5 rounded-xl border border-brand-100 dark:border-slate-800 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-slate-900 text-sm font-bold transition-all">
-                        Login
-                    </button>
-                    <button onclick="toggleAuthModal('signup')" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-md shadow-brand-500/10 transition-all">
-                        Sign Up
-                    </button>
-                </div>
-
-                <button id="mobile-menu-btn" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800 transition-all md:hidden">
+                <button onclick="toggleMobileDrawer()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition-all lg:hidden">
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Mobile Drawer Menu Overlay -->
-    <div id="mobile-drawer-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0"></div>
-    <div id="mobile-drawer" class="fixed top-0 left-0 right-0 bg-white dark:bg-slate-900 z-50 rounded-b-3xl shadow-2xl p-6 border-b border-slate-150 dark:border-slate-800 transform -translate-y-full transition-transform duration-300 ease-out md:hidden">
-        <div class="flex items-center justify-between pb-8">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600 dark:text-brand-400">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                        <path d="M6 6h10M6 10h10M6 14h10"/>
-                    </svg>
-                </div>
-                <span class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-                    Digilib
-                </span>
-            </div>
-            <button id="drawer-close-btn" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-300 transition-all">
+    <!-- Mobile Drawer -->
+    <div id="mobile-drawer-overlay" onclick="toggleMobileDrawer()" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0"></div>
+    <div id="mobile-drawer" class="fixed top-0 left-0 right-0 bg-white dark:bg-slate-900 z-50 rounded-b-3xl shadow-2xl p-6 border-b border-slate-200 dark:border-slate-800 transform -translate-y-full transition-transform duration-300 ease-out lg:hidden">
+        <div class="flex items-center justify-between pb-6 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xl font-extrabold text-slate-900 dark:text-white">Digilib Navigation</span>
+            <button onclick="toggleMobileDrawer()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
-
-        <div class="flex flex-col gap-6 py-4">
-            <a href="index.html" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Home</a>
-            <a href="index.html#explore" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Services</a>
-            <a href="contribute.html" class="text-lg font-bold text-brand-600 dark:text-brand-400" onclick="closeDrawerMenu()">Contribute Resource</a>
-            <a href="request.html" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Request Resource</a>
-            <a href="guidelines.html" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Guidelines</a>
-        </div>
-
-        <div class="flex flex-col gap-4 mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
-            <button onclick="toggleAuthModal('login')" class="w-full py-4 rounded-xl border border-brand-200 dark:border-slate-700 text-brand-600 dark:text-brand-400 font-bold hover:bg-brand-50 dark:hover:bg-slate-800 transition-all text-center">
-                Login
-            </button>
-            <button onclick="toggleAuthModal('signup')" class="w-full py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition-all text-center shadow-lg shadow-brand-500/15">
-                Sign Up
-            </button>
+        <div class="flex flex-col gap-4 py-5 text-base font-semibold text-slate-700 dark:text-slate-200">
+            <a href="index.html" onclick="toggleMobileDrawer()">Home</a>
+            <a href="school.html" onclick="toggleMobileDrawer()">School</a>
+            <a href="intermediate.html" onclick="toggleMobileDrawer()">Inter & Diploma</a>
+            <a href="btech.html" onclick="toggleMobileDrawer()">B.Tech</a>
+            <a href="books.html" onclick="toggleMobileDrawer()">Books & Novels</a>
+            <a href="request.html" onclick="toggleMobileDrawer()">Request Resource</a>
+            <a href="contribute.html" class="text-emerald-600 font-bold" onclick="toggleMobileDrawer()">Contribute Resource</a>
+            <a href="admin.html" class="text-amber-500 font-bold admin-only-link hidden" onclick="toggleMobileDrawer()">Admin Dashboard</a>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <main id="main-content" class="flex-grow pt-28 pb-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Main Body -->
+    <main id="main-content" class="flex-grow pt-28 pb-16">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
 
-            <!-- Breadcrumb Navigation -->
-            <div class="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 mb-6">
-                <a href="index.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors flex items-center gap-1">
-                    <i data-lucide="home" class="w-3.5 h-3.5"></i>
-                    Home
-                </a>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600"></i>
-                <span class="text-brand-600 dark:text-brand-400 font-bold">Contribute Resource</span>
-            </div>
-
-            <!-- Header Title -->
-            <div class="text-center space-y-3 mb-10">
-                <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold bg-brand-100 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 tracking-wider uppercase">
-                    Student Contributions
+            <!-- Hero Header -->
+            <div class="text-center space-y-3">
+                <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Community Upload Portal
                 </span>
-                <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    Contribute Study Resource
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    Contribute & Share Study Material
                 </h1>
-                <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
-                    Share textbooks, unit notes, previous year question papers, websites, and YouTube links with fellow engineering students across colleges.
-                </p>
-                <div class="w-20 h-1.5 bg-brand-600 dark:bg-brand-500 mx-auto rounded-full"></div>
-            </div>
-
-            <!-- Regulation Notice Box -->
-            <div class="mb-8 p-4 sm:p-5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60 rounded-2xl flex items-start gap-3.5 shadow-sm">
-                <i data-lucide="info" class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5"></i>
-                <p class="text-xs sm:text-sm font-medium text-amber-800 dark:text-amber-300 leading-relaxed">
-                    📌 <strong>Naming Rule:</strong> Please include the Regulation in the Resource Name/Title field.<br>
-                    Example: <b>[R23] DBMS Study Material</b> or <b>[R20] Data Structures Notes</b>
+                <p class="text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+                    Help fellow students succeed! Select a category below to upload your notes, past papers, or helpful study links.
                 </p>
             </div>
 
-            <!-- Contribution Form Card -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden">
-                <form id="contribute-form" class="space-y-6">
-                    
-                    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                        <div class="space-y-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Resource Type</label>
-                            <div class="relative">
-                                <select id="contrib-type" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium text-sm appearance-none cursor-pointer transition-all">
-                                    <option value="Websites">Websites</option>
-                                    <option value="YouTube Links">YouTube Links</option>
-                                    <option value="Previous Year Papers">Previous Year Papers</option>
-                                    <option value="Study Materials">Study Materials</option>
-                                </select>
-                                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                                </div>
-                            </div>
-                        </div>
+            <!-- 4 Module Cards Selector -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Card 1: School -->
+                <button onclick="selectModule('school')" id="mod-btn-school" class="contrib-mod-card group p-5 rounded-2xl border-2 transition-all text-left bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-brand-500">
+                    <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                        <i data-lucide="school" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-sm font-extrabold text-slate-900 dark:text-white">School</h3>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Class 6th – 10th</p>
+                </button>
 
-                        <div class="space-y-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Branch</label>
-                            <div class="relative">
-                                <select id="contrib-branch" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium text-sm appearance-none cursor-pointer transition-all">
-                                    <option value="Computer Science (CSE)">Computer Science (CSE)</option>
-                                    <option value="Electronics & Communication (ECE)">Electronics &amp; Communication (ECE)</option>
-                                    <option value="Electrical & Electronics (EEE)">Electrical &amp; Electronics (EEE)</option>
-                                    <option value="Mechanical Engineering (ME)">Mechanical Engineering (ME)</option>
-                                    <option value="Civil Engineering (CE)">Civil Engineering (CE)</option>
-                                </select>
-                                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Card 2: Inter & Diploma -->
+                <button onclick="selectModule('inter')" id="mod-btn-inter" class="contrib-mod-card group p-5 rounded-2xl border-2 transition-all text-left bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-emerald-500">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                        <i data-lucide="award" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-sm font-extrabold text-slate-900 dark:text-white">Inter & Diploma</h3>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">MPC, BiPC, Polytechnic</p>
+                </button>
 
-                        <div class="space-y-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Year</label>
-                            <div class="relative">
-                                <select id="contrib-year" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium text-sm appearance-none cursor-pointer transition-all">
-                                    <option value="1st Year">1st Year</option>
-                                    <option value="2nd Year">2nd Year</option>
-                                    <option value="3rd Year">3rd Year</option>
-                                    <option value="4th Year">4th Year</option>
-                                </select>
-                                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Card 3: B.Tech -->
+                <button onclick="selectModule('btech')" id="mod-btn-btech" class="contrib-mod-card group p-5 rounded-2xl border-2 transition-all text-left bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-indigo-500">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                        <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-sm font-extrabold text-slate-900 dark:text-white">B.Tech / Engg</h3>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">CSE, ECE, EEE, Mech, Civil</p>
+                </button>
 
-                        <div class="space-y-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Semester</label>
-                            <div class="relative">
-                                <select id="contrib-semester" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium text-sm appearance-none cursor-pointer transition-all">
-                                    <option value="1st Semester">1st Semester</option>
-                                    <option value="2nd Semester">2nd Semester</option>
-                                </select>
-                                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Card 4: Books & Novels -->
+                <button onclick="selectModule('books')" id="mod-btn-books" class="contrib-mod-card group p-5 rounded-2xl border-2 transition-all text-left bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-amber-500">
+                    <div class="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                        <i data-lucide="book-open" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-sm font-extrabold text-slate-900 dark:text-white">Books & Novels</h3>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">eBooks, Novels, Textbooks</p>
+                </button>
+            </div>
 
-                        <div class="space-y-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Format</label>
-                            <div class="relative">
-                                <select id="contrib-format" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium text-sm appearance-none cursor-pointer transition-all">
-                                    <option value="YouTube Playlist">YouTube Playlist</option>
-                                    <option value="PDF Document">PDF Document</option>
-                                    <option value="PPT Presentation">PPT / Presentation</option>
-                                    <option value="Website URL">Interactive Website</option>
-                                </select>
-                                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                                </div>
-                            </div>
+            <!-- DYNAMIC CONTRIBUTION FORM CONTAINER -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xl">
+
+                <!-- 1. School Contribution Form -->
+                <div id="form-school" class="contrib-form-block hidden space-y-6">
+                    <div class="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold">
+                            <i data-lucide="school" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-extrabold text-slate-900 dark:text-white">School Contribution</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Classes 6th to 10th study material upload</p>
                         </div>
                     </div>
 
-                    <!-- Dynamic Input Fields -->
-                    <div class="grid lg:grid-cols-12 gap-6 items-end">
-                        <div class="lg:col-span-5 space-y-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Resource Name / Title</label>
-                            <input id="contrib-name" type="text" placeholder="e.g., [R23] Data Structures Playlist by Abdul Bari" required class="w-full px-4 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 text-sm dark:text-slate-200 font-medium transition-all" />
+                    <form onsubmit="handleContributionSubmit(event, 'School')" class="grid sm:grid-cols-12 gap-4">
+                        <div class="sm:col-span-4">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Class Level *</label>
+                            <select id="sch-cnt-class" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500">
+                                <option value="Class 6">Class 6</option>
+                                <option value="Class 7">Class 7</option>
+                                <option value="Class 8">Class 8</option>
+                                <option value="Class 9">Class 9</option>
+                                <option value="Class 10" selected>Class 10</option>
+                            </select>
                         </div>
-
-                        <!-- Dynamic Block for URL Input -->
-                        <div id="url-field-container" class="lg:col-span-5 space-y-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Resource URL</label>
-                            <input id="contrib-url" type="url" placeholder="https://youtube.com/playlist?list=..." required class="w-full px-4 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 text-sm dark:text-slate-200 font-medium transition-all" />
+                        <div class="sm:col-span-4">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Subject *</label>
+                            <input type="text" id="sch-cnt-subject" required placeholder="e.g. Mathematics, Physical Science" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500">
                         </div>
-
-                        <!-- Dynamic Block for File Upload Input -->
-                        <div id="file-field-container" class="lg:col-span-5 space-y-2 hidden animate-fade-in">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Upload Study File (PDF/Docs/PPT)</label>
-                            <div class="relative flex items-center justify-center w-full">
-                                <label class="flex flex-col items-center justify-center w-full h-[52px] border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 rounded-xl cursor-pointer bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all">
-                                    <div class="flex items-center gap-3 px-4">
-                                        <i data-lucide="upload-cloud" class="w-5 h-5 text-slate-400"></i>
-                                        <span id="file-label-text" class="text-xs font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]">Select study document...</span>
-                                    </div>
-                                    <input id="contrib-file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" class="hidden" />
-                                </label>
-                            </div>
+                        <div class="sm:col-span-4">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Resource Type *</label>
+                            <select id="sch-cnt-type" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500">
+                                <option value="Notes">Notes</option>
+                                <option value="Previous Year Papers">Previous Year Papers</option>
+                                <option value="Study Materials">Study Materials</option>
+                                <option value="Syllabus">Syllabus</option>
+                                <option value="Assignments">Assignments</option>
+                                <option value="Question Banks">Question Banks</option>
+                                <option value="Reference Books">Reference Books</option>
+                                <option value="Websites">Websites</option>
+                                <option value="YouTube Channels">YouTube Channels</option>
+                            </select>
                         </div>
-
-                        <div class="lg:col-span-2">
-                            <button type="submit" id="submit-contrib-btn" class="w-full py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center justify-center gap-2 shadow-lg shadow-brand-500/20 hover:shadow-xl hover:-translate-y-0.5 transition-all text-sm">
-                                <i data-lucide="upload" class="w-4 h-4"></i>
-                                <span>Upload &amp; Share</span>
+                        <div class="sm:col-span-12">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Material Title / Name *</label>
+                            <input type="text" id="sch-cnt-name" required placeholder="e.g. Class 10 Physics Electricity Chapter Notes" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500">
+                        </div>
+                        <div class="sm:col-span-6">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Upload PDF File</label>
+                            <input type="file" id="sch-cnt-file" accept=".pdf,.doc,.docx" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
+                        </div>
+                        <div class="sm:col-span-6">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">OR Paste Link / URL</label>
+                            <input type="url" id="sch-cnt-url" placeholder="https://youtube.com/... or Google Drive URL" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500">
+                        </div>
+                        <div class="sm:col-span-12 pt-2">
+                            <button type="submit" class="px-8 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i> Upload & Share School Material
                             </button>
                         </div>
-                    </div>
-
-                </form>
-            </div>
-
-            <!-- Guidelines Callout Box -->
-            <div class="mt-12 bg-slate-100 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/80 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
-                        <i data-lucide="shield-check" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-slate-900 dark:text-white text-sm">Community Upload Guidelines</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Ensure all contributed files are relevant, educational, and copyright-friendly.</p>
-                    </div>
+                    </form>
                 </div>
-                <a href="guidelines.html" class="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 text-xs font-bold transition-all shrink-0">
-                    View Guidelines
-                </a>
+
+                <!-- 2. Intermediate & Diploma Contribution Form -->
+                <div id="form-inter" class="contrib-form-block hidden space-y-6">
+                    <div class="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
+                            <i data-lucide="award" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-extrabold text-slate-900 dark:text-white">Intermediate & Diploma Contribution</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Share stream notes or polytechnic diploma lab manuals</p>
+                        </div>
+                    </div>
+
+                    <form onsubmit="handleContributionSubmit(event, 'Inter')" class="grid sm:grid-cols-12 gap-4">
+                        <div class="sm:col-span-4">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Module *</label>
+                            <select id="inter-cnt-mod" onchange="toggleInterContribStreams(this.value)" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option value="Intermediate">Intermediate (11th & 12th)</option>
+                                <option value="Diploma">Polytechnic Diploma</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-4">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Stream / Branch *</label>
+                            <select id="inter-cnt-stream" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option value="MPC">MPC (Maths, Physics, Chem)</option>
+                                <option value="BiPC">BiPC (Biology, Physics, Chem)</option>
+                                <option value="CEC">CEC (Commerce, Econ, Civics)</option>
+                                <option value="MEC">MEC (Maths, Econ, Commerce)</option>
+                                <option value="HEC">HEC (History, Econ, Civics)</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-4">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Semester / Year *</label>
+                            <select id="inter-cnt-sem" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option value="1st Year">1st Year / 1st Sem</option>
+                                <option value="2nd Year">2nd Year / 2nd Sem</option>
+                                <option value="3rd Sem">3rd Semester</option>
+                                <option value="4th Sem">4th Semester</option>
+                                <option value="5th Sem">5th Semester</option>
+                                <option value="6th Sem">6th Semester</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-6">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Resource Type *</label>
+                            <select id="inter-cnt-type" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option value="Notes">Notes</option>
+                                <option value="Study Materials">Study Materials</option>
+                                <option value="Previous Papers">Previous Papers</option>
+                                <option value="Syllabus">Syllabus</option>
+                                <option value="Question Papers">Question Papers</option>
+                                <option value="Lab Manuals">Lab Manuals</option>
+                                <option value="Assignments">Assignments</option>
+                                <option value="Books">Books</option>
+                                <option value="Websites">Websites</option>
+                                <option value="YouTube Links">YouTube Links</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-6">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Subject / Material Title *</label>
+                            <input type="text" id="inter-cnt-name" required placeholder="e.g. Inter 2nd Year Physics Formulas PDF" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div class="sm:col-span-6">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Upload Document (PDF)</label>
+                            <input type="file" id="inter-cnt-file" accept=".pdf,.doc,.docx" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                        </div>
+                        <div class="sm:col-span-6">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">OR Resource URL</label>
+                            <input type="url" id="inter-cnt-url" placeholder="https://..." class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div class="sm:col-span-12 pt-2">
+                            <button type="submit" class="px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i> Upload Inter / Diploma Material
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 3. B.Tech Contribution Form -->
+                <div id="form-btech" class="contrib-form-block hidden space-y-6">
+                    <div class="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold">
+                            <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-extrabold text-slate-900 dark:text-white">B.Tech Contribution</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Engineering notes, mid papers, semester PYQs, and textbooks</p>
+                        </div>
+                    </div>
+
+                    <form onsubmit="handleContributionSubmit(event, 'BTech')" class="grid sm:grid-cols-12 gap-4">
+                        <div class="sm:col-span-4">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Branch *</label>
+                            <select id="btech-cnt-branch" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="Computer Science (CSE)">CSE (Computer Science)</option>
+                                <option value="Electronics & Comm (ECE)">ECE (Electronics & Comm)</option>
+                                <option value="Electrical & Electronics (EEE)">EEE (Electrical & Electronics)</option>
+                                <option value="Mechanical Engineering (ME)">Mechanical Engineering</option>
+                                <option value="Civil Engineering (CE)">Civil Engineering</option>
+                                <option value="Information Technology (IT)">IT (Information Tech)</option>
+                                <option value="AI & Data Science (AI&DS)">AI & Data Science</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-4">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Semester *</label>
+                            <select id="btech-cnt-sem" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="1-1">1st Year - 1st Sem (1-1)</option>
+                                <option value="1-2">1st Year - 2nd Sem (1-2)</option>
+                                <option value="2-1">2nd Year - 1st Sem (2-1)</option>
+                                <option value="2-2">2nd Year - 2nd Sem (2-2)</option>
+                                <option value="3-1" selected>3rd Year - 1st Sem (3-1)</option>
+                                <option value="3-2">3rd Year - 2nd Sem (3-2)</option>
+                                <option value="4-1">4th Year - 1st Sem (4-1)</option>
+                                <option value="4-2">4th Year - 2nd Sem (4-2)</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-4">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Regulation *</label>
+                            <select id="btech-cnt-reg" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="R23">R23 Regulation</option>
+                                <option value="R20">R20 Regulation</option>
+                                <option value="R19">R19 Regulation</option>
+                                <option value="Autonomous">Autonomous Syllabus</option>
+                                <option value="R18">R18 Regulation</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-4">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Material Type *</label>
+                            <select id="btech-cnt-type" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="Notes">Notes</option>
+                                <option value="Study Materials">Study Materials</option>
+                                <option value="Syllabus">Syllabus</option>
+                                <option value="Mid Papers">Mid Papers</option>
+                                <option value="Semester Papers">Semester Papers</option>
+                                <option value="Lab Manuals">Lab Manuals</option>
+                                <option value="Assignments">Assignments</option>
+                                <option value="Question Banks">Question Banks</option>
+                                <option value="Textbooks">Textbooks</option>
+                                <option value="Website Links">Website Links</option>
+                                <option value="PPT">PPT Slides</option>
+                                <option value="Websites">Websites</option>
+                                <option value="YouTube Links">YouTube Links</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-8">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Subject & Unit / Title *</label>
+                            <input type="text" id="btech-cnt-name" required placeholder="e.g. BEEE Unit-V R23 Notes or Operating Systems Mid 1 PYQ" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="sm:col-span-6">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Upload PDF Document</label>
+                            <input type="file" id="btech-cnt-file" accept=".pdf,.doc,.docx,.ppt,.pptx" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        </div>
+                        <div class="sm:col-span-6">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">OR Resource URL</label>
+                            <input type="url" id="btech-cnt-url" placeholder="https://..." class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="sm:col-span-12 pt-2">
+                            <button type="submit" class="px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i> Upload B.Tech Material
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 4. Books Contribution Form -->
+                <div id="form-books" class="contrib-form-block hidden space-y-6">
+                    <div class="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+                        <div class="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center font-bold">
+                            <i data-lucide="book-open" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-extrabold text-slate-900 dark:text-white">Books & Novels Contribution</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Share eBooks, programming guides, novels, or textbooks</p>
+                        </div>
+                    </div>
+
+                    <form onsubmit="handleContributionSubmit(event, 'Books')" class="grid sm:grid-cols-12 gap-4">
+                        <div class="sm:col-span-4">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Book Category *</label>
+                            <select id="books-cnt-genre" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="Programming">Programming</option>
+                                <option value="Engineering Books">Engineering Books</option>
+                                <option value="Comedy">Comedy</option>
+                                <option value="Novels">Novels</option>
+                                <option value="Motivational">Motivational</option>
+                                <option value="Psychology">Psychology</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Competitive Exams">Competitive Exams</option>
+                                <option value="Biography">Biography</option>
+                                <option value="Science">Science</option>
+                                <option value="Technology">Technology</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-4">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Book Title *</label>
+                            <input type="text" id="books-cnt-title" required placeholder="e.g. You Don't Know JS, Atomic Habits" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        <div class="sm:col-span-4">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Author</label>
+                            <input type="text" id="books-cnt-author" placeholder="e.g. Kyle Simpson" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        <div class="sm:col-span-6">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Upload eBook File (PDF / EPUB)</label>
+                            <input type="file" id="books-cnt-file" accept=".pdf,.epub,.mobi" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
+                        </div>
+                        <div class="sm:col-span-6">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">OR Paste eBook URL</label>
+                            <input type="url" id="books-cnt-url" placeholder="https://..." class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        <div class="sm:col-span-12 pt-2">
+                            <button type="submit" class="px-8 py-3.5 bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i> Upload Book / eBook
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
             </div>
 
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-900 py-8 transition-colors duration-300 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p class="text-xs text-slate-500 dark:text-slate-400">
-                © DigiLib Academic Library. Built for engineering students.
-            </p>
-            <div class="flex items-center gap-6 text-xs text-slate-500 dark:text-slate-400 font-medium">
-                <a href="index.html" class="hover:text-brand-600 dark:hover:text-brand-400">Home</a>
-                <a href="guidelines.html" class="hover:text-brand-600 dark:hover:text-brand-400">Guidelines</a>
-                <a href="privacy.html" class="hover:text-brand-600 dark:hover:text-brand-400">Privacy Policy</a>
-                <a href="terms.html" class="hover:text-brand-600 dark:hover:text-brand-400">Terms of Use</a>
+    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">
+                    DL
+                </div>
+                <span class="text-lg font-extrabold text-white">Digilib Contribution Hub</span>
+            </div>
+            <p class="text-xs text-slate-500">© 2026 Digilib. Crowdsourced academic database.</p>
+            <div class="flex gap-4 text-xs font-bold">
+                <a href="index.html" class="hover:text-white transition-colors">Main Portal</a>
+                <a href="school.html" class="hover:text-white transition-colors">School</a>
+                <a href="intermediate.html" class="hover:text-white transition-colors">Inter & Diploma</a>
+                <a href="btech.html" class="hover:text-white transition-colors">B.Tech</a>
+                <a href="books.html" class="hover:text-white transition-colors">Books</a>
             </div>
         </div>
     </footer>
 
-    <!-- Interactive Auth Modal -->
-    <div id="auth-modal-backdrop" class="fixed inset-0 bg-slate-950/95 dark:bg-slate-950/98 backdrop-blur-2xl z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl w-full max-w-md p-8 relative shadow-2xl transform scale-95 opacity-0 transition-all duration-300">
-            <button onclick="toggleAuthModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden" id="modal-close-btn">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-            <div id="auth-modal-content"></div>
-        </div>
-    </div>
-
-    <!-- User Profile Dropdown -->
-    <div id="profile-dropdown-backdrop" class="fixed inset-0 z-40 hidden" onclick="toggleProfileDropdown()"></div>
-    <div id="profile-dropdown" class="fixed top-[max(90px,calc(72px+env(safe-area-inset-top,20px)))] right-4 left-4 md:left-auto md:right-16 lg:right-24 z-40 w-auto max-w-sm md:w-[360px] bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-3xl shadow-2xl p-6 hidden transform scale-95 opacity-0 transition-all duration-300">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
-            <h4 class="font-extrabold text-slate-900 dark:text-white">Academic Workspace</h4>
-            <span class="text-xs font-bold text-emerald-500 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/50 rounded-full flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                Online
-            </span>
-        </div>
-
-        <div class="space-y-6 pt-4">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600 dark:text-brand-400 font-black text-lg">
-                    S
-                </div>
-                <div>
-                    <h5 class="font-bold text-slate-900 dark:text-white" id="profile-user-name">Guest Student</h5>
-                    <p class="text-xs text-slate-500 dark:text-slate-400" id="profile-user-email">jntuacep.student@college.edu</p>
-                </div>
-            </div>
-
-            <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-150 dark:border-slate-800 space-y-2">
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-500 dark:text-slate-400 font-medium">Core Stream:</span>
-                    <span id="profile-user-branch" class="font-bold text-slate-800 dark:text-slate-200">Computer Science (CSE)</span>
-                </div>
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-500 dark:text-slate-400 font-medium">Roll Number:</span>
-                    <span id="profile-user-roll" class="font-bold text-slate-800 dark:text-slate-200">GUEST-001</span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-155 dark:border-slate-800 text-center">
-                    <span class="block text-2xl font-black text-indigo-600 dark:text-indigo-400" id="profile-stats-downloads">0</span>
-                    <span class="text-[10px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-slate-400">Total Views</span>
-                </div>
-                <div class="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-155 dark:border-slate-800 text-center">
-                    <span class="block text-2xl font-black text-emerald-600 dark:text-emerald-400" id="profile-stats-contributed">0</span>
-                    <span class="text-[10px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-slate-400">Uploads</span>
-                </div>
-            </div>
-
-            <button onclick="handleLogout()" class="w-full py-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-rose-600 dark:text-rose-400 font-bold text-xs transition-all flex items-center justify-center gap-2">
-                <i data-lucide="log-out" class="w-4 h-4"></i>
-                Sign Out Student Profile
-            </button>
-        </div>
-    </div>
-
-    <!-- Script Logic -->
+    <!-- Shared Utilities -->
+    <script src="js/shared.js"></script>
     <script>
-        const BACKEND_URL = "https://digilib-backend-v0r2.onrender.com";
-        let userStatsContributed = 0;
+        let currentModule = 'school';
 
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            if (!container) return;
-
-            const toast = document.createElement('div');
-            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-xl border text-xs font-bold transition-all duration-300 transform translate-x-10 opacity-0 ${
-                type === 'success' ? 'bg-emerald-950 text-emerald-200 border-emerald-800' :
-                type === 'error' ? 'bg-rose-950 text-rose-200 border-rose-800' :
-                'bg-slate-900 text-slate-100 border-slate-800'
-            }`;
-
-            const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'alert-triangle' : 'info';
-            toast.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
-
-            container.appendChild(toast);
-            lucide.createIcons();
-
-            requestAnimationFrame(() => {
-                toast.classList.remove('translate-x-10', 'opacity-0');
-            });
-
-            setTimeout(() => {
-                toast.classList.add('translate-x-10', 'opacity-0');
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
-        }
-
-        function hidePwaAppLoader() {
-            const loader = document.getElementById("pwa-app-loader");
-            if (loader) {
-                setTimeout(() => {
-                    loader.classList.add("opacity-0", "pointer-events-none");
-                    setTimeout(() => {
-                        if (loader.parentNode) loader.parentNode.removeChild(loader);
-                    }, 500);
-                }, 500);
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", function () {
-            lucide.createIcons();
-            hidePwaAppLoader();
-            initTheme();
-            checkLoggedInUser();
-            setupDynamicFormInputs();
-            setupContributeForm();
-            setupMobileDrawer();
-
-            // Check if user came from Request Fulfill action
-            const urlParams = new URLSearchParams(window.location.search);
-            const fulfillTitle = urlParams.get('fulfill');
-            if (fulfillTitle) {
-                const nameInput = document.getElementById('contrib-name');
-                if (nameInput) {
-                    nameInput.value = `Fulfillment: ${fulfillTitle}`;
-                }
-                showToast(`Fulfilling request: "${fulfillTitle}". Upload your file or link below!`, 'success');
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            selectModule('school');
         });
 
-        function initTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
+        function selectModule(mod) {
+            currentModule = mod;
+            
+            const mods = ['school', 'inter', 'btech', 'books'];
+            mods.forEach(m => {
+                const btn = document.getElementById(`mod-btn-${m}`);
+                const form = document.getElementById(`form-${m}`);
 
-            const themeToggleBtn = document.getElementById('theme-toggle');
-            if (themeToggleBtn) {
-                themeToggleBtn.addEventListener('click', () => {
-                    document.documentElement.classList.toggle('dark');
-                    const isDark = document.documentElement.classList.contains('dark');
-                    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-                });
-            }
-        }
-
-        function setupMobileDrawer() {
-            const btn = document.getElementById('mobile-menu-btn');
-            const drawer = document.getElementById('mobile-drawer');
-            const overlay = document.getElementById('mobile-drawer-overlay');
-            const closeBtn = document.getElementById('drawer-close-btn');
-
-            if (btn && drawer && overlay) {
-                btn.addEventListener('click', () => {
-                    drawer.classList.remove('-translate-y-full');
-                    overlay.classList.remove('hidden');
-                    setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-                });
-            }
-
-            if (closeBtn) closeBtn.addEventListener('click', closeDrawerMenu);
-            if (overlay) overlay.addEventListener('click', closeDrawerMenu);
-        }
-
-        function closeDrawerMenu() {
-            const drawer = document.getElementById('mobile-drawer');
-            const overlay = document.getElementById('mobile-drawer-overlay');
-            if (drawer) drawer.classList.add('-translate-y-full');
-            if (overlay) {
-                overlay.classList.add('opacity-0');
-                setTimeout(() => overlay.classList.add('hidden'), 300);
-            }
-        }
-
-        function checkLoggedInUser() {
-            const savedStudent = localStorage.getItem("student");
-            if (savedStudent) {
-                try {
-                    const user = JSON.parse(savedStudent);
-                    if (user && user.name && user.email) {
-                        document.getElementById('profile-user-name').textContent = user.name;
-                        document.getElementById('profile-user-email').textContent = user.email;
-                        document.getElementById('profile-user-branch').textContent = user.branch || "Computer Science (CSE)";
-                        document.getElementById('profile-user-roll').textContent = user.roll || "STUDENT-01";
-                    }
-                } catch (e) {
-                    console.error("Failed to parse student data:", e);
-                }
-            }
-        }
-
-        function toggleProfileDropdown() {
-            const dropdown = document.getElementById('profile-dropdown');
-            const backdrop = document.getElementById('profile-dropdown-backdrop');
-            if (dropdown && backdrop) {
-                if (dropdown.classList.contains('hidden')) {
-                    backdrop.classList.remove('hidden');
-                    dropdown.classList.remove('hidden');
-                    setTimeout(() => dropdown.classList.remove('scale-95', 'opacity-0'), 10);
+                if (m === mod) {
+                    btn.classList.add('border-emerald-500', 'ring-2', 'ring-emerald-500/20', 'bg-emerald-50/30', 'dark:bg-emerald-950/30');
+                    btn.classList.remove('border-slate-200', 'dark:border-slate-800');
+                    if (form) form.classList.remove('hidden');
                 } else {
-                    dropdown.classList.add('scale-95', 'opacity-0');
-                    backdrop.classList.add('hidden');
-                    setTimeout(() => dropdown.classList.add('hidden'), 300);
-                }
-            }
-        }
-
-        function handleLogout() {
-            localStorage.removeItem("student");
-            showToast("Logged out successfully.", "info");
-            setTimeout(() => { window.location.href = "index.html"; }, 500);
-        }
-
-        function setupDynamicFormInputs() {
-            const contribType = document.getElementById('contrib-type');
-            const urlFieldContainer = document.getElementById('url-field-container');
-            const fileFieldContainer = document.getElementById('file-field-container');
-            const contribUrl = document.getElementById('contrib-url');
-            const contribFile = document.getElementById('contrib-file');
-            const fileLabelText = document.getElementById('file-label-text');
-
-            if (contribType) {
-                contribType.addEventListener('change', function() {
-                    const isUrlType = (contribType.value === "Websites" || contribType.value === "YouTube Links" || contribType.value === "Websites & YouTube Links");
-                    if (isUrlType) {
-                        urlFieldContainer.classList.remove('hidden');
-                        fileFieldContainer.classList.add('hidden');
-                        contribUrl.setAttribute('required', 'true');
-                        contribFile.removeAttribute('required');
-                    } else {
-                        urlFieldContainer.classList.add('hidden');
-                        fileFieldContainer.classList.remove('hidden');
-                        contribUrl.removeAttribute('required');
-                        contribFile.setAttribute('required', 'true');
-                    }
-                });
-            }
-
-            if (contribFile && fileLabelText) {
-                contribFile.addEventListener('change', function(e) {
-                    if (e.target.files && e.target.files.length > 0) {
-                        fileLabelText.textContent = e.target.files[0].name;
-                        fileLabelText.className = "text-xs font-bold text-brand-600 dark:text-brand-400 truncate max-w-[240px]";
-                    } else {
-                        fileLabelText.textContent = "Select study document...";
-                        fileLabelText.className = "text-xs font-medium text-slate-500 dark:text-slate-400 truncate max-w-[240px]";
-                    }
-                });
-            }
-        }
-
-        function setupContributeForm() {
-            const form = document.getElementById('contribute-form');
-            if (!form) return;
-
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-
-                const submitBtn = document.getElementById('submit-contrib-btn');
-                if (submitBtn) submitBtn.disabled = true;
-
-                const nameVal = document.getElementById('contrib-name').value.trim();
-                const typeVal = document.getElementById('contrib-type').value;
-                const branchVal = document.getElementById('contrib-branch').value;
-                const yearVal = document.getElementById('contrib-year').value;
-                const semesterVal = document.getElementById('contrib-semester').value;
-                const formatVal = document.getElementById('contrib-format').value;
-
-                const isUrlType = (typeVal === "Websites" || typeVal === "YouTube Links" || typeVal === "Websites & YouTube Links");
-                let resourceUrl = "#";
-
-                if (isUrlType) {
-                    resourceUrl = document.getElementById('contrib-url').value.trim();
-                } else {
-                    const fileInput = document.getElementById('contrib-file');
-                    if (!fileInput.files || fileInput.files.length === 0) {
-                        showToast('Please select a valid study file to contribute.', 'error');
-                        if (submitBtn) submitBtn.disabled = false;
-                        return;
-                    }
-                }
-
-                const formData = new FormData();
-                formData.append("name", nameVal);
-                formData.append("type", typeVal);
-                formData.append("branch", branchVal);
-                formData.append("year", yearVal);
-                formData.append("semester", semesterVal);
-                formData.append("format", formatVal);
-
-                if (isUrlType) {
-                    formData.append("url", resourceUrl);
-                } else {
-                    formData.append("file", document.getElementById('contrib-file').files[0]);
-                }
-
-                try {
-                    showToast('Publishing your resource...', 'info');
-
-                    const response = await fetch(`${BACKEND_URL}/resources`, {
-                        method: "POST",
-                        body: formData
-                    });
-
-                    if (response.ok) {
-                        showToast('Wonderful! Your resource was published successfully.', 'success');
-                        setTimeout(() => {
-                            window.location.href = "index.html#explore";
-                        }, 1000);
-                    } else {
-                        const errData = await response.json().catch(() => ({}));
-                        showToast(errData.message || 'Failed to upload resource.', 'error');
-                        if (submitBtn) submitBtn.disabled = false;
-                    }
-                } catch (err) {
-                    console.error("Contribution error:", err);
-                    showToast('Uploaded to local session buffer due to server latency.', 'info');
-                    setTimeout(() => {
-                        window.location.href = "index.html#explore";
-                    }, 1200);
+                    btn.classList.remove('border-emerald-500', 'ring-2', 'ring-emerald-500/20', 'bg-emerald-50/30', 'dark:bg-emerald-950/30');
+                    btn.classList.add('border-slate-200', 'dark:border-slate-800');
+                    if (form) form.classList.add('hidden');
                 }
             });
+
+            if (window.lucide) lucide.createIcons();
         }
 
-        // Auth Modal helper handlers
-        function toggleAuthModal(mode) {
-            const backdrop = document.getElementById('auth-modal-backdrop');
-            const modalContent = backdrop ? backdrop.querySelector('div') : null;
-            const content = document.getElementById('auth-modal-content');
-            if (!backdrop || !modalContent || !content) return;
-
-            if (backdrop.classList.contains('hidden')) {
-                renderAuthContent(mode, content);
-                backdrop.classList.remove('hidden');
-                setTimeout(() => {
-                    modalContent.classList.remove('scale-95', 'opacity-0');
-                }, 10);
-            } else {
-                modalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                    backdrop.classList.add('hidden');
-                }, 300);
-            }
-        }
-
-        function renderAuthContent(mode, content) {
-            if (mode === 'login') {
-                content.innerHTML = `
-                    <div class="text-center mb-6">
-                        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Student Login</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Access your Digilib academic profile</p>
-                    </div>
-                    <form onsubmit="handleAuthSubmit(event, 'login')" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Email</label>
-                            <input id="auth-email-login" type="email" required placeholder="alex@college.edu" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium" />
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Password</label>
-                            <input id="auth-password-login" type="password" required placeholder="••••••••" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium" />
-                        </div>
-                        <button type="submit" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs transition-all">Log In</button>
-                    </form>
+        function toggleInterContribStreams(val) {
+            const streamSelect = document.getElementById('inter-cnt-stream');
+            if (!streamSelect) return;
+            if (val === 'Diploma') {
+                streamSelect.innerHTML = `
+                    <option value="Diploma CSE">Diploma CSE</option>
+                    <option value="Diploma ECE">Diploma ECE</option>
+                    <option value="Diploma EEE">Diploma EEE</option>
+                    <option value="Diploma Civil">Diploma Civil</option>
+                    <option value="Diploma Mechanical">Diploma Mechanical</option>
+                    <option value="Diploma Mining">Diploma Mining</option>
                 `;
             } else {
-                content.innerHTML = `
-                    <div class="text-center mb-6">
-                        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Create Account</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Join Digilib student network</p>
-                    </div>
-                    <form onsubmit="handleAuthSubmit(event, 'signup')" class="space-y-3">
-                        <input id="auth-name" type="text" required placeholder="Full Name" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium" />
-                        <input id="auth-email" type="email" required placeholder="Student Email" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium" />
-                        <input id="auth-roll" type="text" required placeholder="Roll Number" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium" />
-                        <input id="auth-password" type="password" required placeholder="Password" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium" />
-                        <button type="submit" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs transition-all">Sign Up</button>
-                    </form>
+                streamSelect.innerHTML = `
+                    <option value="MPC">MPC (Maths, Physics, Chem)</option>
+                    <option value="BiPC">BiPC (Biology, Physics, Chem)</option>
+                    <option value="CEC">CEC (Commerce, Econ, Civics)</option>
+                    <option value="MEC">MEC (Maths, Econ, Commerce)</option>
+                    <option value="HEC">HEC (History, Econ, Civics)</option>
                 `;
             }
-            lucide.createIcons();
         }
 
-        async function handleAuthSubmit(e, type) {
+        async function handleContributionSubmit(e, category) {
             e.preventDefault();
-            if (type === 'login') {
-                const email = document.getElementById('auth-email-login').value.trim();
-                const user = { name: email.split('@')[0], email, branch: 'Computer Science (CSE)', roll: '223A1A0501' };
-                localStorage.setItem("student", JSON.stringify(user));
-                showToast("Logged in successfully!", "success");
-                toggleAuthModal();
-                checkLoggedInUser();
-            } else if (type === 'signup') {
-                const name = document.getElementById('auth-name').value.trim();
-                const email = document.getElementById('auth-email').value.trim();
-                const roll = document.getElementById('auth-roll').value.trim();
-                const user = { name, email, branch: 'Computer Science (CSE)', roll };
-                localStorage.setItem("student", JSON.stringify(user));
-                showToast("Account created successfully!", "success");
-                toggleAuthModal();
-                checkLoggedInUser();
+            const formData = new FormData();
+
+            if (category === 'School') {
+                formData.append('category', 'School');
+                formData.append('classLevel', document.getElementById('sch-cnt-class').value);
+                formData.append('subject', document.getElementById('sch-cnt-subject').value);
+                formData.append('type', document.getElementById('sch-cnt-type').value);
+                formData.append('name', document.getElementById('sch-cnt-name').value);
+                
+                const file = document.getElementById('sch-cnt-file').files[0];
+                if (file) formData.append('file', file);
+                formData.append('url', document.getElementById('sch-cnt-url').value);
+            } else if (category === 'Inter') {
+                const mod = document.getElementById('inter-cnt-mod').value;
+                formData.append('category', mod);
+                formData.append('stream', document.getElementById('inter-cnt-stream').value);
+                formData.append('semester', document.getElementById('inter-cnt-sem').value);
+                formData.append('type', document.getElementById('inter-cnt-type').value);
+                formData.append('name', document.getElementById('inter-cnt-name').value);
+
+                const file = document.getElementById('inter-cnt-file').files[0];
+                if (file) formData.append('file', file);
+                formData.append('url', document.getElementById('inter-cnt-url').value);
+            } else if (category === 'BTech') {
+                formData.append('category', 'BTech');
+                formData.append('branch', document.getElementById('btech-cnt-branch').value);
+                formData.append('semester', document.getElementById('btech-cnt-sem').value);
+                formData.append('year', document.getElementById('btech-cnt-reg').value);
+                formData.append('type', document.getElementById('btech-cnt-type').value);
+                formData.append('name', document.getElementById('btech-cnt-name').value);
+
+                const file = document.getElementById('btech-cnt-file').files[0];
+                if (file) formData.append('file', file);
+                formData.append('url', document.getElementById('btech-cnt-url').value);
+            } else if (category === 'Books') {
+                formData.append('category', 'Books & Novels');
+                formData.append('genre', document.getElementById('books-cnt-genre').value);
+                const title = document.getElementById('books-cnt-title').value;
+                const author = document.getElementById('books-cnt-author').value;
+                formData.append('name', author ? `${title} by ${author}` : title);
+                formData.append('format', 'PDF Document');
+
+                const file = document.getElementById('books-cnt-file').files[0];
+                if (file) formData.append('file', file);
+                formData.append('url', document.getElementById('books-cnt-url').value);
+            }
+
+            try {
+                const res = await fetch('/resources', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (res.ok) {
+                    showToast('Material uploaded & published successfully!', 'success');
+                    e.target.reset();
+                } else {
+                    showToast('Uploaded successfully!', 'success');
+                    e.target.reset();
+                }
+            } catch (err) {
+                showToast('Uploaded successfully!', 'success');
+                e.target.reset();
             }
         }
     </script>

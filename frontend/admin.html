@@ -148,9 +148,16 @@
                 <h2 class="text-2xl font-extrabold text-white">System Verification</h2>
                 <p class="text-xs text-slate-400 mt-1">Authorized developers/administrators only. Enter key code to manage content.</p>
             </div>
-            <div class="space-y-3">
-                <input type="password" id="lockscreen-password-input" placeholder="••••••••" class="w-full px-4 py-3.5 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 text-center font-bold tracking-widest text-lg">
-                <p id="lockscreen-error-label" class="text-xs text-red-400 hidden font-semibold">Wrong Credentials. Verification failed.</p>
+            <div class="space-y-3 text-left">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Admin Email Address *</label>
+                    <input type="email" id="lockscreen-email-input" placeholder="e.g. admin@digilib.com or tejeswartejeswar56@gmail.com" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white text-sm font-medium outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Admin Password *</label>
+                    <input type="password" id="lockscreen-password-input" placeholder="••••••••" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-bold tracking-widest text-base">
+                </div>
+                <p id="lockscreen-error-label" class="text-xs text-red-400 hidden font-semibold"></p>
             </div>
             <div class="flex gap-3">
                 <button onclick="window.location.href='/'" class="flex-1 py-3 bg-slate-800 hover:bg-slate-750 text-slate-300 font-semibold rounded-xl text-sm transition-all">Go Back</button>
@@ -245,7 +252,7 @@
     </main>
 
 <script>
-const BACKEND_URL = "https://digilib-backend-v0r2.onrender.com";
+const BACKEND_URL = "";
 let resources = [];
 let pendingDeleteId = null;
 
@@ -307,17 +314,23 @@ document.getElementById('modal-confirm-btn').addEventListener('click', async () 
 
 // Secure Backend Authentication for Admin
 async function authenticateLockscreen() {
+    const emailInput = document.getElementById('lockscreen-email-input');
     const pwdInput = document.getElementById('lockscreen-password-input');
     const errorLabel = document.getElementById('lockscreen-error-label');
-    const entered = pwdInput.value.trim();
+    const email = emailInput ? emailInput.value.trim() : '';
+    const password = pwdInput ? pwdInput.value.trim() : '';
 
-    if (!entered) return;
+    if (!email || !password) {
+        errorLabel.textContent = "Please enter both Admin Email and Password.";
+        errorLabel.classList.remove('hidden');
+        return;
+    }
 
     try {
         const response = await fetch(`${BACKEND_URL}/admin-login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password: entered })
+            body: JSON.stringify({ email, password })
         });
         const data = await response.json();
 
@@ -326,19 +339,25 @@ async function authenticateLockscreen() {
             document.getElementById('admin-content').classList.remove('hidden');
             errorLabel.classList.add('hidden');
             localStorage.setItem('adminLoggedIn', 'true');
+            localStorage.setItem('adminEmail', email);
             fetchResources();
         } else {
-            errorLabel.textContent = data.message || "Wrong Credentials. Verification failed.";
+            errorLabel.textContent = data.message || "Wrong Email or Password. Verification failed.";
             errorLabel.classList.remove('hidden');
             pwdInput.focus();
         }
     } catch (err) {
-        errorLabel.textContent = "Server verification error.";
+        errorLabel.textContent = "Server verification error. Please check server.";
         errorLabel.classList.remove('hidden');
     }
 }
 
-document.getElementById('lockscreen-password-input').addEventListener('keydown', (e) => {
+document.getElementById('lockscreen-password-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        authenticateLockscreen();
+    }
+});
+document.getElementById('lockscreen-email-input')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         authenticateLockscreen();
     }
@@ -414,6 +433,7 @@ function renderDynamicAdminFields() {
                     <option value="Notes">Notes</option>
                     <option value="Previous Year Papers">Previous Year Papers</option>
                     <option value="Study Materials">Study Materials</option>
+                    <option value="Syllabus">Syllabus</option>
                     <option value="Websites">Websites</option>
                     <option value="YouTube Links">YouTube Links</option>
                 </select>
@@ -442,8 +462,10 @@ function renderDynamicAdminFields() {
                 <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Resource Type</label>
                 <select id="admin-type" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
                     <option value="Notes">Notes</option>
-                    <option value="Previous Year Papers">Previous Year Papers</option>
                     <option value="Study Materials">Study Materials</option>
+                    <option value="Previous Papers">Previous Papers</option>
+                    <option value="Syllabus">Syllabus</option>
+                    <option value="Lab Manuals">Lab Manuals</option>
                     <option value="Websites">Websites</option>
                     <option value="YouTube Links">YouTube Links</option>
                 </select>
@@ -473,8 +495,10 @@ function renderDynamicAdminFields() {
                 <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Resource Type</label>
                 <select id="admin-type" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
                     <option value="Notes">Notes</option>
-                    <option value="Previous Year Papers">Previous Year Papers</option>
                     <option value="Study Materials">Study Materials</option>
+                    <option value="Previous Papers">Previous Papers</option>
+                    <option value="Syllabus">Syllabus</option>
+                    <option value="Lab Manuals">Lab Manuals</option>
                     <option value="Websites">Websites</option>
                     <option value="YouTube Links">YouTube Links</option>
                 </select>
@@ -527,9 +551,14 @@ function renderDynamicAdminFields() {
             <div>
                 <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Resource Type</label>
                 <select id="admin-type" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-brand-500 font-medium text-sm">
+                    <option value="Notes">Notes</option>
                     <option value="Study Materials">Study Materials</option>
+                    <option value="Syllabus">Syllabus</option>
                     <option value="Previous Year Papers">Previous Year Papers</option>
-                    <option value="Websites & YouTube Links">Websites & YouTube Links</option>
+                    <option value="Mid Papers">Mid Papers</option>
+                    <option value="Lab Manuals">Lab Manuals</option>
+                    <option value="Website Links">Website Links</option>
+                    <option value="YouTube Links">YouTube Links</option>
                 </select>
             </div>
         `;

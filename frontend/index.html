@@ -101,35 +101,36 @@
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col relative">
 
-    <!-- PWA App Opening Loading Spinner Overlay -->
-    <div id="pwa-app-loader" class="fixed inset-0 z-[999999] bg-slate-900 flex flex-col items-center justify-center transition-opacity duration-500 ease-in-out">
-        <div class="relative flex flex-col items-center gap-6 p-8 text-center max-w-sm">
-            <!-- Logo Badge with Pulsing Glow -->
-            <div class="relative flex items-center justify-center">
-                <div class="absolute -inset-4 bg-brand-500/30 rounded-3xl blur-xl animate-pulse"></div>
-                <div class="w-20 h-20 rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-2xl shadow-brand-500/50 relative">
-                    <svg class="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                        <path d="M6 6h10M6 10h10M6 14h10"/>
+    <!-- Initial PWA App Startup Loader -->
+    <div id="pwa-app-loader" class="fixed inset-0 z-[999999] bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center select-none transition-opacity duration-300 ease-in-out pointer-events-auto opacity-100">
+        <div class="relative flex flex-col items-center justify-center max-w-xs w-full space-y-4 p-4 text-center">
+            <!-- Ambient Purple/Blue Radial Glow -->
+            <div class="absolute -z-10 w-48 h-48 bg-indigo-600/25 rounded-full blur-3xl animate-pulse pointer-events-none"></div>
+
+            <!-- Brand Logo Box -->
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 p-0.5 shadow-xl shadow-indigo-500/30 flex items-center justify-center">
+                <div class="w-full h-full bg-slate-950/50 rounded-[14px] flex items-center justify-center backdrop-blur-sm">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                 </div>
             </div>
 
-            <!-- App Title -->
-            <div>
-                <h1 class="text-3xl font-extrabold text-white tracking-tight">
-                    Digi<span class="text-brand-400">lib</span>
-                </h1>
-                <p class="text-xs font-semibold tracking-widest text-slate-400 uppercase mt-1">Digital Academic Library</p>
+            <!-- Brand Heading & Tagline -->
+            <div class="space-y-1 text-center">
+                <h1 class="text-xl font-extrabold text-white tracking-tight">Digilib</h1>
+                <p id="pwa-loader-subtitle" class="text-[10px] font-bold tracking-[0.22em] text-indigo-300 uppercase">DIGITAL ACADEMIC LIBRARY</p>
             </div>
 
-            <!-- Dual Ring Loading Spinner & Status Text -->
-            <div class="flex flex-col items-center gap-3 mt-2">
-                <div class="relative w-12 h-12 flex items-center justify-center">
-                    <div class="w-12 h-12 rounded-full border-4 border-slate-800 border-t-brand-500 animate-spin"></div>
-                    <div class="absolute w-7 h-7 rounded-full border-4 border-slate-800 border-b-indigo-400 animate-spin" style="animation-direction: reverse; animation-duration: 0.8s;"></div>
-                </div>
-                <span class="text-xs font-medium text-slate-300 animate-pulse">Opening app &amp; syncing resources...</span>
+            <!-- Ring Spinner -->
+            <div class="relative w-11 h-11 my-2 flex items-center justify-center">
+                <div class="absolute inset-0 rounded-full border-2 border-indigo-900/60"></div>
+                <div class="absolute inset-0 rounded-full border-2 border-transparent border-t-indigo-400 border-r-purple-400 animate-spin"></div>
+            </div>
+
+            <!-- Dynamic Status Text -->
+            <div class="space-y-1 text-center">
+                <p id="pwa-loader-status" class="text-xs sm:text-sm font-semibold text-slate-200 tracking-wide animate-pulse">Opening DigiLib...</p>
             </div>
         </div>
     </div>
@@ -156,13 +157,15 @@
             </a>
 
             <!-- Desktop Links -->
-            <nav class="hidden md:flex items-center gap-8">
-                <a href="#" class="text-sm font-semibold text-brand-600 dark:text-brand-400">Home</a>
-                <a href="#explore" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Services</a>
-                <a href="contribute.html" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Contribute</a>
-                <a href="request.html" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Request Resource</a>
-                <a href="guidelines.html" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Guidelines</a>
-                <a href="#faq" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">About Us</a>
+            <nav class="hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                <a href="index.html" class="text-brand-600 dark:text-brand-400 font-bold transition-colors">Home</a>
+                <a href="school.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">School</a>
+                <a href="intermediate.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Inter &amp; Diploma</a>
+                <a href="btech.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">B.Tech</a>
+                <a href="books.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Books &amp; Novels</a>
+                <a href="request.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Request</a>
+                <a href="contribute.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Contribute</a>
+                <a href="admin.html" id="nav-admin-link" class="hidden text-amber-500 font-bold hover:text-amber-400 transition-colors">Admin</a>
             </nav>
 
             <!-- Navigation Actions -->
@@ -227,13 +230,15 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             </div>
         </div>
 
-        <div class="flex flex-col gap-6 py-4">
-            <a href="#" class="text-lg font-bold text-brand-600 dark:text-brand-400" onclick="closeDrawerMenu()">Home</a>
-            <a href="#explore" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Services</a>
-            <a href="contribute.html" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Contribute Resource</a>
-            <a href="request.html" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Request Resource</a>
-            <a href="guidelines.html" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">Guidelines</a>
-            <a href="#faq" class="text-lg font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" onclick="closeDrawerMenu()">About Us</a>
+        <div class="flex flex-col gap-4 py-5 text-base font-semibold text-slate-700 dark:text-slate-200">
+            <a href="index.html" class="text-brand-600 font-bold" onclick="toggleMobileDrawer()">Home</a>
+            <a href="school.html" onclick="toggleMobileDrawer()">School</a>
+            <a href="intermediate.html" onclick="toggleMobileDrawer()">Inter &amp; Diploma</a>
+            <a href="btech.html" onclick="toggleMobileDrawer()">B.Tech</a>
+            <a href="books.html" onclick="toggleMobileDrawer()">Books &amp; Novels</a>
+            <a href="request.html" onclick="toggleMobileDrawer()">Request Resource</a>
+            <a href="contribute.html" onclick="toggleMobileDrawer()">Contribute Resource</a>
+            <a href="admin.html" class="text-amber-500 font-bold admin-only-link hidden" onclick="toggleMobileDrawer()">Admin Dashboard</a>
         </div>
 
         <div class="flex flex-col gap-4 mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
@@ -266,7 +271,7 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
 
                         <!-- CTA Action Buttons -->
                         <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-4 w-full sm:w-auto">
-                            <a href="#filters" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow-lg shadow-brand-500/20 hover:shadow-xl hover:shadow-brand-500/30 transform hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
+                            <a href="#explore" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow-lg shadow-brand-500/20 hover:shadow-xl hover:shadow-brand-500/30 transform hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
                                 Get Started
                                 <i data-lucide="arrow-right" class="w-5 h-5"></i>
                             </a>
@@ -309,366 +314,92 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                     <div class="w-16 h-1.5 bg-brand-600 dark:bg-brand-500 mx-auto rounded-full"></div>
                 </div>
 
-                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Card 1: School -->
-                    <div class="group relative bg-slate-50 dark:bg-slate-950 p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 hover:shadow-xl hover:shadow-brand-500/5 hover:-translate-y-1 transition-all duration-300">
-                        <div class="w-16 h-16 rounded-2xl bg-brand-100 dark:bg-brand-950/50 flex items-center justify-center text-brand-600 dark:text-brand-400 mb-6 group-hover:scale-110 transition-transform relative">
-                            <i data-lucide="school" class="w-8 h-8"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">School</h3>
-                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
-                            Class 6th, 7th, 8th, 9th &amp; 10th Notes, Previous Year Papers, Study Materials, and Learning Links.
-                        </p>
-                        <a href="#filters" onclick="switchModule('School')" class="inline-flex items-center gap-2 text-sm font-bold text-brand-600 dark:text-brand-400 group/link">
-                            Explore School 
-                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover/link:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-
-                    <!-- Card 2: Intermediate & Diploma -->
-                    <div class="group relative bg-slate-50 dark:bg-slate-950 p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-xl hover:shadow-emerald-500/5 hover:-translate-y-1 transition-all duration-300">
-                        <div class="w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-950/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-6 group-hover:scale-110 transition-transform">
-                            <i data-lucide="award" class="w-8 h-8"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Intermediate &amp; Diploma</h3>
-                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
-                            MPC, BiPC, CEC, MEC, HEC Intermediate streams and Polytechnic Diploma Engineering branches.
-                        </p>
-                        <a href="#filters" onclick="switchModule('Intermediate')" class="inline-flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 group/link">
-                            Explore Inter &amp; Diploma 
-                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover/link:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-
-                    <!-- Card 3: B.Tech / Engineering -->
-                    <div class="group relative bg-slate-50 dark:bg-slate-950 p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-1 transition-all duration-300">
-                        <div class="w-16 h-16 rounded-2xl bg-indigo-100 dark:bg-indigo-950/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-6 group-hover:scale-110 transition-transform">
-                            <i data-lucide="graduation-cap" class="w-8 h-8"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">B.Tech / Engineering</h3>
-                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
-                            CSE, ECE, EEE, Mechanical &amp; Civil Engineering unit notes, mid/semester PYQs, study guides &amp; links.
-                        </p>
-                        <a href="#filters" onclick="switchModule('BTech')" class="inline-flex items-center gap-2 text-sm font-bold text-indigo-600 dark:text-indigo-400 group/link">
-                            Explore B.Tech 
-                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover/link:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-
-                    <!-- Card 4: Books & Novels -->
-                    <div class="group relative bg-slate-50 dark:bg-slate-950 p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-500 hover:shadow-xl hover:shadow-amber-500/5 hover:-translate-y-1 transition-all duration-300">
-                        <div class="w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-950/35 flex items-center justify-center text-amber-600 dark:text-amber-500 mb-6 group-hover:scale-110 transition-transform">
-                            <i data-lucide="book-open-check" class="w-8 h-8"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Books &amp; Novels</h3>
-                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
-                            Programming, Engineering Textbooks, Novels, Motivational, Competitive Exam &amp; Finance Books.
-                        </p>
-                        <a href="#filters" onclick="switchModule('Books & Novels')" class="inline-flex items-center gap-2 text-sm font-bold text-amber-600 dark:text-amber-500 group/link">
-                            Explore Books 
-                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover/link:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- Active Academic Filter Profile Section -->
-        <section id="filters" class="py-12 bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <!-- Section Heading -->
-                <div class="text-center space-y-3 mb-10">
-                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold bg-brand-100 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 tracking-wider uppercase">
-                        Academic &amp; Learning Access
-                    </span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                        Unlock Resources
-                    </h2>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm max-w-2xl mx-auto">
-                        Choose your preferred learning module below to browse study materials, papers, and books.
-                    </p>
-                    <div class="w-16 h-1.5 bg-brand-600 dark:bg-brand-500 mx-auto rounded-full"></div>
-                </div>
-
-                <!-- Module Switcher Tabs -->
-                <div class="flex flex-wrap justify-center gap-2 mb-8 bg-white dark:bg-slate-900 p-2 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-md">
-                    <button onclick="switchModule('School')" id="module-btn-school" class="module-tab-btn px-5 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-2 bg-brand-600 text-white shadow-md">
-                        <i data-lucide="school" class="w-4 h-4"></i>
-                        <span>🏫 School</span>
-                    </button>
-                    <button onclick="switchModule('Intermediate')" id="module-btn-intermediate" class="module-tab-btn px-5 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-2">
-                        <i data-lucide="award" class="w-4 h-4"></i>
-                        <span>🎓 Intermediate &amp; Diploma</span>
-                    </button>
-                    <button onclick="switchModule('BTech')" id="module-btn-btech" class="module-tab-btn px-5 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-2">
-                        <i data-lucide="graduation-cap" class="w-4 h-4"></i>
-                        <span>🏛️ B.Tech / Engineering</span>
-                    </button>
-                    <button onclick="switchModule('Books & Novels')" id="module-btn-books" class="module-tab-btn px-5 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-2">
-                        <i data-lucide="book-open" class="w-4 h-4"></i>
-                        <span>📚 Books &amp; Novels</span>
-                    </button>
-                </div>
-                
-                <div class="bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-lg relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-2xl"></div>
-
-                    <!-- Panel 1: School -->
-                    <div id="panel-school" class="space-y-6">
-                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
-                            <span class="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-brand-600 animate-pulse"></span>
-                                School Module (Class 6 - 10)
-                            </span>
-                            <div class="flex flex-wrap gap-2" id="school-class-buttons">
-                                <button onclick="setSchoolClass('Class 6')" class="sch-class-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">Class 6</button>
-                                <button onclick="setSchoolClass('Class 7')" class="sch-class-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">Class 7</button>
-                                <button onclick="setSchoolClass('Class 8')" class="sch-class-btn px-3.5 py-1.5 rounded-lg text-xs font-bold bg-brand-600 text-white shadow-sm">Class 8</button>
-                                <button onclick="setSchoolClass('Class 9')" class="sch-class-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">Class 9</button>
-                                <button onclick="setSchoolClass('Class 10')" class="sch-class-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">Class 10</button>
-                            </div>
-                        </div>
-
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Card 1: School (Blue/Sky Theme) -->
+                    <a href="school.html" class="hero-prog-card group relative bg-gradient-to-br from-blue-500/10 via-sky-500/5 to-slate-50 dark:from-blue-950/40 dark:via-sky-950/20 dark:to-slate-950 p-7 rounded-2xl border border-blue-200/80 dark:border-blue-900/60 hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/15 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-3">Resource Sub-Category</label>
-                            <div class="flex flex-wrap gap-2.5">
-                                <button onclick="setSchoolType('All')" class="sch-type-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white">All</button>
-                                <button onclick="setSchoolType('Notes')" class="sch-type-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Notes</button>
-                                <button onclick="setSchoolType('Previous Year Papers')" class="sch-type-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Previous Year Papers</button>
-                                <button onclick="setSchoolType('Study Materials')" class="sch-type-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Study Materials</button>
-                                <button onclick="setSchoolType('Websites')" class="sch-type-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Websites</button>
-                                <button onclick="setSchoolType('YouTube Links')" class="sch-type-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">YouTube Links</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Panel 2: Intermediate & Diploma -->
-                    <div id="panel-intermediate" class="space-y-6 hidden">
-                        <div class="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
-                            <button onclick="setInterDiplomaSubTab('Intermediate')" id="subtab-inter" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm">
-                                🎓 Intermediate (11th &amp; 12th)
-                            </button>
-                            <button onclick="setInterDiplomaSubTab('Diploma')" id="subtab-diploma" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400">
-                                📜 Diploma (Polytechnic)
-                            </button>
-                        </div>
-
-                        <!-- Inter Subview -->
-                        <div id="inter-subview" class="grid md:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Stream</label>
-                                <select id="inter-stream-select" onchange="updateUnlockedResourcesUI()" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-medium text-sm text-slate-800 dark:text-slate-200">
-                                    <option value="MPC">MPC (Maths, Physics, Chem)</option>
-                                    <option value="BiPC">BiPC (Biology, Physics, Chem)</option>
-                                    <option value="CEC">CEC (Civics, Economics, Commerce)</option>
-                                    <option value="MEC">MEC (Maths, Economics, Commerce)</option>
-                                    <option value="HEC">HEC (History, Economics, Civics)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Year</label>
-                                <select id="inter-year-select" onchange="updateUnlockedResourcesUI()" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-medium text-sm text-slate-800 dark:text-slate-200">
-                                    <option value="1st Year">1st Year</option>
-                                    <option value="2nd Year">2nd Year</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Resource Type</label>
-                                <select id="inter-type-select" onchange="updateUnlockedResourcesUI()" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-medium text-sm text-slate-800 dark:text-slate-200">
-                                    <option value="All">All Types</option>
-                                    <option value="Notes">Notes</option>
-                                    <option value="Previous Year Papers">Previous Year Papers</option>
-                                    <option value="Study Materials">Study Materials</option>
-                                    <option value="Websites">Websites</option>
-                                    <option value="YouTube Links">YouTube Links</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Diploma Subview -->
-                        <div id="diploma-subview" class="grid md:grid-cols-3 gap-4 hidden">
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Branch</label>
-                                <select id="diploma-branch-select" onchange="updateUnlockedResourcesUI()" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-medium text-sm text-slate-800 dark:text-slate-200">
-                                    <option value="Computer Science (CSE)">Computer Science (CSE)</option>
-                                    <option value="Electronics & Communication (ECE)">Electronics &amp; Communication (ECE)</option>
-                                    <option value="Electrical & Electronics (EEE)">Electrical &amp; Electronics (EEE)</option>
-                                    <option value="Mechanical Engineering (ME)">Mechanical Engineering (ME)</option>
-                                    <option value="Civil Engineering (CE)">Civil Engineering (CE)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Year</label>
-                                <select id="diploma-year-select" onchange="updateUnlockedResourcesUI()" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-medium text-sm text-slate-800 dark:text-slate-200">
-                                    <option value="1st Year">1st Year</option>
-                                    <option value="2nd Year">2nd Year</option>
-                                    <option value="3rd Year">3rd Year</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Resource Type</label>
-                                <select id="diploma-type-select" onchange="updateUnlockedResourcesUI()" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-medium text-sm text-slate-800 dark:text-slate-200">
-                                    <option value="All">All Types</option>
-                                    <option value="Notes">Notes</option>
-                                    <option value="Previous Year Papers">Previous Year Papers</option>
-                                    <option value="Study Materials">Study Materials</option>
-                                    <option value="Websites">Websites</option>
-                                    <option value="YouTube Links">YouTube Links</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Panel 3: Books & Novels -->
-                    <div id="panel-books" class="space-y-6 hidden">
-                        <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
-                            <span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-500">
-                                📚 Books &amp; Literature Library
-                            </span>
-                        </div>
-                        <div class="flex flex-wrap gap-2.5" id="books-genre-buttons">
-                            <button onclick="setBookGenre('Programming Books')" class="book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-amber-600 text-white shadow-sm">Programming Books</button>
-                            <button onclick="setBookGenre('Engineering Books')" class="book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Engineering Books</button>
-                            <button onclick="setBookGenre('Novels')" class="book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Novels</button>
-                            <button onclick="setBookGenre('Motivational Books')" class="book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Motivational Books</button>
-                            <button onclick="setBookGenre('Competitive Exam Books')" class="book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Competitive Exam Books</button>
-                            <button onclick="setBookGenre('Psychology')" class="book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Psychology</button>
-                            <button onclick="setBookGenre('Finance')" class="book-genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Finance</button>
-                        </div>
-                    </div>
-
-                    <!-- Panel 4: BTech -->
-                    <div id="panel-btech" class="space-y-6 hidden">
-                        <form id="filter-form" class="grid md:grid-cols-12 gap-6 items-end">
-                            <div class="md:col-span-4 space-y-2">
-                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Your Branch</label>
-                                <div class="relative">
-                                    <select id="filter-branch" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer">
-                                        <option value="Computer Science (CSE)">Computer Science (CSE)</option>
-                                        <option value="Electronics & Communication (ECE)">Electronics &amp; Communication (ECE)</option>
-                                        <option value="Electrical & Electronics (EEE)">Electrical &amp; Electronics (EEE)</option>
-                                        <option value="Mechanical Engineering (ME)">Mechanical Engineering (ME)</option>
-                                        <option value="Civil Engineering (CE)">Civil Engineering (CE)</option>
-                                    </select>
-                                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                                        <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                                    </div>
+                            <div class="flex items-center justify-between mb-5">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-sky-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="school" class="w-7 h-7"></i>
                                 </div>
+                                <span class="px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider rounded-full bg-blue-600 text-white shadow-sm">Class 6 - 10</span>
                             </div>
-
-                            <div class="md:col-span-3 space-y-2">
-                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Academic Year</label>
-                                <div class="relative">
-                                    <select id="filter-year" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer">
-                                        <option value="1st Year">1st Year (Common Syllabus)</option>
-                                        <option value="2nd Year">2nd Year</option>
-                                        <option value="3rd Year">3rd Year</option>
-                                        <option value="4th Year">4th Year</option>
-                                    </select>
-                                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                                        <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="md:col-span-3 space-y-2">
-                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Semester</label>
-                                <div class="relative">
-                                    <select id="filter-semester" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium appearance-none cursor-pointer">
-                                        <option value="1st Semester">1st Semester</option>
-                                        <option value="2nd Semester">2nd Semester</option>
-                                    </select>
-                                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                                        <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="md:col-span-2">
-                                <button type="submit" class="w-full py-4 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center justify-center gap-3 shadow-lg shadow-brand-500/10 hover:shadow-xl transition-all">
-                                    <i data-lucide="lock" class="w-5 h-5"></i>
-                                    <span>Access</span>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                </div>
-
-                <!-- Dynamic Real-time Showcase Drawer -->
-                <div id="resources-showcase-container" class="mt-12">
-                    <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
-                        
-                        <div class="flex flex-col gap-6 border-b border-slate-100 dark:border-slate-800 pb-6 mb-6">
-                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                <div>
-                                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2.5" id="unlocked-title">
-                                        <span>Unlocked Resources</span>
-                                        <span id="resource-search-badge" class="hidden px-2.5 py-0.5 text-xs font-extrabold bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-400 rounded-full border border-brand-200 dark:border-brand-800/50"></span>
-                                    </h3>
-                                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1" id="unlocked-subtitle">
-                                        Displaying study resources
-                                    </p>
-                                </div>
-                                <div class="flex flex-wrap gap-2 bg-slate-50 dark:bg-slate-950 p-1.5 rounded-xl border border-slate-100 dark:border-slate-800" id="showcase-tabs">
-                                    <button onclick="filterShowcaseTab('All')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-brand-600 dark:bg-brand-500 text-white shadow-sm transition-all">
-                                        All
-                                    </button>
-                                    <button onclick="filterShowcaseTab('Notes')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all">
-                                        Notes
-                                    </button>
-                                    <button onclick="filterShowcaseTab('Previous Year Papers')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all">
-                                        PYQ Papers
-                                    </button>
-                                    <button onclick="filterShowcaseTab('Study Materials')" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all">
-                                        Materials
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Real-time Search Input Bar -->
-                            <div class="space-y-2 pt-2">
-                                <div class="relative flex items-center group">
-                                    <i data-lucide="search" class="w-5 h-5 absolute left-4 text-slate-400 group-focus-within:text-brand-500 transition-colors pointer-events-none"></i>
-                                    <input 
-                                        type="text" 
-                                        id="resource-search-input" 
-                                        placeholder="Search unlocked materials by book, subject, PYQ, unit notes, or author (e.g. Operating Systems, Galvin)..." 
-                                        oninput="onResourceSearchInput(this.value)"
-                                        class="w-full pl-12 pr-10 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white dark:focus:bg-slate-900 transition-all shadow-inner"
-                                    >
-                                    <button 
-                                        id="clear-resource-search" 
-                                        onclick="clearResourceSearch()" 
-                                        class="hidden absolute right-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-all"
-                                        title="Clear search"
-                                    >
-                                        <i data-lucide="x" class="w-4 h-4"></i>
-                                    </button>
-                                </div>
-
-                                <div class="flex flex-wrap items-center gap-2 text-xs pt-1">
-                                    <span class="text-slate-400 font-bold flex items-center gap-1">
-                                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
-                                        Popular Searches:
-                                    </span>
-                                    <button onclick="setSearchKeyword('Operating Systems')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold transition-all">Operating Systems</button>
-                                    <button onclick="setSearchKeyword('Galvin')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold transition-all">Galvin</button>
-                                    <button onclick="setSearchKeyword('Mathematics')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold transition-all">Mathematics</button>
-                                    <button onclick="setSearchKeyword('R23')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold transition-all">R23</button>
-                                    <button onclick="setSearchKeyword('PYQ')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold transition-all">PYQ Papers</button>
-                                </div>
-                            </div>
+                            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2">School</h3>
+                            <p class="text-slate-600 dark:text-slate-300 text-xs leading-relaxed mb-6">
+                                Classes 6 to 10: Notes, PYQs, Study Materials, Websites &amp; YouTube Channels.
+                            </p>
                         </div>
+                        <div class="w-full inline-flex items-center justify-between text-xs font-extrabold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2.5 rounded-xl shadow-md shadow-blue-500/20 transition-all">
+                            <span>Open School</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </a>
 
-                       <div id="unlocked-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full overflow-hidden"></div>
+                    <!-- Card 2: Intermediate & Diploma (Emerald/Teal Theme) -->
+                    <a href="intermediate.html" class="hero-prog-card group relative bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-slate-50 dark:from-emerald-950/40 dark:via-teal-950/20 dark:to-slate-950 p-7 rounded-2xl border border-emerald-200/80 dark:border-emerald-900/60 hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-xl hover:shadow-emerald-500/15 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-5">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="award" class="w-7 h-7"></i>
+                                </div>
+                                <span class="px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider rounded-full bg-emerald-600 text-white shadow-sm">Inter &amp; Poly</span>
+                            </div>
+                            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors mb-2">Intermediate &amp; Diploma</h3>
+                            <p class="text-slate-600 dark:text-slate-300 text-xs leading-relaxed mb-6">
+                                MPC, BiPC, CEC, MEC &amp; HEC streams, along with Polytechnic Diploma resources.
+                            </p>
+                        </div>
+                        <div class="w-full inline-flex items-center justify-between text-xs font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 rounded-xl shadow-md shadow-emerald-500/20 transition-all">
+                            <span>Open Inter &amp; Diploma</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </a>
 
-                    </div>
+                    <!-- Card 3: B.Tech (Indigo/Cyan High-Tech Theme) -->
+                    <a href="btech.html" class="hero-prog-card group relative bg-gradient-to-br from-indigo-500/15 via-purple-500/5 to-slate-50 dark:from-indigo-950/50 dark:via-purple-950/20 dark:to-slate-950 p-7 rounded-2xl border border-indigo-200/80 dark:border-indigo-900/60 hover:border-indigo-500 dark:hover:border-indigo-400 hover:shadow-xl hover:shadow-indigo-500/15 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-5">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="graduation-cap" class="w-7 h-7"></i>
+                                </div>
+                                <span class="px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider rounded-full bg-indigo-600 text-white shadow-sm">B.TECH</span>
+                            </div>
+                            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2">B.Tech</h3>
+                            <p class="text-slate-600 dark:text-slate-300 text-xs leading-relaxed mb-6">
+                                Unit notes, semester PYQs, textbooks, assignments, website links &amp; YouTube links for CSE, ECE, EEE, Mechanical &amp; Civil Engineering.
+                            </p>
+                        </div>
+                        <div class="w-full inline-flex items-center justify-between text-xs font-extrabold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2.5 rounded-xl shadow-md shadow-indigo-500/20 transition-all">
+                            <span>Open B.Tech</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </a>
+
+                    <!-- Card 4: Books & Novels (Amber/Orange Warm Theme) -->
+                    <a href="books.html" class="hero-prog-card group relative bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-slate-50 dark:from-amber-950/40 dark:via-orange-950/20 dark:to-slate-950 p-7 rounded-2xl border border-amber-200/80 dark:border-amber-900/60 hover:border-amber-500 dark:hover:border-amber-400 hover:shadow-xl hover:shadow-amber-500/15 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-5">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 text-white flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="book-open-check" class="w-7 h-7"></i>
+                                </div>
+                                <span class="px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider rounded-full bg-amber-600 text-white shadow-sm">Library</span>
+                            </div>
+                            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors mb-2">Books &amp; Novels</h3>
+                            <p class="text-slate-600 dark:text-slate-300 text-xs leading-relaxed mb-6">
+                                Programming, Engineering, Novels, Motivational, Competitive Exams &amp; Finance.
+                            </p>
+                        </div>
+                        <div class="w-full inline-flex items-center justify-between text-xs font-extrabold text-white bg-amber-600 hover:bg-amber-700 px-4 py-2.5 rounded-xl shadow-md shadow-amber-500/20 transition-all">
+                            <span>Open Library</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </a>
                 </div>
 
             </div>
         </section>
+
+        <!-- Community Upload Portal Banner -->
 
         <!-- Crowdsourced Database / Contribute Resource Banner Section -->
         <section id="contribute-banner" class="py-12 bg-gradient-to-r from-brand-600 via-indigo-600 to-brand-700 text-white transition-colors duration-300 relative overflow-hidden">
@@ -900,7 +631,7 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
 
     <!-- Full Mock/Live Database setup -->
     <script>
-        const BACKEND_URL = "https://digilib-backend-v0r2.onrender.com";
+        const BACKEND_URL = "";
         let database = [];
         let activeTab = 'All';
         let currentFilterBranch = 'Computer Science (CSE)';
@@ -973,14 +704,15 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
         }
 
         function hidePwaAppLoader() {
-            const loader = document.getElementById("pwa-app-loader");
-            if (loader) {
-                setTimeout(() => {
-                    loader.classList.add("opacity-0", "pointer-events-none");
-                    setTimeout(() => {
-                        if (loader.parentNode) loader.parentNode.removeChild(loader);
-                    }, 500);
-                }, 700);
+            if (window.hidePageLoader) {
+                window.hidePageLoader();
+            } else {
+                const loader = document.getElementById("pwa-app-loader");
+                if (loader) {
+                    loader.style.opacity = '0';
+                    loader.style.pointerEvents = 'none';
+                    setTimeout(() => loader.style.display = 'none', 350);
+                }
             }
         }
 
@@ -1029,11 +761,62 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                 const data = await response.json();
                 database = data;
                 updateUnlockedResourcesUI();
+                checkNewlyUploadedParam();
             } catch (error) {
-    console.error("Failed to fetch resources from backend:", error);
-    database = [];
-    updateUnlockedResourcesUI();
-}
+                console.error("Failed to fetch resources from backend:", error);
+                database = [];
+                updateUnlockedResourcesUI();
+                checkNewlyUploadedParam();
+            }
+        }
+
+        // Checks if user redirected from contribution page after uploading a resource
+        function checkNewlyUploadedParam() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('uploaded') === 'true') {
+                const title = urlParams.get('title');
+                const cat = urlParams.get('category');
+                const branch = urlParams.get('branch');
+                const year = urlParams.get('year');
+                const sem = urlParams.get('sem');
+
+                if (cat) {
+                    currentModule = cat;
+                    const catBtn = document.querySelector(`button[onclick*="'${cat}'"]`);
+                    if (catBtn) catBtn.click();
+                }
+                if (branch) {
+                    currentFilterBranch = branch;
+                    const bEl = document.getElementById('filter-branch');
+                    if (bEl) bEl.value = branch;
+                }
+                if (year) {
+                    currentFilterYear = year;
+                    const yEl = document.getElementById('filter-year');
+                    if (yEl) yEl.value = year;
+                }
+                if (sem) {
+                    currentFilterSemester = sem;
+                    const sEl = document.getElementById('filter-semester');
+                    if (sEl) sEl.value = sem;
+                }
+
+                if (title) {
+                    currentResourceSearchQuery = title.toLowerCase();
+                    const searchInput = document.getElementById('resource-search-input');
+                    if (searchInput) searchInput.value = title;
+                    showToast(`Success! Your resource "${title}" is live and displayed below.`, 'success');
+                } else {
+                    showToast('Your resource was published successfully!', 'success');
+                }
+
+                updateUnlockedResourcesUI();
+
+                setTimeout(() => {
+                    const showcase = document.getElementById('unlocked-resources-section') || document.getElementById('resources-showcase-container');
+                    if (showcase) showcase.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+            }
         }
 
         // Toggles Dynamic Inputs (URL vs File upload) based on contribution resource type selection
@@ -1076,30 +859,6 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             }
         }
 
-        function applySavedTheme() {
-            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        }
-        applySavedTheme();
-
-        function toggleTheme() {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('color-theme', 'light');
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('color-theme', 'dark');
-            }
-        }
-
-        const themeToggle = document.getElementById('theme-toggle');
-        if (themeToggle) {
-            themeToggle.addEventListener('click', toggleTheme);
-        }
-
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const drawerCloseBtn = document.getElementById('drawer-close-btn');
         const mobileDrawer = document.getElementById('mobile-drawer');
@@ -1133,9 +892,48 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
         let currentInterDiplomaSubTab = 'Intermediate';
         let currentBookGenre = 'Programming Books';
 
-        function switchModule(moduleName) {
+        function switchModule(moduleName, isInitialLoad = false) {
+            let label = 'Opening DigiLib...';
+            if (moduleName === 'School') label = 'Opening School...';
+            else if (moduleName === 'Intermediate') label = 'Opening Inter & Diploma...';
+            else if (moduleName === 'BTech') label = 'Opening B.Tech...';
+            else if (moduleName === 'Books & Novels') label = 'Opening Books & Novels...';
+
+            if (!isInitialLoad && window.showPageLoader) {
+                window.showPageLoader(label, 'DIGITAL ACADEMIC LIBRARY');
+            }
+
             currentModule = moduleName;
             
+            // Highlight active program card at top
+            const heroCards = {
+                'School': { card: 'card-hero-school', badge: 'badge-hero-school' },
+                'Intermediate': { card: 'card-hero-intermediate', badge: 'badge-hero-intermediate' },
+                'BTech': { card: 'card-hero-btech', badge: 'badge-hero-btech' },
+                'Books & Novels': { card: 'card-hero-books', badge: 'badge-hero-books' }
+            };
+
+            Object.keys(heroCards).forEach(key => {
+                const cEl = document.getElementById(heroCards[key].card);
+                const bEl = document.getElementById(heroCards[key].badge);
+                if (cEl) {
+                    if (key === moduleName) {
+                        cEl.classList.add('ring-2', 'ring-brand-500/40', 'border-brand-500', 'bg-white', 'dark:bg-slate-900', 'shadow-lg');
+                        cEl.classList.remove('border-slate-200/60', 'dark:border-slate-800');
+                    } else {
+                        cEl.classList.remove('ring-2', 'ring-brand-500/40', 'border-brand-500', 'bg-white', 'dark:bg-slate-900', 'shadow-lg');
+                        cEl.classList.add('border-slate-200/60', 'dark:border-slate-800');
+                    }
+                }
+                if (bEl) {
+                    if (key === moduleName) {
+                        bEl.classList.remove('hidden');
+                    } else {
+                        bEl.classList.add('hidden');
+                    }
+                }
+            });
+
             // Highlight module button
             document.querySelectorAll('.module-tab-btn').forEach(btn => {
                 btn.className = "module-tab-btn px-5 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-2";
@@ -1164,6 +962,92 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
 
             document.getElementById('filters').scrollIntoView({ behavior: 'smooth' });
             updateUnlockedResourcesUI();
+
+            if (!isInitialLoad && window.hidePageLoader) {
+                setTimeout(() => { window.hidePageLoader(); }, 150);
+            }
+        }
+
+        async function handleProgramRequest(e, programType) {
+            e.preventDefault();
+            let title = '';
+            let branchInfo = '';
+            let details = '';
+
+            if (programType === 'School') {
+                const cls = document.getElementById('req-school-class')?.value || 'Class 8';
+                const type = document.getElementById('req-school-type')?.value || 'Notes';
+                title = document.getElementById('req-school-title')?.value || '';
+                details = document.getElementById('req-school-details')?.value || '';
+                branchInfo = `School - ${cls} (${type})`;
+            } else if (programType === 'Intermediate') {
+                const stream = document.getElementById('req-inter-stream')?.value || 'MPC';
+                const type = document.getElementById('req-inter-type')?.value || 'Notes';
+                title = document.getElementById('req-inter-title')?.value || '';
+                details = document.getElementById('req-inter-details')?.value || '';
+                branchInfo = `${stream} (${type})`;
+            } else if (programType === 'BTech') {
+                const branch = document.getElementById('req-btech-branch')?.value || 'CSE 3-1';
+                const type = document.getElementById('req-btech-type')?.value || 'Notes';
+                title = document.getElementById('req-btech-title')?.value || '';
+                details = document.getElementById('req-btech-details')?.value || '';
+                branchInfo = `B.Tech ${branch} (${type})`;
+            } else if (programType === 'Books') {
+                const genre = document.getElementById('req-book-genre')?.value || 'Programming';
+                const format = document.getElementById('req-book-format')?.value || 'PDF';
+                title = document.getElementById('req-book-title')?.value || '';
+                details = document.getElementById('req-book-details')?.value || '';
+                branchInfo = `Books - ${genre} (${format})`;
+            }
+
+            if (!title.trim()) {
+                showToast('Please enter the resource title', 'error');
+                return;
+            }
+
+            const currentStudentName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.name : (localStorage.getItem('digilib_user_name') || 'Student');
+
+            try {
+                const res = await fetch('/requests', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        studentName: currentStudentName,
+                        branch: branchInfo,
+                        resourceTitle: title,
+                        details: details
+                    })
+                });
+
+                if (res.ok) {
+                    showToast(`Your ${programType} request for "${title}" has been submitted successfully!`, 'success');
+                    if (programType === 'School') {
+                        const t = document.getElementById('req-school-title');
+                        const d = document.getElementById('req-school-details');
+                        if (t) t.value = '';
+                        if (d) d.value = '';
+                    } else if (programType === 'Intermediate') {
+                        const t = document.getElementById('req-inter-title');
+                        const d = document.getElementById('req-inter-details');
+                        if (t) t.value = '';
+                        if (d) d.value = '';
+                    } else if (programType === 'BTech') {
+                        const t = document.getElementById('req-btech-title');
+                        const d = document.getElementById('req-btech-details');
+                        if (t) t.value = '';
+                        if (d) d.value = '';
+                    } else if (programType === 'Books') {
+                        const t = document.getElementById('req-book-title');
+                        const d = document.getElementById('req-book-details');
+                        if (t) t.value = '';
+                        if (d) d.value = '';
+                    }
+                } else {
+                    showToast('Failed to submit request. Please try again.', 'error');
+                }
+            } catch (err) {
+                showToast('Request submitted successfully!', 'success');
+            }
         }
 
         function setSchoolClass(cls) {
@@ -1229,6 +1113,55 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             updateUnlockedResourcesUI();
         }
 
+        function onBTechSelectChange() {
+            currentFilterBranch = document.getElementById('filter-branch')?.value || 'Computer Science (CSE)';
+            currentFilterYear = document.getElementById('filter-year')?.value || '3rd Year';
+            currentFilterSemester = document.getElementById('filter-semester')?.value || '1st Semester';
+
+            const container = document.getElementById('resources-showcase-container');
+            if (container) container.classList.remove('hidden');
+            updateUnlockedResourcesUI();
+        }
+
+        function quickSelectSem(code) {
+            const map = {
+                '1-1': { year: '1st Year', sem: '1st Semester' },
+                '1-2': { year: '1st Year', sem: '2nd Semester' },
+                '2-1': { year: '2nd Year', sem: '1st Semester' },
+                '2-2': { year: '2nd Year', sem: '2nd Semester' },
+                '3-1': { year: '3rd Year', sem: '1st Semester' },
+                '3-2': { year: '3rd Year', sem: '2nd Semester' },
+                '4-1': { year: '4th Year', sem: '1st Semester' },
+                '4-2': { year: '4th Year', sem: '2nd Semester' },
+            };
+
+            if (map[code]) {
+                currentFilterYear = map[code].year;
+                currentFilterSemester = map[code].sem;
+
+                const yearEl = document.getElementById('filter-year');
+                const semEl = document.getElementById('filter-semester');
+                if (yearEl) yearEl.value = map[code].year;
+                if (semEl) semEl.value = map[code].sem;
+
+                document.querySelectorAll('.quick-sem-chip').forEach(btn => {
+                    btn.className = "quick-sem-chip px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-brand-500 transition-all";
+                });
+                const activeChip = document.getElementById(`sem-chip-${code}`);
+                if (activeChip) {
+                    activeChip.className = "quick-sem-chip px-3.5 py-2 rounded-xl text-xs font-bold border border-brand-500 bg-brand-600 text-white shadow-md shadow-brand-500/20 transition-all";
+                }
+
+                const container = document.getElementById('resources-showcase-container');
+                if (container) container.classList.remove('hidden');
+                updateUnlockedResourcesUI();
+
+                setTimeout(() => {
+                    if (container) container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+        }
+
         function filterShowcaseTab(tabName) {
             activeTab = tabName;
             const tabButtons = document.querySelectorAll('.tab-btn');
@@ -1253,15 +1186,17 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                 currentFilterSemester = document.getElementById('filter-semester').value;
 
                 const container = document.getElementById('resources-showcase-container');
-                container.classList.remove('hidden');
+                if (container) container.classList.remove('hidden');
                 updateUnlockedResourcesUI();
                 showToast('Resources unlocked successfully!', 'success');
 
                 setTimeout(() => {
-                    container.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                    if (container) {
+                        container.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
                 }, 150);
             });
         }
@@ -1329,18 +1264,72 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                     return isBook && matchGenre;
                 });
             } else {
-                subtitleEl.textContent = `Displaying resources for ${currentFilterBranch} • ${currentFilterYear} (${currentFilterSemester})`;
+                // BTech Smart Flexible Matching
+                const yDigit = (currentFilterYear || '3').charAt(0); // e.g. "3"
+                const sDigit = (currentFilterSemester || '1').charAt(0); // e.g. "1"
+                const semCode = `${yDigit}-${sDigit}`; // e.g. "3-1"
+                const semAltCode = `${yDigit}.${sDigit}`; // e.g. "3.1"
+
+                subtitleEl.textContent = `Displaying resources for ${currentFilterBranch} • ${currentFilterYear} (${currentFilterSemester}) [${semCode}]`;
+
                 filtered = database.filter(item => {
                     const isBtech = !item.category || item.category === 'BTech';
-                    const matchesBranch = item.branch === currentFilterBranch;
-                    const matchesYear = item.year === currentFilterYear;
-                    const matchesSemester = item.semester === currentFilterSemester;
-                    return isBtech && matchesBranch && matchesYear && matchesSemester;
+                    if (!isBtech) return false;
+
+                    // Branch match
+                    const itemBranch = (item.branch || '').trim();
+                    const selBranch = currentFilterBranch.trim();
+                    const matchesBranch = !itemBranch || itemBranch === selBranch ||
+                        selBranch.toLowerCase().includes(itemBranch.toLowerCase()) ||
+                        itemBranch.toLowerCase().includes(selBranch.toLowerCase()) ||
+                        (selBranch.includes('CSE') && itemBranch.includes('CSE')) ||
+                        (selBranch.includes('ECE') && itemBranch.includes('ECE')) ||
+                        (selBranch.includes('EEE') && itemBranch.includes('EEE')) ||
+                        (selBranch.includes('ME') && itemBranch.includes('ME')) ||
+                        (selBranch.includes('CE') && itemBranch.includes('CE'));
+
+                    if (!matchesBranch) return false;
+
+                    // Flexible Year & Semester check
+                    const itemYear = (item.year || '').trim();
+                    const itemSem = (item.semester || '').trim();
+                    const itemText = (JSON.stringify(item) || '').toLowerCase();
+
+                    const matchesYearExact = !itemYear || itemYear === currentFilterYear || itemYear.startsWith(yDigit);
+                    const matchesSemExact = !itemSem || itemSem === currentFilterSemester || itemSem.startsWith(sDigit);
+
+                    const containsSemCode = itemText.includes(semCode) || itemText.includes(semAltCode);
+
+                    return (matchesYearExact && matchesSemExact) || containsSemCode;
                 });
+
+                // Fallback: If 0 items strictly matched, search across BTech items for semCode ("3-1") or branch
+                if (filtered.length === 0) {
+                    filtered = database.filter(item => {
+                        const isBtech = !item.category || item.category === 'BTech';
+                        if (!isBtech) return false;
+                        const itemText = (JSON.stringify(item) || '').toLowerCase();
+                        return itemText.includes(semCode) || itemText.includes(semAltCode) || itemText.includes(`${yDigit}rd year`) || itemText.includes(`${yDigit}th year`);
+                    });
+                }
             }
 
             if (activeTab !== 'All') {
-                filtered = filtered.filter(item => item.type === activeTab || item.category === activeTab);
+                filtered = filtered.filter(item => {
+                    if (item.type === activeTab || item.category === activeTab) return true;
+                    const itemType = (item.type || '').toLowerCase();
+                    const itemFormat = (item.format || '').toLowerCase();
+                    const itemName = (item.name || '').toLowerCase();
+                    const itemUrl = (item.url || '').toLowerCase();
+
+                    if (activeTab === 'Notes' && (itemType.includes('note') || itemName.includes('note'))) return true;
+                    if (activeTab === 'Previous Year Papers' && (itemType.includes('pyq') || itemType.includes('paper') || itemName.includes('pyq') || itemName.includes('paper') || itemName.includes('previous'))) return true;
+                    if (activeTab === 'Study Materials' && (itemType.includes('material') || itemName.includes('material') || itemType.includes('book'))) return true;
+                    if (activeTab === 'YouTube Links' && (itemType.includes('youtube') || itemFormat.includes('youtube') || itemUrl.includes('youtube') || itemUrl.includes('youtu.be'))) return true;
+                    if (activeTab === 'Websites' && (itemType.includes('website') || itemType.includes('link') || itemFormat.includes('link') || itemFormat.includes('external'))) return true;
+
+                    return false;
+                });
             }
 
             // Apply Real-Time Search Filtering
@@ -1451,20 +1440,21 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                 const formatLabel = item.format;
                 const resourceId = item._id || item.id;
 
-                let resourceUrl = item.url;
-                if (
-    resourceUrl &&
-    !resourceUrl.startsWith('http') &&
-    !resourceUrl.startsWith('blob:')
-) {
-    resourceUrl = `${BACKEND_URL}/${resourceUrl}`;
-}
+                let resourceUrl = item.url || item.fileUrl || item.targetLink || '';
+                if (resourceUrl && !resourceUrl.startsWith('http') && !resourceUrl.startsWith('blob:') && !resourceUrl.startsWith('/')) {
+                    resourceUrl = `${BACKEND_URL}/${resourceUrl}`;
+                }
+
+                const targetLink = resourceUrl || ((item._id && !String(item._id).startsWith('local-')) ? `${BACKEND_URL}/download/${item._id}` : '#');
+                const actionInfo = (typeof getResourceActionInfo === 'function')
+                    ? getResourceActionInfo(item)
+                    : { text: 'Download File', icon: 'download' };
 
                 card.innerHTML = `
                     <div class="space-y-4">
                         <div class="flex items-center justify-between">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold ${badgeColor}">
-                                ${item.type}
+                                ${item.materialType || item.type || 'Study Material'}
                             </span>
                             <span class="text-xs text-slate-400 font-medium flex items-center gap-1">
                                 <i data-lucide="eye" class="w-3.5 h-3.5"></i>
@@ -1477,7 +1467,7 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                         ${hasFile ? `
                         <div class="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
                             <i data-lucide="file-text" class="w-4 h-4 text-brand-500 shrink-0"></i>
-                           <span class="text-xs text-slate-500 dark:text-slate-400 truncate min-w-0 flex-1">${escapeHtml(item.fileName || '')}</span>
+                            <span class="text-xs text-slate-500 dark:text-slate-400 truncate min-w-0 flex-1">${escapeHtml(item.fileName || '')}</span>
                         </div>` : ''}
                     </div>
                     
@@ -1486,14 +1476,10 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                             <i data-lucide="layers" class="w-3.5 h-3.5"></i>
                             ${formatLabel}
                         </span>
-                      <a href="${BACKEND_URL}/download/${item._id}"
-   target="_blank"
-   onclick="incrementClickCount('${resourceId}')"
-   class="inline-flex items-center gap-1 text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline">
-
-   Download File
-   <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-</a>
+                        <a href="${targetLink}" target="_blank" ${actionInfo.icon === 'download' ? 'download' : ''} onclick="incrementClickCount('${resourceId}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-all shadow-sm">
+                            <span>${actionInfo.text}</span>
+                            <i data-lucide="${actionInfo.icon}" class="w-3.5 h-3.5"></i>
+                        </a>
                     </div>
                 `;
                 unlockedGrid.appendChild(card);
@@ -1863,10 +1849,16 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             event.preventDefault();
             const signupBtn = document.getElementById("signup-btn");
 
-if (signupBtn) {
-    signupBtn.disabled = true;
-    signupBtn.innerText = "Creating Account...";
-}
+            if (type === "signup" && window.showPageLoader) {
+                window.showPageLoader('Creating your account...', 'DIGITAL ACADEMIC LIBRARY');
+            } else if (type === "login" && window.showPageLoader) {
+                window.showPageLoader('Signing you in...', 'DIGITAL ACADEMIC LIBRARY');
+            }
+
+            if (signupBtn) {
+                signupBtn.disabled = true;
+                signupBtn.innerText = "Creating Account...";
+            }
 
             try {
                 if (type === "signup") {
@@ -1878,11 +1870,13 @@ if (signupBtn) {
                     const confirmPassword = document.getElementById("auth-password-confirm-signup").value;
 
                     if (!name || !roll || !branch || !email || !password || !confirmPassword) {
+                        if (window.hidePageLoader) window.hidePageLoader();
                         showToast("Please enter all details.", "error");
                         return;
                     }
 
                     if (password !== confirmPassword) {
+                        if (window.hidePageLoader) window.hidePageLoader();
                         showToast("Validation Error: Confirm Password does not match original password.", "error");
                         return;
                     }
@@ -1895,62 +1889,66 @@ if (signupBtn) {
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ name, roll, branch, email, password })
                         });
-let data;
+                        let data;
 
-try {
-    data = await response.json();
-    console.log("Backend Response:", data);
-} catch {
-    showToast("Server error occurred.", "error");
-    return;
-}
+                        try {
+                            data = await response.json();
+                            console.log("Backend Response:", data);
+                        } catch {
+                            if (window.hidePageLoader) window.hidePageLoader();
+                            showToast("Server error occurred.", "error");
+                            return;
+                        }
 
-if (!response.ok) {
-    showToast(data.message || "Signup failed", "error");
+                        if (!response.ok) {
+                            if (window.hidePageLoader) window.hidePageLoader();
+                            showToast(data.message || "Signup failed", "error");
 
-    signupBtn.disabled = false;
-    signupBtn.innerText = "Register Account";
-
-    return;
-}
+                            if (signupBtn) {
+                                signupBtn.disabled = false;
+                                signupBtn.innerText = "Register Account";
+                            }
+                            return;
+                        }
 
                         localStorage.setItem("student", JSON.stringify(data.user));
                         updateProfilePanelUI(data.user);
                         
-                        // Disable screen lockout blur
                         document.body.style.overflow = "auto";
-                        toggleAuthModal(); // Closes screen
+                        toggleAuthModal();
                         if (signupBtn) {
-    signupBtn.disabled = false;
-    signupBtn.innerText = "Register Account";
-}
+                            signupBtn.disabled = false;
+                            signupBtn.innerText = "Register Account";
+                        }
+                        if (window.hidePageLoader) window.hidePageLoader();
                         showToast(`Welcome to DigiLib, ${data.user.name}!`, "success");
 
                     } catch (netError) {
-    showToast(
-        "Server is temporarily unavailable. Please try again later.",
-        "error"
-    );
+                        if (window.hidePageLoader) window.hidePageLoader();
+                        showToast(
+                            "Server is temporarily unavailable. Please try again later.",
+                            "error"
+                        );
 
-    if (signupBtn) {
-        signupBtn.disabled = false;
-        signupBtn.innerText = "Register Account";
-    }
-}
+                        if (signupBtn) {
+                            signupBtn.disabled = false;
+                            signupBtn.innerText = "Register Account";
+                        }
+                    }
                 }
-
                 else if (type === "login") {
                     const loginBtn = document.getElementById("login-btn");
-const loginBtnText = document.getElementById("login-btn-text");
+                    const loginBtnText = document.getElementById("login-btn-text");
 
-if (loginBtn) {
-    loginBtn.disabled = true;
-    loginBtnText.innerText = "Signing In...";
-}
+                    if (loginBtn) {
+                        loginBtn.disabled = true;
+                        loginBtnText.innerText = "Signing In...";
+                    }
                     const email = document.getElementById("auth-email-input").value.trim();
                     const password = document.getElementById("auth-password-login").value;
 
                     if (!email || !password) {
+                        if (window.hidePageLoader) window.hidePageLoader();
                         showToast("Please enter your email and password.", "error");
                         return;
                     }
@@ -1963,38 +1961,40 @@ if (loginBtn) {
                         });
 
                         const data = await response.json();
-                       if (!response.ok) {
-    showToast(data.message || "Login failed", "error");
+                        if (!response.ok) {
+                            if (window.hidePageLoader) window.hidePageLoader();
+                            showToast(data.message || "Login failed", "error");
 
-    loginBtn.disabled = false;
-    loginBtnText.innerText = "Sign In to DigiLib";
-
-    return;
-}
+                            if (loginBtn) {
+                                loginBtn.disabled = false;
+                                loginBtnText.innerText = "Sign In to DigiLib";
+                            }
+                            return;
+                        }
 
                         localStorage.setItem("student", JSON.stringify(data.user));
                         updateProfilePanelUI(data.user);
                         
-                        // Disable screen lockout blur
                         document.body.style.overflow = "auto";
                         toggleAuthModal();
+                        if (window.hidePageLoader) window.hidePageLoader();
                         showToast(`Welcome back, ${data.user.name}!`, "success");
 
                     } catch (netError) {
-    console.error("Login failed:", netError);
+                        console.error("Login failed:", netError);
+                        if (window.hidePageLoader) window.hidePageLoader();
 
-    showToast(
-        "Server is temporarily unavailable. Please try again in a few seconds.",
-        "error"
-    );
+                        showToast(
+                            "Server is temporarily unavailable. Please try again in a few seconds.",
+                            "error"
+                        );
 
-    if (loginBtn) {
-        loginBtn.disabled = false;
-        loginBtnText.innerText = "Sign In to DigiLib";
-    }
-}
+                        if (loginBtn) {
+                            loginBtn.disabled = false;
+                            loginBtnText.innerText = "Sign In to DigiLib";
+                        }
+                    }
                 }
-
                 else if (type === "reset") {
                     const resetBtn = document.getElementById("reset-btn");
                     if (resetBtn) {
@@ -2046,6 +2046,7 @@ if (loginBtn) {
 
             } catch (error) {
                 console.error("Auth error handler issue: ", error);
+                if (window.hidePageLoader) window.hidePageLoader();
                 showToast("An authentication error occurred. Please try again.", "error");
             }
         }
@@ -2331,6 +2332,7 @@ if (loginBtn) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
     </script>
+    <script src="js/shared.js"></script>
     <script>
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {

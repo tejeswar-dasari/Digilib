@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Books & Novels Library - Digilib</title>
+    <!-- Resource hints -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            950: '#0b0f19',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+
+        @media (max-width: 767px) {
+            header {
+                padding-top: max(16px, env(safe-area-inset-top, 20px)) !important;
+                height: auto !important;
+            }
+            #main-content {
+                padding-top: max(110px, calc(85px + env(safe-area-inset-top, 20px))) !important;
+            }
+            footer {
+                padding-bottom: calc(60px + env(safe-area-inset-bottom, 16px)) !important;
+            }
+        }
+    </style>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#d97706">
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col relative">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-[99999] flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- Navigation Header -->
+    <header class="fixed top-0 left-0 w-full z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-900 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
+                    <i data-lucide="book-open-check" class="w-6 h-6"></i>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Digi<span class="text-amber-600">lib</span></span>
+            </a>
+
+            <!-- Navigation Links -->
+            <nav class="hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                <a href="index.html" class="hover:text-amber-600 dark:hover:text-amber-400 transition-colors">Home</a>
+                <a href="school.html" class="hover:text-amber-600 dark:hover:text-amber-400 transition-colors">School</a>
+                <a href="intermediate.html" class="hover:text-amber-600 dark:hover:text-amber-400 transition-colors">Inter &amp; Diploma</a>
+                <a href="btech.html" class="hover:text-amber-600 dark:hover:text-amber-400 transition-colors">B.Tech</a>
+                <a href="books.html" class="text-amber-600 dark:text-amber-500 font-bold transition-colors">Books &amp; Novels</a>
+                <a href="request.html" class="hover:text-amber-600 dark:hover:text-amber-400 transition-colors">Request</a>
+                <a href="contribute.html" class="hover:text-amber-600 dark:hover:text-amber-400 transition-colors">Contribute</a>
+                <a href="admin.html" id="nav-admin-link" class="hidden text-amber-500 font-bold hover:text-amber-400 transition-colors">Admin</a>
+            </nav>
+
+            <div class="flex items-center gap-2.5">
+                <button id="theme-toggle" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition-all" aria-label="Toggle Dark Mode">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+                <button onclick="toggleProfileDropdown()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition-all">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                </button>
+                <button onclick="toggleMobileDrawer()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition-all lg:hidden">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer -->
+    <div id="mobile-drawer-overlay" onclick="toggleMobileDrawer()" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0"></div>
+    <div id="mobile-drawer" class="fixed top-0 left-0 right-0 bg-white dark:bg-slate-900 z-50 rounded-b-3xl shadow-2xl p-6 border-b border-slate-200 dark:border-slate-800 transform -translate-y-full transition-transform duration-300 ease-out lg:hidden">
+        <div class="flex items-center justify-between pb-6 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xl font-extrabold text-slate-900 dark:text-white">Digilib Navigation</span>
+            <button onclick="toggleMobileDrawer()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <div class="flex flex-col gap-4 py-5 text-base font-semibold text-slate-700 dark:text-slate-200">
+            <a href="index.html" onclick="toggleMobileDrawer()">Home</a>
+            <a href="school.html" onclick="toggleMobileDrawer()">School</a>
+            <a href="intermediate.html" onclick="toggleMobileDrawer()">Inter &amp; Diploma</a>
+            <a href="btech.html" onclick="toggleMobileDrawer()">B.Tech</a>
+            <a href="books.html" class="text-amber-600 font-bold" onclick="toggleMobileDrawer()">Books &amp; Novels</a>
+            <a href="request.html" onclick="toggleMobileDrawer()">Request Resource</a>
+            <a href="contribute.html" onclick="toggleMobileDrawer()">Contribute Resource</a>
+            <a href="admin.html" class="text-amber-500 font-bold admin-only-link hidden" onclick="toggleMobileDrawer()">Admin Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content" class="flex-grow pt-28 pb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-600 via-orange-600 to-rose-700 text-white p-8 sm:p-12 shadow-2xl">
+                <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="relative z-10 max-w-3xl space-y-4">
+                    <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-white/15 text-white backdrop-blur-md uppercase tracking-wider">
+                        <i data-lucide="book-open-check" class="w-4 h-4"></i>
+                        eBooks &amp; Literature Library
+                    </span>
+                    <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+                        Books, eBooks &amp; Novels Collection
+                    </h1>
+                    <p class="text-white/80 text-sm sm:text-base leading-relaxed">
+                        Explore free programming textbooks, engineering handbooks, bestseller novels, self-development guides, competitive exam prep, psychology &amp; finance eBooks!
+                    </p>
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <a href="#books-resources" class="px-5 py-3 rounded-xl bg-white text-amber-800 hover:bg-amber-50 text-xs font-extrabold shadow-lg transition-all flex items-center gap-2">
+                            <i data-lucide="book-open" class="w-4 h-4"></i>
+                            Browse Books Library
+                        </a>
+                        <a href="request.html" class="px-5 py-3 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/20 text-xs font-extrabold transition-all flex items-center gap-2">
+                            <i data-lucide="help-circle" class="w-4 h-4"></i>
+                            Request a Book
+                        </a>
+                        <a href="contribute.html" class="px-5 py-3 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/20 text-xs font-extrabold transition-all flex items-center gap-2">
+                            <i data-lucide="upload" class="w-4 h-4"></i>
+                            Upload an eBook
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Genre & Search Filters Section -->
+            <section id="books-resources" class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+                <!-- Genre Tabs -->
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2 mb-3">
+                        <i data-lucide="book" class="w-5 h-5 text-amber-600"></i>
+                        Select Book Genre
+                    </h2>
+                    <div class="flex flex-wrap gap-2" id="genre-buttons">
+                        <button onclick="filterGenre('All')" class="genre-btn px-4 py-2 rounded-xl text-xs font-extrabold bg-amber-600 text-white shadow-md">All Genres</button>
+                        <button onclick="filterGenre('Programming Books')" class="genre-btn px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Programming</button>
+                        <button onclick="filterGenre('Engineering Books')" class="genre-btn px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Engineering</button>
+                        <button onclick="filterGenre('Novels')" class="genre-btn px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Novels</button>
+                        <button onclick="filterGenre('Motivational Books')" class="genre-btn px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Motivational</button>
+                        <button onclick="filterGenre('Competitive Exam Books')" class="genre-btn px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Exam Guides</button>
+                        <button onclick="filterGenre('Psychology')" class="genre-btn px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Psychology</button>
+                        <button onclick="filterGenre('Finance')" class="genre-btn px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300">Finance</button>
+                    </div>
+                </div>
+
+                <!-- Search Bar & Access Resources Button -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-2">
+                    <div class="relative w-full sm:max-w-md">
+                        <input type="text" id="books-search-input" placeholder="Search book title, author name or topic..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-amber-500 outline-none">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+                    </div>
+
+                    <button type="button" id="btn-books-access" onclick="handleBooksAccessResources()" onmouseenter="window.prefetchResources && window.prefetchResources('/resources?category=' + encodeURIComponent('Books & Novels'))" class="w-full sm:w-auto min-w-[220px] h-11 px-6 py-2.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-md shadow-amber-500/20 hover:shadow-amber-500/30 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 whitespace-nowrap">
+                        <span id="books-btn-icon-wrap" class="w-4 h-4 flex items-center justify-center shrink-0">
+                            <i data-lucide="database" class="w-4 h-4 shrink-0"></i>
+                        </span>
+                        <span id="books-btn-text" class="shrink-0 text-center">Access Resources</span>
+                        <span id="books-btn-arrow-wrap" class="w-4 h-4 flex items-center justify-center shrink-0 transition-opacity">
+                            <i data-lucide="arrow-right" class="w-4 h-4 shrink-0"></i>
+                        </span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Resources Grid -->
+            <div id="books-results-section" class="scroll-mt-24">
+                <div class="flex items-center justify-between gap-4 mb-4">
+                    <span id="res-count-badge" class="text-xs font-extrabold text-slate-500 uppercase tracking-wider min-w-0 truncate">Select your filters and click 'Access Resources'</span>
+                </div>
+
+                <div id="books-resources-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div class="sm:col-span-2 lg:col-span-3 text-center py-16 px-6 bg-slate-50/60 dark:bg-slate-950/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 space-y-3">
+                        <div class="w-14 h-14 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto shadow-sm">
+                            <i data-lucide="filter" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-base font-extrabold text-slate-800 dark:text-slate-200">Select your filters and click 'Access Resources' to view matching resources.</h3>
+                        <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">Choose a genre button or type search keywords above, then click the Access Resources button.</p>
+                    </div>
+                </div>
+            </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-amber-600 flex items-center justify-center text-white">
+                    <i data-lucide="book-open-check" class="w-5 h-5"></i>
+                </div>
+                <span class="text-lg font-extrabold text-white">Digilib Books &amp; Novels Hub</span>
+            </div>
+            <p class="text-xs text-slate-500">© 2026 Digilib. Digital Literature &amp; Academic Books Repository.</p>
+            <div class="flex gap-4 text-xs font-bold">
+                <a href="index.html" class="hover:text-white transition-colors">Main Portal</a>
+                <a href="school.html" class="hover:text-white transition-colors">School</a>
+                <a href="intermediate.html" class="hover:text-white transition-colors">Inter &amp; Diploma</a>
+                <a href="btech.html" class="hover:text-white transition-colors">B.Tech</a>
+                <a href="request.html" class="hover:text-white transition-colors">Request</a>
+                <a href="contribute.html" class="hover:text-white transition-colors">Contribute</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Shared Utilities -->
+    <script src="js/shared.js"></script>
+    <script>
+        let allBooksResources = [];
+        let selectedGenre = 'All';
+        let hasAccessedBooksResources = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) lucide.createIcons();
+            if (window.hidePageLoader) {
+                setTimeout(() => { window.hidePageLoader(); }, 100);
+            }
+        });
+
+        async function handleBooksAccessResources() {
+            const btn = document.getElementById('btn-books-access');
+            const iconWrap = document.getElementById('books-btn-icon-wrap');
+            const text = document.getElementById('books-btn-text');
+            const arrowWrap = document.getElementById('books-btn-arrow-wrap');
+            const countBadge = document.getElementById('res-count-badge');
+
+            if (btn) btn.disabled = true;
+            if (text) text.textContent = 'Accessing Resources...';
+            if (arrowWrap) arrowWrap.style.opacity = '0';
+
+            if (countBadge) countBadge.textContent = 'Fetching matching resources from MongoDB...';
+
+            if (window.showPageLoader) {
+                window.showPageLoader('Fetching resources...', 'DIGITAL ACADEMIC LIBRARY');
+            }
+
+            try {
+                if (window.fetchFastResources) {
+                    allBooksResources = await window.fetchFastResources('/resources?category=' + encodeURIComponent('Books & Novels'));
+                } else {
+                    const res = await fetch('/resources?category=' + encodeURIComponent('Books & Novels'));
+                    allBooksResources = res.ok ? await res.json() : [];
+                }
+            } catch (e) {
+                console.error(e);
+                allBooksResources = [];
+            } finally {
+                hasAccessedBooksResources = true;
+                renderBooksResources();
+                if (window.hidePageLoader) window.hidePageLoader();
+
+                if (btn) btn.disabled = false;
+                if (text) text.textContent = 'Access Resources';
+                if (iconWrap) iconWrap.innerHTML = `<i data-lucide="database" class="w-4 h-4 shrink-0"></i>`;
+                if (arrowWrap) arrowWrap.style.opacity = '1';
+                if (window.lucide) lucide.createIcons();
+
+                // Auto-scroll to unlocked resources section
+                const resultsSection = document.getElementById('books-results-section') || document.getElementById('books-resources-grid');
+                if (resultsSection) {
+                    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        }
+
+        function filterGenre(genre) {
+            selectedGenre = genre;
+            document.querySelectorAll('#genre-buttons button').forEach(btn => {
+                if (btn.innerText.includes(genre) || (genre === 'All' && btn.innerText.includes('All'))) {
+                    btn.className = "genre-btn px-4 py-2 rounded-xl text-xs font-extrabold bg-amber-600 text-white shadow-md";
+                } else {
+                    btn.className = "genre-btn px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300";
+                }
+            });
+            if (hasAccessedBooksResources) {
+                renderBooksResources();
+            }
+        }
+
+        function renderBooksResources() {
+            if (!hasAccessedBooksResources) return;
+
+            const grid = document.getElementById('books-resources-grid');
+            const searchVal = (document.getElementById('books-search-input')?.value || '').toLowerCase().trim();
+            const countBadge = document.getElementById('res-count-badge');
+
+            let filtered = allBooksResources.filter(item => {
+                if (selectedGenre !== 'All' && item.genre !== selectedGenre && item.type !== selectedGenre) return false;
+
+                if (searchVal) {
+                    const haystack = (item.name + ' ' + (item.genre || '') + ' ' + (item.type || '')).toLowerCase();
+                    if (!haystack.includes(searchVal)) return false;
+                }
+                return true;
+            });
+
+            if (countBadge) countBadge.innerText = `Showing ${filtered.length} Books`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center bg-slate-50 dark:bg-slate-950 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+                        <i data-lucide="book-open" class="w-10 h-10 mx-auto text-slate-400 mb-3"></i>
+                        <h4 class="text-sm font-bold text-slate-700 dark:text-slate-300">No books found for this filter</h4>
+                        <p class="text-xs text-slate-500 mt-1">Request a book or contribute one to get it added!</p>
+                        <a href="request.html" class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-amber-600 text-white rounded-xl text-xs font-bold">
+                            Request This Book
+                        </a>
+                    </div>
+                `;
+                if (window.lucide) lucide.createIcons();
+                return;
+            }
+
+            const cardRenderer = window.renderStandardResourceCard || (typeof renderStandardResourceCard !== 'undefined' ? renderStandardResourceCard : null);
+            if (cardRenderer) {
+                grid.innerHTML = filtered.map(item => cardRenderer(item)).join('');
+            } else {
+                grid.innerHTML = filtered.map(item => {
+                    let targetUrl = item.url || item.fileUrl || item.targetLink || '';
+                    if (targetUrl) {
+                        if (!targetUrl.startsWith('http') && !targetUrl.startsWith('https') && !targetUrl.startsWith('blob:') && !targetUrl.startsWith('/')) {
+                            targetUrl = `/${targetUrl}`;
+                        }
+                    } else if (item._id || item.id) {
+                        targetUrl = `/download/${item._id || item.id}`;
+                    } else {
+                        targetUrl = '#';
+                    }
+
+                    return `
+                        <div class="group bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 hover:border-amber-500 hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between gap-2 mb-3">
+                                    <span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400">
+                                        ${item.genre || item.type || 'Textbooks'}
+                                    </span>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                                        ${item.format || 'eBook PDF'}
+                                    </span>
+                                </div>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white line-clamp-2 mb-2 group-hover:text-amber-600 transition-colors">
+                                    ${item.name || 'Untitled Book'}
+                                </h3>
+                            </div>
+                            <div class="pt-4 border-t border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between gap-2 mt-3">
+                                <span class="text-[11px] font-medium text-slate-500 flex items-center gap-1">
+                                    <i data-lucide="eye" class="w-3.5 h-3.5"></i> ${item.clicks || 0} views
+                                </span>
+                                <a href="${targetUrl}" target="_blank" download onclick="trackClick('${item._id || item.id}')" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition-all">
+                                    <span>Download File</span>
+                                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            if (window.lucide) lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

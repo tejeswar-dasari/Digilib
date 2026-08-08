@@ -80,10 +80,12 @@ const ResourceSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-// Compound indexes for optimal performance and sub-second filtering speeds
+// Compound & Text indexes for optimal performance and sub-second filtering speeds
+ResourceSchema.index({ category: 1, createdAt: -1 });
 ResourceSchema.index({ category: 1, classLevel: 1, type: 1 });
 ResourceSchema.index({ category: 1, stream: 1, year: 1, type: 1 });
-ResourceSchema.index({ category: 1, branch: 1, year: 1, type: 1 });
+ResourceSchema.index({ category: 1, branch: 1, year: 1, semester: 1, type: 1 });
 ResourceSchema.index({ category: 1, genre: 1 });
+ResourceSchema.index({ name: 'text', subject: 'text', fileName: 'text' });
 
 module.exports = mongoose.model('Resource', ResourceSchema);

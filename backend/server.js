@@ -119,16 +119,30 @@ let memoryResources = [
     },
     {
         _id: "local-res-3",
-        name: "Data Structures & Algorithms Course",
+        name: "GeeksforGeeks Data Structures & Algorithms Portal",
         category: "BTech",
-        type: "Websites & YouTube Links",
+        type: "Website Links",
         branch: "Computer Science (CSE)",
         year: "2nd Year",
         semester: "1st Semester",
-        format: "YouTube Playlist",
-        url: "https://www.youtube.com/playlist?list=PL2_aWCzGMAwI3W_JlcBbtYTwiQSsOTa6P",
+        format: "Website Link",
+        url: "https://www.geeksforgeeks.org/data-structures/",
         fileName: "",
         clicks: 115,
+        createdAt: new Date()
+    },
+    {
+        _id: "local-res-4",
+        name: "JNTU R23 Computer Science Engineering Official Syllabus Copy",
+        category: "BTech",
+        type: "Syllabus",
+        branch: "Computer Science (CSE)",
+        year: "1st Year",
+        semester: "1st Semester",
+        format: "PDF Document",
+        url: "https://jntu.ac.in/",
+        fileName: "BTech_CSE_R23_Syllabus.pdf",
+        clicks: 74,
         createdAt: new Date()
     },
     // School Resources
@@ -170,6 +184,18 @@ let memoryResources = [
     },
     {
         _id: "sch-res-4",
+        name: "Class 10 All Subjects Official Board Syllabus 2024-25",
+        category: "School",
+        classLevel: "Class 10",
+        type: "Syllabus",
+        format: "PDF Document",
+        url: "https://ncert.nic.in/",
+        fileName: "Class10_Syllabus_2024_25.pdf",
+        clicks: 61,
+        createdAt: new Date()
+    },
+    {
+        _id: "sch-res-5",
         name: "Khan Academy Class 9 Mathematics Video Tutorials",
         category: "School",
         classLevel: "Class 9",
@@ -200,7 +226,7 @@ let memoryResources = [
         category: "Intermediate",
         stream: "MPC",
         year: "2nd Year",
-        type: "Previous Year Papers",
+        type: "Previous Papers",
         format: "PDF Document",
         url: "https://bie.ap.gov.in/",
         fileName: "Inter2_Chemistry_PYQ.pdf",
@@ -218,6 +244,19 @@ let memoryResources = [
         url: "https://bie.ap.gov.in/",
         fileName: "BiPC_Zoology_Diagrams.pdf",
         clicks: 41,
+        createdAt: new Date()
+    },
+    {
+        _id: "inter-res-4",
+        name: "BIEAP Intermediate Board Official Complete Syllabus 2024-25",
+        category: "Intermediate",
+        stream: "MPC",
+        year: "1st Year",
+        type: "Syllabus",
+        format: "PDF Document",
+        url: "https://bie.ap.gov.in/",
+        fileName: "Inter_BIEAP_Syllabus.pdf",
+        clicks: 83,
         createdAt: new Date()
     },
     // Diploma Resources
@@ -294,7 +333,25 @@ let memoryResources = [
     }
 ];
 
-let memoryUsers = [];
+const defaultAdminPassHash = bcrypt.hashSync("Tejeswar2709", 10);
+let memoryUsers = [
+    {
+        _id: "admin-user-1",
+        name: "Tejeswar",
+        email: "tejeswartejeswar56@gmail.com",
+        password: defaultAdminPassHash,
+        roll: "ADMIN-001",
+        branch: "Computer Science (CSE)"
+    },
+    {
+        _id: "admin-user-2",
+        name: "System Admin",
+        email: "admin@digilib.com",
+        password: defaultAdminPassHash,
+        roll: "ADMIN-002",
+        branch: "Administration"
+    }
+];
 
 let memoryRequests = [
     {
@@ -322,32 +379,123 @@ app.get('/test', (req, res) => {
     res.json({ message: 'API Working Successfully' });
 });
 
-// ADMIN AUTHENTICATION ENDPOINT
-app.post('/admin-login', (req, res) => {
+// ADMIN AUTHENTICATION ENDPOINT - Email & Password Database Verification
+app.post('/admin-login', async (req, res) => {
     try {
-        const { password } = req.body;
-        if (!password) {
-            return res.status(400).json({ success: false, message: 'Password is required' });
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: 'Both Admin Email and Password are required.' });
         }
+
+        const normalizedEmail = email.toLowerCase().trim();
+        const inputPassword = password.trim();
 
         const masterKeys = [
             process.env.ADMIN_PASSWORD || "Tejeswar2709",
             "Tejessen45"
         ];
 
-        if (masterKeys.includes(password.trim())) {
-            return res.status(200).json({ success: true, message: 'Admin authentication verified successfully' });
+        let foundUser = null;
+        let isMatch = false;
+
+        // 1. Verify against MongoDB database if connected
+        if (mongoose.connection.readyState === 1) {
+            foundUser = await User.findOne({ email: normalizedEmail });
+            if (foundUser) {
+                isMatch = await bcrypt.compare(inputPassword, foundUser.password);
+                if (!isMatch && masterKeys.includes(inputPassword)) {
+                    isMatch = true;
+                }
+            } else if (masterKeys.includes(inputPassword)) {
+                // If master key is provided for a new admin email, auto-register admin in DB
+                const hashedMaster = await bcrypt.hash(inputPassword, 10);
+                foundUser = new User({
+                    name: "Verified Administrator",
+                    email: normalizedEmail,
+                    password: hashedMaster,
+                    roll: "ADMIN-DB",
+                    branch: "Administration"
+                });
+                await foundUser.save();
+                isMatch = true;
+            }
         }
 
-        return res.status(401).json({ success: false, message: 'Wrong credentials. Verification failed.' });
+        // 2. Fallback to in-memory store if DB didn't find or is offline
+        if (!foundUser) {
+            foundUser = memoryUsers.find(u => u.email === normalizedEmail);
+            if (foundUser) {
+                isMatch = await bcrypt.compare(inputPassword, foundUser.password);
+                if (!isMatch && masterKeys.includes(inputPassword)) {
+                    isMatch = true;
+                }
+            } else if (masterKeys.includes(inputPassword)) {
+                const hashedMaster = bcrypt.hashSync(inputPassword, 10);
+                foundUser = {
+                    _id: `admin-mem-${Date.now()}`,
+                    name: "Verified Administrator",
+                    email: normalizedEmail,
+                    password: hashedMaster,
+                    roll: "ADMIN-MEM",
+                    branch: "Administration"
+                };
+                memoryUsers.push(foundUser);
+                isMatch = true;
+            }
+        }
+
+        if (!foundUser) {
+            return res.status(401).json({ success: false, message: 'Admin email not found in database records.' });
+        }
+
+        if (!isMatch) {
+            return res.status(401).json({ success: false, message: 'Incorrect admin password. Verification failed.' });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Admin email and password verified successfully from database.',
+            user: { name: foundUser.name, email: foundUser.email }
+        });
     } catch (error) {
-        return res.status(500).json({ success: false, message: 'Authentication error' });
+        console.error("Admin Auth Error:", error);
+        return res.status(500).json({ success: false, message: 'Server verification error' });
     }
 });
 
-// GET RESOURCES (Supports full query parameters and filtering optimization)
+// Server In-Memory Cache for Lightning-Fast Resource Queries (< 1ms responses)
+const resourceApiCache = new Map();
+const RESOURCE_CACHE_TTL = 30000; // 30s cache TTL
+
+function getCachedResources(key) {
+    const cached = resourceApiCache.get(key);
+    if (!cached) return null;
+    if (Date.now() - cached.timestamp > RESOURCE_CACHE_TTL) {
+        resourceApiCache.delete(key);
+        return null;
+    }
+    return cached.data;
+}
+
+function setCachedResources(key, data) {
+    resourceApiCache.set(key, { data, timestamp: Date.now() });
+}
+
+function invalidateResourceCache() {
+    resourceApiCache.clear();
+}
+
+// GET RESOURCES (Supports full query parameters, query caching, and index projection)
 app.get('/resources', async (req, res) => {
     try {
+        const cacheKey = JSON.stringify(req.query);
+        const cachedResult = getCachedResources(cacheKey);
+        if (cachedResult) {
+            res.setHeader('X-Cache', 'HIT');
+            res.setHeader('Cache-Control', 'public, max-age=15, stale-while-revalidate=60');
+            return res.json(cachedResult);
+        }
+
         const { category, classLevel, stream, branch, year, semester, type, genre } = req.query;
 
         let query = {};
@@ -360,25 +508,31 @@ app.get('/resources', async (req, res) => {
         if (type && type !== 'All') query.type = type;
         if (genre) query.genre = genre;
 
+        let result = [];
         if (mongoose.connection.readyState === 1) {
-            const resources = await Resource.find(query).sort({ createdAt: -1 }).lean();
-            return res.json(resources);
+            result = await Resource.find(query)
+                .select('_id name category classLevel stream branch year semester type genre subject format url fileName clicks createdAt')
+                .sort({ createdAt: -1 })
+                .lean();
+        } else {
+            // Memory array filtering fallback
+            result = memoryResources.filter(item => {
+                if (category && item.category !== category) return false;
+                if (classLevel && item.classLevel !== classLevel) return false;
+                if (stream && item.stream !== stream) return false;
+                if (branch && item.branch !== branch) return false;
+                if (year && item.year !== year) return false;
+                if (semester && item.semester !== semester) return false;
+                if (type && type !== 'All' && item.type !== type) return false;
+                if (genre && item.genre !== genre) return false;
+                return true;
+            });
         }
 
-        // Memory array filtering fallback
-        let filteredMemory = memoryResources.filter(item => {
-            if (category && item.category !== category) return false;
-            if (classLevel && item.classLevel !== classLevel) return false;
-            if (stream && item.stream !== stream) return false;
-            if (branch && item.branch !== branch) return false;
-            if (year && item.year !== year) return false;
-            if (semester && item.semester !== semester) return false;
-            if (type && type !== 'All' && item.type !== type) return false;
-            if (genre && item.genre !== genre) return false;
-            return true;
-        });
-
-        res.json(filteredMemory);
+        setCachedResources(cacheKey, result);
+        res.setHeader('X-Cache', 'MISS');
+        res.setHeader('Cache-Control', 'public, max-age=15, stale-while-revalidate=60');
+        res.json(result);
     } catch (error) {
         res.json(memoryResources);
     }
@@ -460,6 +614,8 @@ app.post('/resources', upload.single('file'), async (req, res) => {
             clicks: 0
         };
 
+        invalidateResourceCache();
+
         if (mongoose.connection.readyState === 1) {
             const resource = new Resource(resourceData);
             const savedResource = await resource.save();
@@ -484,7 +640,7 @@ app.post('/resources', upload.single('file'), async (req, res) => {
 });
 
 // INCREMENT CLICK/VIEW COUNT
-app.patch('/resources/:id/click', async (req, res) => {
+const handleClick = async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -510,12 +666,16 @@ app.patch('/resources/:id/click', async (req, res) => {
     } catch (error) {
         res.json({ message: 'Click updated' });
     }
-});
+};
+
+app.patch('/resources/:id/click', handleClick);
+app.post('/resources/:id/click', handleClick);
 
 // DELETE RESOURCE
 app.delete('/resources/:id', async (req, res) => {
     try {
         const { id } = req.params;
+        invalidateResourceCache();
 
         if (mongoose.connection.readyState === 1 && mongoose.Types.ObjectId.isValid(id)) {
             await Resource.findByIdAndDelete(id);
