@@ -764,21 +764,37 @@ app.delete('/resources/:id', async (req, res) => {
 // STUDENT SIGNUP
 app.post('/signup', async (req, res) => {
     try {
-        const { name, email, password, roll, branch } = req.body;
+        const {
+            name, email, password,
+            educationLevel = 'B.Tech',
+            roll = '',
+            branch = '',
+            schoolClass = '',
+            stream = '',
+            course = '',
+            collegeName = ''
+        } = req.body;
 
-        if (!name || !email || !password) {
-            return res.status(400).json({ message: 'Missing required parameters (name, email, or password).' });
+        if (!name || !email || !password || !educationLevel) {
+            return res.status(400).json({ message: 'Name, email, password and education level are required.' });
+        }
+
+        const allowedLevels = ['School', 'Intermediate', 'Diploma', 'B.Tech'];
+        if (!allowedLevels.includes(educationLevel)) {
+            return res.status(400).json({ message: 'Invalid education level.' });
         }
 
         const normalizedEmail = email.toLowerCase().trim();
+        const normalizedRoll = String(roll || '').trim();
 
         if (mongoose.connection.readyState === 1) {
             const existingUser = await User.findOne({ email: normalizedEmail });
             if (existingUser) {
                 return res.status(400).json({ message: 'An account with this email address already exists.' });
             }
-            if (roll) {
-                const existingRoll = await User.findOne({ roll });
+
+            if (normalizedRoll) {
+                const existingRoll = await User.findOne({ roll: normalizedRoll });
                 if (existingRoll) {
                     return res.status(400).json({ message: 'This Roll Number is already registered.' });
                 }
@@ -786,22 +802,40 @@ app.post('/signup', async (req, res) => {
 
             const hashedPassword = await bcrypt.hash(password, 10);
             const user = new User({
-                name,
+                name: name.trim(),
                 email: normalizedEmail,
                 password: hashedPassword,
-                roll: roll || "STU-OFFLINE",
-                branch: branch || "Computer Science (CSE)"
+                educationLevel,
+                roll: normalizedRoll,
+                branch: String(branch || '').trim(),
+                schoolClass: String(schoolClass || '').trim(),
+                stream: String(stream || '').trim(),
+                course: String(course || '').trim(),
+                collegeName: String(collegeName || '').trim()
             });
             await user.save();
 
             return res.status(201).json({
                 message: 'Signup successful',
-                user: { name: user.name, email: user.email, roll: user.roll, branch: user.branch }
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    educationLevel: user.educationLevel,
+                    roll: user.roll,
+                    branch: user.branch,
+                    schoolClass: user.schoolClass,
+                    stream: user.stream,
+                    course: user.course,
+                    collegeName: user.collegeName
+                }
             });
         }
 
         // In-memory fallback
-        const existingInMemory = memoryUsers.find(u => u.email === normalizedEmail || (roll && u.roll === roll));
+        const existingInMemory = memoryUsers.find(
+            u => u.email === normalizedEmail || (normalizedRoll && u.roll === normalizedRoll)
+        );
         if (existingInMemory) {
             return res.status(400).json({ message: 'Account or Roll Number already registered.' });
         }
@@ -809,17 +843,33 @@ app.post('/signup', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = {
             _id: `user-${Date.now()}`,
-            name,
+            name: name.trim(),
             email: normalizedEmail,
             password: hashedPassword,
-            roll: roll || "STU-OFFLINE",
-            branch: branch || "Computer Science (CSE)"
+            educationLevel,
+            roll: normalizedRoll,
+            branch: String(branch || '').trim(),
+            schoolClass: String(schoolClass || '').trim(),
+            stream: String(stream || '').trim(),
+            course: String(course || '').trim(),
+            collegeName: String(collegeName || '').trim()
         };
         memoryUsers.push(newUser);
 
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Signup successful',
-            user: { name: newUser.name, email: newUser.email, roll: newUser.roll, branch: newUser.branch }
+            user: {
+                id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+                educationLevel: newUser.educationLevel,
+                roll: newUser.roll,
+                branch: newUser.branch,
+                schoolClass: newUser.schoolClass,
+                stream: newUser.stream,
+                course: newUser.course,
+                collegeName: newUser.collegeName
+            }
         });
     } catch (error) {
         console.error("Signup Error:", error);
@@ -843,13 +893,26 @@ app.post('/login', async (req, res) => {
             if (!user) {
                 return res.status(400).json({ message: 'No account found with this email address.' });
             }
+
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
                 return res.status(400).json({ message: 'Incorrect password. Please try again.' });
             }
+
             return res.status(200).json({
                 message: 'Login successful',
-                user: { name: user.name, email: user.email, roll: user.roll || "STU-OFFLINE", branch: user.branch || "Computer Science (CSE)" }
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    educationLevel: user.educationLevel || 'B.Tech',
+                    roll: user.roll || '',
+                    branch: user.branch || '',
+                    schoolClass: user.schoolClass || '',
+                    stream: user.stream || '',
+                    course: user.course || '',
+                    collegeName: user.collegeName || ''
+                }
             });
         }
 
@@ -858,14 +921,26 @@ app.post('/login', async (req, res) => {
         if (!user) {
             return res.status(400).json({ message: 'No account found with this email address.' });
         }
+
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Incorrect password. Please try again.' });
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             message: 'Login successful',
-            user: { name: user.name, email: user.email, roll: user.roll, branch: user.branch }
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                educationLevel: user.educationLevel || 'B.Tech',
+                roll: user.roll || '',
+                branch: user.branch || '',
+                schoolClass: user.schoolClass || '',
+                stream: user.stream || '',
+                course: user.course || '',
+                collegeName: user.collegeName || ''
+            }
         });
     } catch (error) {
         console.error("Login Error:", error);

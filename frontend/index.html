@@ -1739,31 +1739,39 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                 content.innerHTML = `
                     <div class="text-center mb-4">
                         <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Create Student Profile</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Join DigiLib to access, share, and request study resources.</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Choose your education level so DigiLib can automatically show the right resources and filters.</p>
                     </div>
+
                     <p class="text-xs text-amber-600 dark:text-amber-400 text-center mb-3">
-    📌 Use a valid email address. An email can only be registered once. 🔐 Please remember your password for future logins.
-</p>
+                        📌 Use a valid email address. An email can only be registered once. 🔐 Please remember your password for future logins.
+                    </p>
+
                     <form onsubmit="handleAuthSubmit(event, 'signup')" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Full Name</label>
                             <input id="auth-name-input" type="text" required placeholder="Alex Johnson" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
                         </div>
-                        
-                        <div class="grid grid-cols-2 gap-3">
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Education Level</label>
+                            <select id="auth-education-input" required onchange="updateSignupEducationFields()" class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium cursor-pointer">
+                                <option value="School">School</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Diploma">Diploma</option>
+                                <option value="B.Tech" selected>B.Tech</option>
+                            </select>
+                        </div>
+
+                        <div id="auth-education-context"></div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Roll Number</label>
-                                <input id="auth-roll-input" type="text" required placeholder="223A1A0501" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
+                                <label id="auth-roll-label" class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Roll / Student ID</label>
+                                <input id="auth-roll-input" type="text" placeholder="223A1A0501" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Branch</label>
-                                <select id="auth-branch-input" required class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium cursor-pointer">
-                                    <option value="Computer Science (CSE)">CSE</option>
-                                    <option value="Electronics & Communication (ECE)">ECE</option>
-                                    <option value="Electrical & Electronics (EEE)">EEE</option>
-                                    <option value="Mechanical Engineering (ME)">ME</option>
-                                    <option value="Civil Engineering (CE)">CE</option>
-                                </select>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Institution Name</label>
+                                <input id="auth-college-input" type="text" placeholder="School / College Name" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium" />
                             </div>
                         </div>
 
@@ -1792,14 +1800,18 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                             </div>
                         </div>
 
-                       <button id="signup-btn" type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-md transition-all mt-3">
-    Register Account
-</button>
+                        <button id="signup-btn" type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-md transition-all mt-3">
+                            Register Account
+                        </button>
                     </form>
+
                     <p class="text-xs text-center text-slate-500 dark:text-slate-400 mt-4">
                         Already have an academic profile? <a href="#" onclick="toggleAuthModal('login')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline">Log In</a>
                     </p>
                 `;
+                setTimeout(() => {
+                    if (typeof updateSignupEducationFields === 'function') updateSignupEducationFields();
+                }, 0);
             } else if (mode === 'forgot') {
                 content.innerHTML = `
                     <div class="text-center mb-4">
@@ -1855,6 +1867,83 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             lucide.createIcons();
         }
 
+        // Dynamically changes registration fields according to the selected education level.
+        function updateSignupEducationFields() {
+            const level = document.getElementById('auth-education-input')?.value || 'B.Tech';
+            const container = document.getElementById('auth-education-context');
+            const rollInput = document.getElementById('auth-roll-input');
+            const rollLabel = document.getElementById('auth-roll-label');
+
+            if (!container) return;
+
+            const baseClass = 'w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium';
+            const selectClass = 'w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-200 font-medium cursor-pointer';
+
+            if (level === 'School') {
+                container.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Class</label>
+                        <select id="auth-class-input" required class="${selectClass}">
+                            <option value="Class 6">Class 6</option>
+                            <option value="Class 7">Class 7</option>
+                            <option value="Class 8">Class 8</option>
+                            <option value="Class 9">Class 9</option>
+                            <option value="Class 10">Class 10</option>
+                        </select>
+                    </div>
+                `;
+                if (rollLabel) rollLabel.textContent = 'Roll / Student ID (Optional)';
+                if (rollInput) rollInput.required = false;
+            } else if (level === 'Intermediate') {
+                container.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Stream</label>
+                        <select id="auth-stream-input" required class="${selectClass}">
+                            <option value="MPC">MPC (Maths, Physics, Chem)</option>
+                            <option value="BiPC">BiPC (Biology, Physics, Chem)</option>
+                            <option value="CEC">CEC (Commerce, Econ, Civics)</option>
+                            <option value="MEC">MEC (Maths, Econ, Commerce)</option>
+                            <option value="HEC">HEC (History, Econ, Civics)</option>
+                        </select>
+                    </div>
+                `;
+                if (rollLabel) rollLabel.textContent = 'Roll / Student ID';
+                if (rollInput) rollInput.required = true;
+            } else if (level === 'Diploma') {
+                container.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Branch</label>
+                        <select id="auth-branch-input" required class="${selectClass}">
+                            <option value="Diploma CSE">Diploma CSE</option>
+                            <option value="Diploma ECE">Diploma ECE</option>
+                            <option value="Diploma EEE">Diploma EEE</option>
+                            <option value="Diploma Civil">Diploma Civil</option>
+                            <option value="Diploma Mechanical">Diploma Mechanical</option>
+                        </select>
+                    </div>
+                `;
+                if (rollLabel) rollLabel.textContent = 'Roll / Student ID';
+                if (rollInput) rollInput.required = true;
+            } else {
+                container.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">B.Tech Branch</label>
+                        <select id="auth-branch-input" required class="${selectClass}">
+                            <option value="CSE">CSE (Computer Science)</option>
+                            <option value="AI & ML">AI & ML (Artificial Intelligence & Machine Learning)</option>
+                            <option value="ECE">ECE (Electronics & Communication)</option>
+                            <option value="EEE">EEE (Electrical & Electronics)</option>
+                            <option value="Mechanical">Mechanical Engineering</option>
+                            <option value="Civil">Civil Engineering</option>
+                            <option value="IT">IT (Information Technology)</option>
+                        </select>
+                    </div>
+                `;
+                if (rollLabel) rollLabel.textContent = 'Roll Number';
+                if (rollInput) rollInput.required = true;
+            }
+        }
+
         // Handles user authentication submits, with integrated backend connection + simulated robust fallbacks
         async function handleAuthSubmit(event, type) {
             event.preventDefault();
@@ -1874,15 +1963,43 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             try {
                 if (type === "signup") {
                     const name = document.getElementById("auth-name-input").value.trim();
-                    const roll = document.getElementById("auth-roll-input").value.trim();
-                    const branch = document.getElementById("auth-branch-input").value;
+                    const educationLevel = document.getElementById("auth-education-input").value;
+                    const roll = document.getElementById("auth-roll-input")?.value.trim() || "";
+                    const branch = document.getElementById("auth-branch-input")?.value || "";
+                    const schoolClass = document.getElementById("auth-class-input")?.value || "";
+                    const stream = document.getElementById("auth-stream-input")?.value || "";
+                    const collegeName = document.getElementById("auth-college-input")?.value.trim() || "";
                     const email = document.getElementById("auth-email-signup").value.trim();
                     const password = document.getElementById("auth-password-signup").value;
                     const confirmPassword = document.getElementById("auth-password-confirm-signup").value;
 
-                    if (!name || !roll || !branch || !email || !password || !confirmPassword) {
+                    if (!name || !educationLevel || !email || !password || !confirmPassword) {
                         if (window.hidePageLoader) window.hidePageLoader();
-                        showToast("Please enter all details.", "error");
+                        showToast("Please enter all required details.", "error");
+                        return;
+                    }
+
+                    if (educationLevel !== "School" && !roll) {
+                        if (window.hidePageLoader) window.hidePageLoader();
+                        showToast("Please enter your Roll / Student ID.", "error");
+                        return;
+                    }
+
+                    if (educationLevel === "School" && !schoolClass) {
+                        if (window.hidePageLoader) window.hidePageLoader();
+                        showToast("Please select your class.", "error");
+                        return;
+                    }
+
+                    if (educationLevel === "Intermediate" && !stream) {
+                        if (window.hidePageLoader) window.hidePageLoader();
+                        showToast("Please select your stream.", "error");
+                        return;
+                    }
+
+                    if ((educationLevel === "Diploma" || educationLevel === "B.Tech") && !branch) {
+                        if (window.hidePageLoader) window.hidePageLoader();
+                        showToast("Please select your branch.", "error");
                         return;
                     }
 
@@ -1898,7 +2015,10 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                         const response = await fetch(`${BACKEND_URL}/signup`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ name, roll, branch, email, password })
+                            body: JSON.stringify({
+                                name, roll, branch, email, password,
+                                educationLevel, schoolClass, stream, collegeName
+                            })
                         });
                         let data;
 
@@ -1922,7 +2042,7 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                             return;
                         }
 
-                        localStorage.setItem("student", JSON.stringify(data.user));
+                        persistDigiLibUser(data.user);
                         updateProfilePanelUI(data.user);
                         
                         document.body.style.overflow = "auto";
@@ -1983,7 +2103,7 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                             return;
                         }
 
-                        localStorage.setItem("student", JSON.stringify(data.user));
+                        persistDigiLibUser(data.user);
                         updateProfilePanelUI(data.user);
                         
                         document.body.style.overflow = "auto";
@@ -2093,8 +2213,18 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             if (user) {
                 nameEl.textContent = user.name;
                 emailEl.textContent = user.email;
-                if (branchEl) branchEl.textContent = user.branch || "Computer Science (CSE)";
-                if (rollEl) rollEl.textContent = user.roll || "STU-OFFLINE";
+                if (branchEl) {
+                    if (user.educationLevel === 'School') {
+                        branchEl.textContent = user.schoolClass || 'School';
+                    } else if (user.educationLevel === 'Intermediate') {
+                        branchEl.textContent = user.stream ? `Intermediate • ${user.stream}` : 'Intermediate';
+                    } else if (user.educationLevel === 'Diploma') {
+                        branchEl.textContent = user.branch ? `Diploma • ${user.branch}` : 'Diploma';
+                    } else {
+                        branchEl.textContent = user.branch || 'B.Tech';
+                    }
+                }
+                if (rollEl) rollEl.textContent = user.roll || "Student ID not provided";
 
                 const initials = user.name
                     .split(' ')
@@ -2140,6 +2270,11 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
         // Handles user log out, session clearing and forces portal lock
         function handleLogout() {
             localStorage.removeItem("student");
+            localStorage.removeItem("digilib_user_name");
+            localStorage.removeItem("digilib_user_email");
+            localStorage.removeItem("digilib_education_level");
+            localStorage.removeItem("digilib_user_roll");
+            localStorage.removeItem("digilib_user_branch");
             updateProfilePanelUI(null);
             toggleProfileDropdown();
             showToast("Successfully logged out. DigiLib lock screen activated.", "info");
@@ -2350,6 +2485,14 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
         }
     </script>
     <script src="js/shared.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const currentUser = window.getDigiLibUser ? window.getDigiLibUser() : null;
+    if (currentUser && typeof updateProfilePanelUI === 'function') {
+        updateProfilePanelUI(currentUser);
+    }
+});
+</script>
     <script>
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {

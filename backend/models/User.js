@@ -1,34 +1,69 @@
-const mongoose = require('mongoose'); // Corrected Capital 'C' in 'Const' to prevent fatal crashes
+const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
-    name: { 
-        type: String, 
+    name: {
+        type: String,
         required: true,
-        trim: true 
+        trim: true
     },
-    email: { 
-        type: String, 
-        required: true, 
+    email: {
+        type: String,
+        required: true,
         unique: true,
-        lowercase: true, // Auto-converts email strings to lowercase in the database
-        trim: true // Cleans up any accidental whitespaces
+        lowercase: true,
+        trim: true
     },
-    password: { 
-        type: String, 
-        required: true 
+    password: {
+        type: String,
+        required: true
     },
-    roll: { 
-        type: String, 
-        required: true,
-        trim: true 
+
+    // DigiLib education context
+    educationLevel: {
+        type: String,
+        enum: ['School', 'Intermediate', 'Diploma', 'B.Tech'],
+        default: 'B.Tech'
     },
-    branch: { 
-        type: String, 
-        required: true,
-        trim: true 
+
+    // Kept optional because school/inter users may not have an engineering roll number.
+    roll: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+
+    // B.Tech / Diploma branch, or an optional branch supplied by another course.
+    branch: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+
+    // School class, e.g. Class 6; Intermediate stream, e.g. MPC.
+    schoolClass: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+    stream: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+
+    // Optional institution/course information.
+    course: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+    collegeName: {
+        type: String,
+        trim: true,
+        default: ''
     }
-}, { 
-    timestamps: true 
+}, {
+    timestamps: true
 });
 
-module.exports = mongoose.model('User', UserSchema); // Cleaned up the double assignment export typo
+module.exports = mongoose.model('User', UserSchema);
