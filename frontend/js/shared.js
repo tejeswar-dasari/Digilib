@@ -165,6 +165,7 @@ async function fetchFastResources(url) {
 window.fetchFastResources = fetchFastResources;
 
 function prefetchResources(url) {
+    const apiUrl = digilibApiUrl(url);
     if (!window.DigiLibResourceCache.has(apiUrl)) {
         fetchFastResources(url).catch(() => {});
     }
@@ -354,10 +355,10 @@ function toggleProfileDropdown() {
                     ` : ''}
 
                     <div class="w-full pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2.5">
-                        <a href="request.html" onclick="toggleProfileDropdown()" class="w-full py-2.5 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 text-xs font-bold text-center transition-all flex items-center justify-center gap-2">
+                        <a href="my-activity.html#requests" onclick="toggleProfileDropdown()" class="w-full py-2.5 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 text-xs font-bold text-center transition-all flex items-center justify-center gap-2">
                             <i data-lucide="help-circle" class="w-4 h-4 text-brand-500"></i> My Requested Resources
                         </a>
-                        <a href="contribute.html" onclick="toggleProfileDropdown()" class="w-full py-2.5 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 text-xs font-bold text-center transition-all flex items-center justify-center gap-2">
+                        <a href="my-activity.html#contributions" onclick="toggleProfileDropdown()" class="w-full py-2.5 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 text-xs font-bold text-center transition-all flex items-center justify-center gap-2">
                             <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-500"></i> Contribute New Material
                         </a>
                         ${isAdmin ? `

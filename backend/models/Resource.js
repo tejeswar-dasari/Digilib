@@ -77,8 +77,16 @@ const ResourceSchema = new mongoose.Schema({
     clicks: {
         type: Number,
         default: 0
+    },
+    contributedBy: {
+        userId: { type: String, default: '' },
+        email: { type: String, default: '', trim: true, lowercase: true },
+        name: { type: String, default: '', trim: true }
     }
 }, { timestamps: true });
+
+ResourceSchema.index({ 'contributedBy.userId': 1, createdAt: -1 });
+ResourceSchema.index({ 'contributedBy.email': 1, createdAt: -1 });
 
 // Compound & Text indexes for optimal performance and sub-second filtering speeds
 ResourceSchema.index({ category: 1, createdAt: -1 });

@@ -487,12 +487,19 @@ let memoryRequests = [
 // Request Model Definition for Mongoose
 const RequestSchema = new mongoose.Schema({
     studentName: { type: String, required: true, trim: true },
-    userEmail: { type: String, default: '', trim: true, lowercase: true },
+    userEmail: { type: String, default: '', trim: true, lowercase: true, index: true },
+    requestedBy: {
+        userId: { type: String, default: '' },
+        email: { type: String, default: '', trim: true, lowercase: true },
+        name: { type: String, default: '', trim: true }
+    },
     branch: { type: String, required: true, trim: true },
     resourceTitle: { type: String, required: true, trim: true },
     details: { type: String, default: '', trim: true },
     createdAt: { type: Date, default: Date.now, index: true }
 });
+RequestSchema.index({ 'requestedBy.userId': 1, createdAt: -1 });
+RequestSchema.index({ userEmail: 1, createdAt: -1 });
 const RequestModel = mongoose.model('Request', RequestSchema);
 
 // API Health Check
@@ -845,7 +852,12 @@ app.post('/resources', requireAuth, requireMongo, upload.single('file'), async (
             format: req.body.format || "PDF Document",
             url: resourceUrl,
             fileName: cleanFileName,
-            clicks: 0
+            clicks: 0,
+            contributedBy: {
+                userId: req.userSession.sub,
+                email: req.userSession.email,
+                name: req.userSession.name || ''
+            }
         };
 
         invalidateResourceCache();
@@ -1112,11 +1124,55 @@ app.post('/requests', requireAuth, requireMongo, async (req, res) => {
             return res.status(400).json({ message: 'Missing required request fields' });
         }
 
-        const newRequest = new RequestModel({ studentName, userEmail, branch, resourceTitle, details });
+        const newRequest = new RequestModel({
+            studentName,
+            userEmail,
+            requestedBy: {
+                userId: req.userSession.sub,
+                email: req.userSession.email,
+                name: req.userSession.name || studentName
+            },
+            branch,
+            resourceTitle,
+            details
+        });
         const savedRequest = await newRequest.save();
         return res.status(201).json(savedRequest);
     } catch (error) {
         res.status(500).json({ message: 'Failed to post request', error: error.message });
+    }
+});
+
+// Get only the authenticated user's requests
+app.get('/me/requests', requireAuth, requireMongo, async (req, res) => {
+    try {
+        const session = req.userSession;
+        const filters = [{ userEmail: session.email }];
+        if (session.sub && mongoose.Types.ObjectId.isValid(session.sub)) {
+            filters.unshift({ 'requestedBy.userId': session.sub });
+        }
+        const requests = await RequestModel.find({ $or: filters }).sort({ createdAt: -1 }).lean();
+        return res.json(requests);
+    } catch (error) {
+        console.error('GET /me/requests error:', error.message);
+        return res.status(500).json({ message: 'Failed to fetch your requests.' });
+    }
+});
+
+// Get only resources contributed by the authenticated user
+app.get('/me/resources', requireAuth, requireMongo, async (req, res) => {
+    try {
+        const session = req.userSession;
+        const filters = [{ 'contributedBy.email': session.email }];
+        if (session.sub) filters.unshift({ 'contributedBy.userId': session.sub });
+        const resources = await Resource.find({ $or: filters })
+            .select('_id name category classLevel stream branch year semester type genre subject format url fileName clicks createdAt contributedBy')
+            .sort({ createdAt: -1 })
+            .lean();
+        return res.json(resources);
+    } catch (error) {
+        console.error('GET /me/resources error:', error.message);
+        return res.status(500).json({ message: 'Failed to fetch your contributed resources.' });
     }
 });
 
