@@ -285,7 +285,7 @@
                 if (window.fetchFastResources) {
                     allBooksResources = await window.fetchFastResources('/resources?category=' + encodeURIComponent('Books & Novels'));
                 } else {
-                    const res = await fetch('/resources?category=' + encodeURIComponent('Books & Novels'));
+                    const res = await window.digilibApiFetch('/resources?category=' + encodeURIComponent('Books & Novels'));
                     allBooksResources = res.ok ? await res.json() : [];
                 }
             } catch (e) {
@@ -363,14 +363,19 @@
                 grid.innerHTML = filtered.map(item => cardRenderer(item)).join('');
             } else {
                 grid.innerHTML = filtered.map(item => {
+                    const actionInfo = getResourceActionInfo(item);
+                    const resourceId = item._id || item.id;
                     let targetUrl = item.url || item.fileUrl || item.targetLink || '';
-                    if (targetUrl) {
-                        if (!targetUrl.startsWith('http') && !targetUrl.startsWith('https') && !targetUrl.startsWith('blob:') && !targetUrl.startsWith('/')) {
-                            targetUrl = `/${targetUrl}`;
+                    if (actionInfo.isExternal) {
+                        if (targetUrl && !/^https?:\/\//i.test(targetUrl) && !targetUrl.startsWith('blob:')) {
+                            targetUrl = digilibApiUrl(targetUrl);
                         }
-                    } else if (item._id || item.id) {
-                        targetUrl = `/download/${item._id || item.id}`;
-                    } else {
+                    } else if (resourceId) {
+                        // Route file downloads through the backend so the original uploaded filename is preserved.
+                        targetUrl = digilibApiUrl(`/download/${resourceId}`);
+                    } else if (targetUrl && !/^https?:\/\//i.test(targetUrl) && !targetUrl.startsWith('blob:')) {
+                        targetUrl = digilibApiUrl(targetUrl);
+                    } else if (!targetUrl) {
                         targetUrl = '#';
                     }
 

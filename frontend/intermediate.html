@@ -501,7 +501,7 @@
                 if (window.fetchFastResources) {
                     allInterResources = await window.fetchFastResources(`/resources?category=${encodeURIComponent(reqCat)}`);
                 } else {
-                    const res = await fetch(`/resources?category=${encodeURIComponent(reqCat)}`);
+                    const res = await window.digilibApiFetch(`/resources?category=${encodeURIComponent(reqCat)}`);
                     allInterResources = res.ok ? await res.json() : [];
                 }
             } catch (err) {

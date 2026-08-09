@@ -498,7 +498,7 @@
                 if (window.fetchFastResources) {
                     allSchoolResources = await window.fetchFastResources('/resources?category=School');
                 } else {
-                    const res = await fetch('/resources?category=School');
+                    const res = await window.digilibApiFetch('/resources?category=School');
                     allSchoolResources = res.ok ? await res.json() : [];
                 }
             } catch (err) {

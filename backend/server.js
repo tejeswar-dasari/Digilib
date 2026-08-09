@@ -73,6 +73,19 @@ const upload = multer({ storage });
 mongoose.set('bufferCommands', false);
 const MONGO_URI = process.env.MONGO_URI;
 
+function isMongoConnected() {
+    return mongoose.connection.readyState === 1;
+}
+
+function requireMongo(req, res, next) {
+    if (!isMongoConnected()) {
+        return res.status(503).json({
+            message: 'MongoDB is not connected. Configure MONGO_URI in the deployment environment.'
+        });
+    }
+    next();
+}
+
 if (MONGO_URI) {
     mongoose.connect(MONGO_URI, {
         serverSelectionTimeoutMS: 5000
@@ -391,17 +404,29 @@ let memoryRequests = [
 
 // Request Model Definition for Mongoose
 const RequestSchema = new mongoose.Schema({
-    studentName: { type: String, required: true },
-    branch: { type: String, required: true },
-    resourceTitle: { type: String, required: true },
-    details: { type: String },
-    createdAt: { type: Date, default: Date.now }
+    studentName: { type: String, required: true, trim: true },
+    userEmail: { type: String, default: '', trim: true, lowercase: true },
+    branch: { type: String, required: true, trim: true },
+    resourceTitle: { type: String, required: true, trim: true },
+    details: { type: String, default: '', trim: true },
+    createdAt: { type: Date, default: Date.now, index: true }
 });
 const RequestModel = mongoose.model('Request', RequestSchema);
 
 // API Health Check
 app.get('/test', (req, res) => {
     res.json({ message: 'API Working Successfully' });
+});
+
+// Health check used to verify deployment + MongoDB connectivity without exposing secrets.
+app.get('/health', (req, res) => {
+    const connected = isMongoConnected();
+    res.status(connected ? 200 : 503).json({
+        ok: connected,
+        mongodb: connected ? 'connected' : 'disconnected',
+        database: connected ? (mongoose.connection.name || 'connected') : null,
+        timestamp: new Date().toISOString()
+    });
 });
 
 // ADMIN AUTHENTICATION ENDPOINT - Email & Password Database Verification
@@ -538,33 +563,24 @@ app.get('/resources', async (req, res) => {
         if (type && type !== 'All') query.type = { $regex: escapeRegex(type), $options: 'i' };
         if (genre) query.genre = { $regex: escapeRegex(genre), $options: 'i' };
 
-        let result = [];
-        if (mongoose.connection.readyState === 1) {
-            result = await Resource.find(query)
-                .select('_id name category classLevel stream branch year semester type genre subject format url fileName clicks createdAt')
-                .sort({ createdAt: -1 })
-                .lean();
-            setCachedResources(cacheKey, result);
-        } else {
-            // Memory array filtering fallback
-            result = memoryResources.filter(item => {
-                if (category && (item.category || '').toLowerCase() !== category.toLowerCase()) return false;
-                if (classLevel && (item.classLevel || '').toLowerCase() !== classLevel.toLowerCase()) return false;
-                if (stream && (item.stream || '').toLowerCase() !== stream.toLowerCase()) return false;
-                if (branch && !(item.branch || '').toLowerCase().includes(branch.toLowerCase()) && !branch.toLowerCase().includes((item.branch || '').toLowerCase())) return false;
-                if (year && !(item.year || '').toLowerCase().includes(year.toLowerCase())) return false;
-                if (semester && !(item.semester || '').toLowerCase().includes(semester.toLowerCase())) return false;
-                if (type && type !== 'All' && !(item.type || '').toLowerCase().includes(type.toLowerCase())) return false;
-                if (genre && !(item.genre || '').toLowerCase().includes(genre.toLowerCase())) return false;
-                return true;
+        if (!isMongoConnected()) {
+            return res.status(503).json({
+                message: 'MongoDB is not connected. Configure MONGO_URI in the deployment environment.'
             });
         }
+
+        const result = await Resource.find(query)
+            .select('_id name category classLevel stream branch year semester type genre subject format url fileName clicks createdAt')
+            .sort({ createdAt: -1 })
+            .lean();
+        setCachedResources(cacheKey, result);
 
         res.setHeader('X-Cache', 'MISS');
         res.setHeader('Cache-Control', 'public, max-age=15, stale-while-revalidate=60');
         res.json(result);
     } catch (error) {
-        res.json(memoryResources);
+        console.error('GET /resources error:', error.message);
+        res.status(500).json({ message: 'Failed to fetch resources', error: error.message });
     }
 });
 
@@ -620,9 +636,19 @@ app.get('/download/:id', async (req, res) => {
                     responseType: 'stream'
                 });
 
-                const fileNameToUse = resource.fileName || path.basename(resource.url) || 'document.pdf';
-                res.setHeader('Content-Disposition', `attachment; filename="${fileNameToUse}"`);
-                res.setHeader('Content-Type', 'application/pdf');
+                const fileNameToUse = resource.fileName || path.basename(new URL(resource.url).pathname) || 'document.pdf';
+                const safeFileName = String(fileNameToUse).replace(/[\\\"\r\n]/g, '_');
+                // Send both the traditional filename and RFC 5987 UTF-8 filename
+                // so browsers preserve the user's original uploaded filename.
+                res.setHeader(
+                    'Content-Disposition',
+                    `attachment; filename="${safeFileName}"; filename*=UTF-8''${encodeURIComponent(safeFileName)}`
+                );
+                const upstreamContentType = response.headers['content-type'];
+                res.setHeader('Content-Type', upstreamContentType || 'application/octet-stream');
+                if (response.headers['content-length']) {
+                    res.setHeader('Content-Length', response.headers['content-length']);
+                }
                 return response.data.pipe(res);
             } catch (dlError) {
                 // Fallback to direct redirect if proxy stream fails
@@ -638,7 +664,7 @@ app.get('/download/:id', async (req, res) => {
 });
 
 // ADD NEW RESOURCE
-app.post('/resources', upload.single('file'), async (req, res) => {
+app.post('/resources', requireMongo, upload.single('file'), async (req, res) => {
     try {
         if (!req.body.name || !req.body.name.trim()) {
             return res.status(400).json({ message: 'Resource name is required.' });
@@ -671,20 +697,9 @@ app.post('/resources', upload.single('file'), async (req, res) => {
 
         invalidateResourceCache();
 
-        if (mongoose.connection.readyState === 1) {
-            const resource = new Resource(resourceData);
-            const savedResource = await resource.save();
-            return res.status(201).json(savedResource);
-        }
-
-        // In-memory fallback
-        const savedResource = {
-            ...resourceData,
-            _id: `local-res-${Date.now()}`,
-            createdAt: new Date()
-        };
-        memoryResources.unshift(savedResource);
-        res.status(201).json(savedResource);
+        const resource = new Resource(resourceData);
+        const savedResource = await resource.save();
+        return res.status(201).json(savedResource);
     } catch (error) {
         console.error("Save Resource Error:", error);
         res.status(500).json({
@@ -905,41 +920,30 @@ app.post('/reset-password', async (req, res) => {
 // GET ALL PENDING REQUESTS
 app.get('/requests', async (req, res) => {
     try {
-        if (mongoose.connection.readyState === 1) {
-            const requests = await RequestModel.find().sort({ createdAt: -1 }).lean();
-            return res.json(requests);
+        if (!isMongoConnected()) {
+            return res.status(503).json({
+                message: 'MongoDB is not connected. Configure MONGO_URI in the deployment environment.'
+            });
         }
-        res.json(memoryRequests);
+        const requests = await RequestModel.find().sort({ createdAt: -1 }).lean();
+        return res.json(requests);
     } catch (error) {
-        res.json(memoryRequests);
+        console.error('GET /requests error:', error.message);
+        res.status(500).json({ message: 'Failed to fetch requests', error: error.message });
     }
 });
 
 // SUBMIT A NEW RESOURCE REQUEST
-app.post('/requests', async (req, res) => {
+app.post('/requests', requireMongo, async (req, res) => {
     try {
-        const { studentName, branch, resourceTitle, details } = req.body;
+        const { studentName, userEmail, branch, resourceTitle, details } = req.body;
         if (!studentName || !branch || !resourceTitle) {
             return res.status(400).json({ message: 'Missing required request fields' });
         }
 
-        if (mongoose.connection.readyState === 1) {
-            const newRequest = new RequestModel({ studentName, branch, resourceTitle, details });
-            const savedRequest = await newRequest.save();
-            return res.status(201).json(savedRequest);
-        }
-
-        // In-memory fallback
-        const newRequest = {
-            _id: `req-${Date.now()}`,
-            studentName,
-            branch,
-            resourceTitle,
-            details: details || "",
-            createdAt: new Date()
-        };
-        memoryRequests.unshift(newRequest);
-        res.status(201).json(newRequest);
+        const newRequest = new RequestModel({ studentName, userEmail, branch, resourceTitle, details });
+        const savedRequest = await newRequest.save();
+        return res.status(201).json(savedRequest);
     } catch (error) {
         res.status(500).json({ message: 'Failed to post request', error: error.message });
     }

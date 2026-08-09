@@ -596,7 +596,7 @@
                 if (window.fetchFastResources) {
                     allBtechResources = await window.fetchFastResources('/resources?category=BTech');
                 } else {
-                    const res = await fetch('/resources?category=BTech');
+                    const res = await window.digilibApiFetch('/resources?category=BTech');
                     allBtechResources = res.ok ? await res.json() : [];
                 }
             } catch (err) {

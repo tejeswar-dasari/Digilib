@@ -664,20 +664,28 @@
             }
 
             try {
-                const res = await fetch('/resources', {
+                const res = await window.digilibApiFetch('/resources', {
                     method: 'POST',
                     body: formData
                 });
 
-                if (window.hideDigilibLoader) window.hideDigilibLoader();
+                if (!res.ok) {
+                    let message = 'Failed to save resource.';
+                    try {
+                        const data = await res.json();
+                        if (data?.message) message = data.message;
+                    } catch (_) {}
+                    throw new Error(message);
+                }
 
+                if (window.hideDigilibLoader) window.hideDigilibLoader();
                 showToast('✓ Resource uploaded successfully', 'success');
                 showToast('Your contribution is now available in DigiLib.', 'info');
                 e.target.reset();
 
                 if (activeFulfillId) {
                     try {
-                        await fetch(`/requests/${activeFulfillId}`, { method: 'DELETE' });
+                        await window.digilibApiFetch(`/requests/${activeFulfillId}`, { method: 'DELETE' });
                     } catch (err) {}
                     setTimeout(() => {
                         window.location.href = 'request.html';
@@ -685,17 +693,8 @@
                 }
             } catch (err) {
                 if (window.hideDigilibLoader) window.hideDigilibLoader();
-                showToast('✓ Resource uploaded successfully', 'success');
-                showToast('Your contribution is now available in DigiLib.', 'info');
-                e.target.reset();
-                if (activeFulfillId) {
-                    try {
-                        await fetch(`/requests/${activeFulfillId}`, { method: 'DELETE' });
-                    } catch (e) {}
-                    setTimeout(() => {
-                        window.location.href = 'request.html';
-                    }, 1500);
-                }
+                console.error('Contribution failed:', err);
+                showToast(`✗ ${err.message || 'Failed to upload resource.'}`, 'error');
             } finally {
                 if (submitBtn) submitBtn.disabled = false;
             }

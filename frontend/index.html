@@ -1023,7 +1023,7 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             const currentStudentName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.name : (localStorage.getItem('digilib_user_name') || 'Student');
 
             try {
-                const res = await fetch('/requests', {
+                const res = await fetch(`${BACKEND_URL}/requests`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1061,7 +1061,8 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                     showToast('Failed to submit request. Please try again.', 'error');
                 }
             } catch (err) {
-                showToast('Request submitted successfully!', 'success');
+                console.error('Request submission failed:', err);
+                showToast(`✗ ${err.message || 'Failed to submit request.'}`, 'error');
             }
         }
 
@@ -1455,15 +1456,20 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                 const formatLabel = item.format;
                 const resourceId = item._id || item.id;
 
-                let resourceUrl = item.url || item.fileUrl || item.targetLink || '';
-                if (resourceUrl && !resourceUrl.startsWith('http') && !resourceUrl.startsWith('blob:') && !resourceUrl.startsWith('/')) {
-                    resourceUrl = `${BACKEND_URL}/${resourceUrl}`;
-                }
-
-                const targetLink = resourceUrl || ((item._id && !String(item._id).startsWith('local-')) ? `${BACKEND_URL}/download/${item._id}` : '#');
                 const actionInfo = (typeof getResourceActionInfo === 'function')
                     ? getResourceActionInfo(item)
-                    : { text: 'Download File', icon: 'download' };
+                    : { text: 'Download File', icon: 'download', isExternal: false };
+                let resourceUrl = item.url || item.fileUrl || item.targetLink || '';
+                let targetLink = '#';
+
+                if (actionInfo.isExternal) {
+                    targetLink = resourceUrl || '#';
+                } else if (resourceId && !String(resourceId).startsWith('local-')) {
+                    // Always use the backend download endpoint for files so the original uploaded filename is retained.
+                    targetLink = digilibApiUrl(`/download/${resourceId}`);
+                } else if (resourceUrl) {
+                    targetLink = /^https?:\/\//i.test(resourceUrl) ? resourceUrl : digilibApiUrl(resourceUrl);
+                }
 
                 card.innerHTML = `
                     <div class="space-y-4">
@@ -1600,27 +1606,17 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                         database.unshift(savedResource);
                         showToast('Wonderful! Your study resource was published to the live stream.', 'success');
                     } else {
-                        throw new Error("Server rejected request");
+                        let message = "Server rejected the request";
+                        try {
+                            const data = await response.json();
+                            if (data?.message) message = data.message;
+                        } catch (_) {}
+                        throw new Error(message);
                     }
-                } catch (err) {
-                    console.warn("Backend post failed, adding to session cache:", err);
-                    
-                    // Offline Fallback capability
-                    const fallbackResource = {
-                        id: `local-${Date.now()}`,
-                        name: nameVal,
-                        type: typeVal,
-                        branch: branchVal,
-                        year: yearVal,
-                        semester: semesterVal,
-                        format: formatVal,
-                        url: resourceUrl,
-                        fileName: fileNameVal,
-                        clicks: 0,
-                        verified: true
-                    };
-                    database.unshift(fallbackResource);
-                    showToast('Server connection issues! Added to temporary session feed.', 'info');
+                    } catch (err) {
+                    console.error('Resource contribution failed:', err);
+                    showToast(`✗ ${err.message || 'Could not save resource to MongoDB.'}`, 'error');
+                    return;
                 }
 
                 userStatsContributed += 1;
@@ -2176,10 +2172,8 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
                 if (!response.ok || !contentType.includes('application/json')) throw new Error("Server issues");
                 localRequestsCache = await response.json();
             } catch (err) {
-                console.warn("Backend disconnected, showing safe mock campus requests.");
-                localRequestsCache = [
-                    { _id: "req-mock-1", studentName: "TEJESWAR", branch: "Computer Science (CSE)", resourceTitle: "Discrete Mathematics Graph Theory Spanning Tree Notes", details: "Urgent need for internal exam prep!" }
-                ];
+                console.error('Failed to fetch campus requests:', err);
+                localRequestsCache = [];
             }
             renderRequestsBoardUI();
         }
@@ -2316,15 +2310,22 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
     submitBtn.disabled = false;
     submitBtn.innerText = "Post Request";
 }
-                        } else { throw new Error(); }
+                        } else {
+                            let message = "Server rejected the request";
+                            try {
+                                const data = await response.json();
+                                if (data?.message) message = data.message;
+                            } catch (_) {}
+                            throw new Error(message);
+                        }
                     } catch(err) {
-                        payload._id = "local-req-" + Date.now();
-                        localRequestsCache.unshift(payload);
-                        showToast("Server offline. Request posted temporarily to runtime dashboard view.", "info");
+                        console.error('Request submission failed:', err);
+                        showToast(`✗ ${err.message || 'Could not save request to MongoDB.'}`, 'error');
                         if (submitBtn) {
     submitBtn.disabled = false;
     submitBtn.innerText = "Post Request";
 }
+                        return;
                     }
 
                     this.reset();

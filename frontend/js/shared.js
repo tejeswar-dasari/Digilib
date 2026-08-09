@@ -1,3 +1,19 @@
+// DigiLib API configuration
+// Keep all frontend API calls pointed at the deployed Express backend.
+// You can override this before shared.js loads with window.DIGILIB_API_BASE.
+window.DIGILIB_API_BASE = window.DIGILIB_API_BASE || 'https://digilib-backend-v0r2.onrender.com';
+
+function digilibApiUrl(path) {
+    if (/^https?:\/\//i.test(path)) return path;
+    const base = String(window.DIGILIB_API_BASE || '').replace(/\/+$/, '');
+    const cleanPath = String(path || '').replace(/^\/+/, '');
+    return `${base}/${cleanPath}`;
+}
+window.digilibApiUrl = digilibApiUrl;
+window.digilibApiFetch = function(path, options) {
+    return fetch(digilibApiUrl(path), options);
+};
+
 // Reusable Global DigiLib Loading Component
 function showDigilibLoader(titleText = 'Opening Resources...', subtitleText = 'DIGITAL ACADEMIC LIBRARY') {
     let loader = document.getElementById('digilib-global-loader');
@@ -102,11 +118,12 @@ window.sortResources = sortResources;
 window.DigiLibResourceCache = window.DigiLibResourceCache || new Map();
 
 async function fetchFastResources(url) {
-    if (window.DigiLibResourceCache.has(url)) {
-        const cached = window.DigiLibResourceCache.get(url);
+    const apiUrl = digilibApiUrl(url);
+    if (window.DigiLibResourceCache.has(apiUrl)) {
+        const cached = window.DigiLibResourceCache.get(apiUrl);
         // Revalidate asynchronously in background if older than 30s
         if (Date.now() - cached.timestamp > 30000) {
-            fetch(url).then(async r => {
+            fetch(apiUrl).then(async r => {
                 const contentType = r.headers.get('content-type') || '';
                 if (r.ok && contentType.includes('application/json')) {
                     try { return await r.json(); } catch(e) { return null; }
@@ -114,7 +131,7 @@ async function fetchFastResources(url) {
                 return null;
             }).then(data => {
                 if (data && Array.isArray(data)) {
-                    window.DigiLibResourceCache.set(url, { data, timestamp: Date.now() });
+                    window.DigiLibResourceCache.set(apiUrl, { data, timestamp: Date.now() });
                 }
             }).catch(() => {});
         }
@@ -122,13 +139,13 @@ async function fetchFastResources(url) {
     }
 
     try {
-        const res = await fetch(url);
+        const res = await fetch(apiUrl);
         const contentType = res.headers.get('content-type') || '';
         if (res.ok && contentType.includes('application/json')) {
             try {
                 const data = await res.json();
                 if (Array.isArray(data)) {
-                    window.DigiLibResourceCache.set(url, { data, timestamp: Date.now() });
+                    window.DigiLibResourceCache.set(apiUrl, { data, timestamp: Date.now() });
                     return data;
                 }
             } catch (jsonErr) {
@@ -136,8 +153,8 @@ async function fetchFastResources(url) {
             }
         }
     } catch (e) {
-        if (window.DigiLibResourceCache.has(url)) {
-            return window.DigiLibResourceCache.get(url).data;
+        if (window.DigiLibResourceCache.has(apiUrl)) {
+            return window.DigiLibResourceCache.get(apiUrl).data;
         }
     }
     return [];
@@ -145,7 +162,7 @@ async function fetchFastResources(url) {
 window.fetchFastResources = fetchFastResources;
 
 function prefetchResources(url) {
-    if (!window.DigiLibResourceCache.has(url)) {
+    if (!window.DigiLibResourceCache.has(apiUrl)) {
         fetchFastResources(url).catch(() => {});
     }
 }
@@ -236,7 +253,7 @@ function toggleMobileDrawer() {
 async function trackClick(id) {
     if (!id) return;
     try {
-        await fetch(`/resources/${id}/click`, { method: 'POST' });
+        await window.digilibApiFetch(`/resources/${id}/click`, { method: 'POST' });
     } catch (e) {
         // Fallback or ignore network issue
     }
@@ -580,18 +597,31 @@ window.matchMaterialType = matchMaterialType;
 
 // Unified Resource Card Builder
 function renderStandardResourceCard(item) {
+    const actionInfo = getResourceActionInfo(item);
+
+    // Always route downloadable files through the backend /download endpoint.
+    // This lets the backend send the original uploaded filename (including its
+    // extension) via Content-Disposition instead of exposing the Cloudinary
+    // public URL, which can otherwise cause browsers to save files with a
+    // generated/generic name. External websites/YouTube links still open directly.
     let targetUrl = item.url || item.fileUrl || item.targetLink || '';
-    if (targetUrl) {
-        if (!targetUrl.startsWith('http') && !targetUrl.startsWith('https') && !targetUrl.startsWith('blob:') && !targetUrl.startsWith('/')) {
-            targetUrl = `/${targetUrl}`;
+    const resourceId = item._id || item.id;
+
+    if (actionInfo.isExternal) {
+        // Keep external resources on their original URL.
+        if (targetUrl && !/^https?:\/\//i.test(targetUrl) && !targetUrl.startsWith('blob:')) {
+            targetUrl = digilibApiUrl(targetUrl);
         }
-    } else if (item._id || item.id) {
-        targetUrl = `/download/${item._id || item.id}`;
+    } else if (resourceId) {
+        // Backend download endpoint preserves the original filename.
+        targetUrl = digilibApiUrl(`/download/${resourceId}`);
+    } else if (targetUrl) {
+        if (!/^https?:\/\//i.test(targetUrl) && !targetUrl.startsWith('blob:') && !targetUrl.startsWith('/')) {
+            targetUrl = digilibApiUrl(targetUrl);
+        }
     } else {
         targetUrl = '#';
     }
-
-    const actionInfo = getResourceActionInfo(item);
     const badgeInfo = getResourceBadgeInfo(item);
 
     // Format date
@@ -806,7 +836,7 @@ window.canUserDeleteRequest = canUserDeleteRequest;
 // Auto-updates request count badges across all page navbars
 async function updateNavRequestCount() {
     try {
-        const res = await fetch('/requests');
+        const res = await window.digilibApiFetch('/requests');
         if (res.ok) {
             const requests = await res.json();
             const count = Array.isArray(requests) ? requests.length : 0;

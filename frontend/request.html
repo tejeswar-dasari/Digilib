@@ -602,7 +602,7 @@
 
         async function fetchCommunityRequests() {
             try {
-                const res = await fetch('/requests');
+                const res = await window.digilibApiFetch('/requests');
                 const contentType = res.headers.get('content-type') || '';
                 if (res.ok && contentType.includes('application/json')) {
                     allCommunityRequests = await res.json();
@@ -725,7 +725,7 @@
         async function deleteRequest(reqId) {
             if (!confirm('Are you sure you want to delete this resource request?')) return;
             try {
-                const res = await fetch(`/requests/${reqId}`, { method: 'DELETE' });
+                const res = await window.digilibApiFetch(`/requests/${reqId}`, { method: 'DELETE' });
                 if (res.ok) {
                     showToast('Request deleted successfully!', 'success');
                     await fetchCommunityRequests();
@@ -790,7 +790,7 @@
             }
 
             try {
-                const res = await fetch('/requests', {
+                const res = await window.digilibApiFetch('/requests', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -802,18 +802,24 @@
                     })
                 });
 
-                if (window.hideDigilibLoader) window.hideDigilibLoader();
+                if (!res.ok) {
+                    let message = 'Failed to submit request.';
+                    try {
+                        const data = await res.json();
+                        if (data?.message) message = data.message;
+                    } catch (_) {}
+                    throw new Error(message);
+                }
 
+                if (window.hideDigilibLoader) window.hideDigilibLoader();
                 showToast('✓ Request submitted successfully', 'success');
                 showToast('Your request is visible to the DigiLib community.', 'info');
                 e.target.reset();
                 await fetchCommunityRequests();
             } catch (err) {
                 if (window.hideDigilibLoader) window.hideDigilibLoader();
-                showToast('✓ Request submitted successfully', 'success');
-                showToast('Your request is visible to the DigiLib community.', 'info');
-                e.target.reset();
-                await fetchCommunityRequests();
+                console.error('Request submission failed:', err);
+                showToast(`✗ ${err.message || 'Failed to submit request.'}`, 'error');
             } finally {
                 if (submitBtn) submitBtn.disabled = false;
             }
