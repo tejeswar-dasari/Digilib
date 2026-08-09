@@ -476,7 +476,7 @@
                             <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">Community Requested Materials</h2>
                         </div>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                            Browse active requests posted by students. Anyone can click <strong class="text-emerald-600 dark:text-emerald-400 font-bold">Fulfill Request</strong> to upload the material!
+                            Browse active requests posted by students. Anyone can click <strong class="text-emerald-600 dark:text-emerald-400 font-bold">Fulfill Request</strong> to upload the material. You can cancel only your own requests; admins can manage all requests!
                         </p>
                     </div>
                     <div id="req-total-badge" class="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-black self-start sm:self-auto">
@@ -711,7 +711,7 @@
 
                             ${canDelete ? `
                                 <button onclick="deleteRequest('${reqId}')" title="Delete this request" class="px-3 py-2 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 text-rose-600 dark:text-rose-400 font-bold text-xs rounded-xl flex items-center gap-1 transition-all">
-                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> ${localStorage.getItem('digilib_is_admin') === 'true' ? 'Delete' : 'Cancel'}
                                 </button>
                             ` : ''}
                         </div>
@@ -727,10 +727,12 @@
             try {
                 const res = await window.digilibApiFetch(`/requests/${reqId}`, { method: 'DELETE' });
                 if (res.ok) {
-                    showToast('Request deleted successfully!', 'success');
+                    showToast(localStorage.getItem('digilib_is_admin') === 'true' ? 'Request deleted successfully!' : 'Your request was cancelled successfully!', 'success');
                     await fetchCommunityRequests();
                 } else {
-                    showToast('Failed to delete request', 'error');
+                    let msg = 'Failed to delete request';
+                    try { const data = await res.json(); if (data?.message) msg = data.message; } catch (_) {}
+                    showToast(msg, 'error');
                 }
             } catch (err) {
                 showToast('Error deleting request', 'error');

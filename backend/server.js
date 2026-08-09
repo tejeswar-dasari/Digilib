@@ -9,11 +9,91 @@ const fs = require('fs');
 const compression = require('compression');
 const bcrypt = require('bcryptjs');
 const axios = require('axios');
+const crypto = require('crypto');
 
 const Resource = require('./models/Resource');
 const User = require('./models/User');
 
 const app = express();
+
+// Lightweight signed session token. No extra JWT dependency is required.
+const AUTH_SECRET = String(process.env.AUTH_SECRET || '').trim();
+if (!AUTH_SECRET || AUTH_SECRET.length < 32) {
+    console.error('AUTH_SECRET must be configured in the backend environment and be at least 32 characters long.');
+    process.exit(1);
+}
+const AUTH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
+
+function base64UrlEncode(value) {
+    return Buffer.from(value).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
+function base64UrlDecode(value) {
+    const padded = String(value).replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(String(value).length / 4) * 4, '=');
+    return Buffer.from(padded, 'base64').toString('utf8');
+}
+
+function signSession(payload) {
+    const body = base64UrlEncode(JSON.stringify(payload));
+    const signature = crypto.createHmac('sha256', AUTH_SECRET).update(body).digest('base64')
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+    return `${body}.${signature}`;
+}
+
+function verifySession(token) {
+    if (!token || typeof token !== 'string' || !token.includes('.')) return null;
+    const [body, signature] = token.split('.');
+    const expected = crypto.createHmac('sha256', AUTH_SECRET).update(body).digest('base64')
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+    const a = Buffer.from(signature);
+    const b = Buffer.from(expected);
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+    try {
+        const payload = JSON.parse(base64UrlDecode(body));
+        if (!payload.exp || payload.exp < Math.floor(Date.now() / 1000)) return null;
+        return payload;
+    } catch (_) {
+        return null;
+    }
+}
+
+function createSession(user, roleOverride) {
+    return signSession({
+        sub: String(user._id || user.email),
+        email: String(user.email || '').toLowerCase().trim(),
+        role: roleOverride || user.role || 'student',
+        name: user.name || '',
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + AUTH_TOKEN_TTL_SECONDS
+    });
+}
+
+function getSession(req) {
+    const header = req.headers.authorization || '';
+    return verifySession(header.startsWith('Bearer ') ? header.slice(7).trim() : '');
+}
+
+function requireAuth(req, res, next) {
+    const session = getSession(req);
+    if (!session) return res.status(401).json({ message: 'Please log in to perform this action.' });
+    req.userSession = session;
+    next();
+}
+
+function requireAdmin(req, res, next) {
+    const session = getSession(req);
+    if (!session || session.role !== 'admin') return res.status(403).json({ message: 'Admin access required.' });
+    req.userSession = session;
+    next();
+}
+
+function isAdminUser(user) {
+    if (!user) return false;
+    const email = String(user.email || '').toLowerCase().trim();
+    return user.role === 'admin' ||
+        String(user.roll || '').toUpperCase().startsWith('ADMIN-') ||
+        String(user.branch || '').toLowerCase() === 'administration';
+}
 
 app.use(cors());
 app.use(compression());
@@ -379,7 +459,8 @@ let memoryUsers = [
         email: "tejeswartejeswar56@gmail.com",
         password: defaultAdminPassHash,
         roll: "ADMIN-001",
-        branch: "Computer Science (CSE)"
+        branch: "Computer Science (CSE)",
+        role: "admin"
     },
     {
         _id: "admin-user-2",
@@ -387,7 +468,8 @@ let memoryUsers = [
         email: "admin@digilib.com",
         password: defaultAdminPassHash,
         roll: "ADMIN-002",
-        branch: "Administration"
+        branch: "Administration",
+        role: "admin"
     }
 ];
 
@@ -429,87 +511,158 @@ app.get('/health', (req, res) => {
     });
 });
 
-// ADMIN AUTHENTICATION ENDPOINT - Email & Password Database Verification
+// ADMIN AUTHENTICATION ENDPOINT
+// Admin credentials are verified only on the backend. Never put ADMIN_EMAIL,
+// ADMIN_PASSWORD, or AUTH_SECRET in frontend code.
 app.post('/admin-login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        if (!email || !password) {
+        const normalizedEmail = String(email || '').toLowerCase().trim();
+        const inputPassword = String(password || '');
+
+        if (!normalizedEmail || !inputPassword) {
             return res.status(400).json({ success: false, message: 'Both Admin Email and Password are required.' });
         }
 
-        const normalizedEmail = email.toLowerCase().trim();
-        const inputPassword = password.trim();
+        const configuredAdminEmail = String(process.env.ADMIN_EMAIL || '').toLowerCase().trim();
+        const configuredAdminPassword = String(process.env.ADMIN_PASSWORD || '');
 
-        const masterKeys = [
-            process.env.ADMIN_PASSWORD || "Tejeswar2709",
-            "Tejessen45"
-        ];
+        if (!configuredAdminEmail || !configuredAdminPassword) {
+            return res.status(503).json({
+                success: false,
+                message: 'Admin credentials are not configured on the backend.'
+            });
+        }
 
+        // Primary administrator credentials come from Render/backend environment variables.
+        // They are never shipped to the browser.
+        if (normalizedEmail === configuredAdminEmail && inputPassword === configuredAdminPassword) {
+            let adminUser = null;
+
+            if (mongoose.connection.readyState === 1) {
+                adminUser = await User.findOne({ email: configuredAdminEmail });
+
+                if (adminUser) {
+                    adminUser.name = adminUser.name || 'DigiLib Administrator';
+                    adminUser.roll = 'ADMIN-001';
+                    adminUser.branch = 'Administration';
+                    adminUser.role = 'admin';
+                    adminUser.password = await bcrypt.hash(configuredAdminPassword, 12);
+                    await adminUser.save();
+                } else {
+                    adminUser = await User.create({
+                        name: 'DigiLib Administrator',
+                        email: configuredAdminEmail,
+                        password: await bcrypt.hash(configuredAdminPassword, 12),
+                        roll: 'ADMIN-001',
+                        branch: 'Administration',
+                        role: 'admin'
+                    });
+                }
+            }
+
+            if (!adminUser) {
+                adminUser = memoryUsers.find(u => u.email === configuredAdminEmail);
+                if (!adminUser) {
+                    adminUser = {
+                        _id: `admin-mem-${Date.now()}`,
+                        name: 'DigiLib Administrator',
+                        email: configuredAdminEmail,
+                        password: await bcrypt.hash(configuredAdminPassword, 12),
+                        roll: 'ADMIN-001',
+                        branch: 'Administration',
+                        role: 'admin'
+                    };
+                    memoryUsers.push(adminUser);
+                }
+                adminUser.role = 'admin';
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: 'Administrator credentials verified by backend.',
+                token: createSession(adminUser, 'admin'),
+                user: {
+                    name: adminUser.name,
+                    email: adminUser.email,
+                    role: 'admin'
+                }
+            });
+        }
+
+        // Legacy/admin accounts stored in MongoDB may also log in, but only when
+        // their account is explicitly marked as an administrator.
         let foundUser = null;
-        let isMatch = false;
-
-        // 1. Verify against MongoDB database if connected
         if (mongoose.connection.readyState === 1) {
             foundUser = await User.findOne({ email: normalizedEmail });
-            if (foundUser) {
-                isMatch = await bcrypt.compare(inputPassword, foundUser.password);
-                if (!isMatch && masterKeys.includes(inputPassword)) {
-                    isMatch = true;
-                }
-            } else if (masterKeys.includes(inputPassword)) {
-                // If master key is provided for a new admin email, auto-register admin in DB
-                const hashedMaster = await bcrypt.hash(inputPassword, 10);
-                foundUser = new User({
-                    name: "Verified Administrator",
-                    email: normalizedEmail,
-                    password: hashedMaster,
-                    roll: "ADMIN-DB",
-                    branch: "Administration"
-                });
-                await foundUser.save();
-                isMatch = true;
-            }
         }
-
-        // 2. Fallback to in-memory store if DB didn't find or is offline
         if (!foundUser) {
             foundUser = memoryUsers.find(u => u.email === normalizedEmail);
-            if (foundUser) {
-                isMatch = await bcrypt.compare(inputPassword, foundUser.password);
-                if (!isMatch && masterKeys.includes(inputPassword)) {
-                    isMatch = true;
-                }
-            } else if (masterKeys.includes(inputPassword)) {
-                const hashedMaster = bcrypt.hashSync(inputPassword, 10);
-                foundUser = {
-                    _id: `admin-mem-${Date.now()}`,
-                    name: "Verified Administrator",
-                    email: normalizedEmail,
-                    password: hashedMaster,
-                    roll: "ADMIN-MEM",
-                    branch: "Administration"
-                };
-                memoryUsers.push(foundUser);
-                isMatch = true;
-            }
         }
 
-        if (!foundUser) {
-            return res.status(401).json({ success: false, message: 'Admin email not found in database records.' });
+        if (!foundUser || !isAdminUser(foundUser)) {
+            return res.status(401).json({ success: false, message: 'Invalid administrator credentials.' });
         }
 
+        const isMatch = await bcrypt.compare(inputPassword, foundUser.password);
         if (!isMatch) {
-            return res.status(401).json({ success: false, message: 'Incorrect admin password. Verification failed.' });
+            return res.status(401).json({ success: false, message: 'Invalid administrator credentials.' });
         }
 
         return res.status(200).json({
             success: true,
-            message: 'Admin email and password verified successfully from database.',
-            user: { name: foundUser.name, email: foundUser.email }
+            message: 'Administrator account verified by backend.',
+            token: createSession(foundUser, 'admin'),
+            user: {
+                name: foundUser.name,
+                email: foundUser.email,
+                role: 'admin'
+            }
         });
     } catch (error) {
-        console.error("Admin Auth Error:", error);
+        console.error('Admin Auth Error:', error);
         return res.status(500).json({ success: false, message: 'Server verification error' });
+    }
+});
+
+// Return the authenticated user's current profile.
+// This is used to restore the profile UI after navigation/reload.
+app.get('/me', requireAuth, async (req, res) => {
+    try {
+        const session = req.userSession;
+        let user = null;
+
+        if (mongoose.connection.readyState === 1 && mongoose.Types.ObjectId.isValid(session.sub)) {
+            user = await User.findById(session.sub).lean();
+        }
+
+        if (!user && mongoose.connection.readyState === 1 && session.email) {
+            user = await User.findOne({ email: session.email }).lean();
+        }
+
+        if (!user) {
+            user = memoryUsers.find(u => String(u.email).toLowerCase() === String(session.email).toLowerCase());
+        }
+
+        if (!user) {
+            return res.status(404).json({ message: 'User profile not found.' });
+        }
+
+        return res.json({
+            name: user.name || session.name || '',
+            email: user.email || session.email || '',
+            roll: user.roll || '',
+            branch: user.branch || '',
+            role: user.role || session.role || 'student',
+            educationLevel: user.educationLevel || '',
+            schoolClass: user.schoolClass || '',
+            stream: user.stream || '',
+            course: user.course || '',
+            collegeName: user.collegeName || ''
+        });
+    } catch (error) {
+        console.error('GET /me error:', error.message);
+        return res.status(500).json({ message: 'Failed to load profile.' });
     }
 });
 
@@ -664,7 +817,7 @@ app.get('/download/:id', async (req, res) => {
 });
 
 // ADD NEW RESOURCE
-app.post('/resources', requireMongo, upload.single('file'), async (req, res) => {
+app.post('/resources', requireAuth, requireMongo, upload.single('file'), async (req, res) => {
     try {
         if (!req.body.name || !req.body.name.trim()) {
             return res.status(400).json({ message: 'Resource name is required.' });
@@ -742,7 +895,7 @@ app.patch('/resources/:id/click', handleClick);
 app.post('/resources/:id/click', handleClick);
 
 // DELETE RESOURCE
-app.delete('/resources/:id', async (req, res) => {
+app.delete('/resources/:id', requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         invalidateResourceCache();
@@ -764,37 +917,21 @@ app.delete('/resources/:id', async (req, res) => {
 // STUDENT SIGNUP
 app.post('/signup', async (req, res) => {
     try {
-        const {
-            name, email, password,
-            educationLevel = 'B.Tech',
-            roll = '',
-            branch = '',
-            schoolClass = '',
-            stream = '',
-            course = '',
-            collegeName = ''
-        } = req.body;
+        const { name, email, password, roll, branch, educationLevel, schoolClass, stream, course, collegeName } = req.body;
 
-        if (!name || !email || !password || !educationLevel) {
-            return res.status(400).json({ message: 'Name, email, password and education level are required.' });
-        }
-
-        const allowedLevels = ['School', 'Intermediate', 'Diploma', 'B.Tech'];
-        if (!allowedLevels.includes(educationLevel)) {
-            return res.status(400).json({ message: 'Invalid education level.' });
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: 'Missing required parameters (name, email, or password).' });
         }
 
         const normalizedEmail = email.toLowerCase().trim();
-        const normalizedRoll = String(roll || '').trim();
 
         if (mongoose.connection.readyState === 1) {
             const existingUser = await User.findOne({ email: normalizedEmail });
             if (existingUser) {
                 return res.status(400).json({ message: 'An account with this email address already exists.' });
             }
-
-            if (normalizedRoll) {
-                const existingRoll = await User.findOne({ roll: normalizedRoll });
+            if (roll) {
+                const existingRoll = await User.findOne({ roll });
                 if (existingRoll) {
                     return res.status(400).json({ message: 'This Roll Number is already registered.' });
                 }
@@ -802,40 +939,29 @@ app.post('/signup', async (req, res) => {
 
             const hashedPassword = await bcrypt.hash(password, 10);
             const user = new User({
-                name: name.trim(),
+                name,
                 email: normalizedEmail,
                 password: hashedPassword,
-                educationLevel,
-                roll: normalizedRoll,
-                branch: String(branch || '').trim(),
-                schoolClass: String(schoolClass || '').trim(),
-                stream: String(stream || '').trim(),
-                course: String(course || '').trim(),
-                collegeName: String(collegeName || '').trim()
+                roll: roll || "STU-OFFLINE",
+                branch: branch || "Computer Science (CSE)",
+                role: 'student',
+                educationLevel: educationLevel || '',
+                schoolClass: schoolClass || '',
+                stream: stream || '',
+                course: course || '',
+                collegeName: collegeName || ''
             });
             await user.save();
 
             return res.status(201).json({
                 message: 'Signup successful',
-                user: {
-                    id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    educationLevel: user.educationLevel,
-                    roll: user.roll,
-                    branch: user.branch,
-                    schoolClass: user.schoolClass,
-                    stream: user.stream,
-                    course: user.course,
-                    collegeName: user.collegeName
-                }
+                token: createSession(user, 'student'),
+                user: { name: user.name, email: user.email, roll: user.roll, branch: user.branch, role: 'student', educationLevel: user.educationLevel, schoolClass: user.schoolClass, stream: user.stream, course: user.course, collegeName: user.collegeName }
             });
         }
 
         // In-memory fallback
-        const existingInMemory = memoryUsers.find(
-            u => u.email === normalizedEmail || (normalizedRoll && u.roll === normalizedRoll)
-        );
+        const existingInMemory = memoryUsers.find(u => u.email === normalizedEmail || (roll && u.roll === roll));
         if (existingInMemory) {
             return res.status(400).json({ message: 'Account or Roll Number already registered.' });
         }
@@ -843,33 +969,24 @@ app.post('/signup', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = {
             _id: `user-${Date.now()}`,
-            name: name.trim(),
+            name,
             email: normalizedEmail,
             password: hashedPassword,
-            educationLevel,
-            roll: normalizedRoll,
-            branch: String(branch || '').trim(),
-            schoolClass: String(schoolClass || '').trim(),
-            stream: String(stream || '').trim(),
-            course: String(course || '').trim(),
-            collegeName: String(collegeName || '').trim()
+            roll: roll || "STU-OFFLINE",
+            branch: branch || "Computer Science (CSE)",
+            role: 'student',
+            educationLevel: educationLevel || '',
+            schoolClass: schoolClass || '',
+            stream: stream || '',
+            course: course || '',
+            collegeName: collegeName || ''
         };
         memoryUsers.push(newUser);
 
-        return res.status(201).json({
+        res.status(201).json({
             message: 'Signup successful',
-            user: {
-                id: newUser._id,
-                name: newUser.name,
-                email: newUser.email,
-                educationLevel: newUser.educationLevel,
-                roll: newUser.roll,
-                branch: newUser.branch,
-                schoolClass: newUser.schoolClass,
-                stream: newUser.stream,
-                course: newUser.course,
-                collegeName: newUser.collegeName
-            }
+            token: createSession(newUser, 'student'),
+            user: { name: newUser.name, email: newUser.email, roll: newUser.roll, branch: newUser.branch, role: 'student', educationLevel: newUser.educationLevel, schoolClass: newUser.schoolClass, stream: newUser.stream, course: newUser.course, collegeName: newUser.collegeName }
         });
     } catch (error) {
         console.error("Signup Error:", error);
@@ -893,26 +1010,14 @@ app.post('/login', async (req, res) => {
             if (!user) {
                 return res.status(400).json({ message: 'No account found with this email address.' });
             }
-
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
                 return res.status(400).json({ message: 'Incorrect password. Please try again.' });
             }
-
             return res.status(200).json({
                 message: 'Login successful',
-                user: {
-                    id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    educationLevel: user.educationLevel || 'B.Tech',
-                    roll: user.roll || '',
-                    branch: user.branch || '',
-                    schoolClass: user.schoolClass || '',
-                    stream: user.stream || '',
-                    course: user.course || '',
-                    collegeName: user.collegeName || ''
-                }
+                token: createSession(user, 'student'),
+                user: { name: user.name, email: user.email, roll: user.roll || "STU-OFFLINE", branch: user.branch || "Computer Science (CSE)", role: 'student', educationLevel: user.educationLevel || '', schoolClass: user.schoolClass || '', stream: user.stream || '', course: user.course || '', collegeName: user.collegeName || '' }
             });
         }
 
@@ -921,26 +1026,15 @@ app.post('/login', async (req, res) => {
         if (!user) {
             return res.status(400).json({ message: 'No account found with this email address.' });
         }
-
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Incorrect password. Please try again.' });
         }
 
-        return res.status(200).json({
+        res.status(200).json({
             message: 'Login successful',
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                educationLevel: user.educationLevel || 'B.Tech',
-                roll: user.roll || '',
-                branch: user.branch || '',
-                schoolClass: user.schoolClass || '',
-                stream: user.stream || '',
-                course: user.course || '',
-                collegeName: user.collegeName || ''
-            }
+            token: createSession(user, 'student'),
+            user: { name: user.name, email: user.email, roll: user.roll, branch: user.branch, role: 'student', educationLevel: user.educationLevel || '', schoolClass: user.schoolClass || '', stream: user.stream || '', course: user.course || '', collegeName: user.collegeName || '' }
         });
     } catch (error) {
         console.error("Login Error:", error);
@@ -1009,9 +1103,11 @@ app.get('/requests', async (req, res) => {
 });
 
 // SUBMIT A NEW RESOURCE REQUEST
-app.post('/requests', requireMongo, async (req, res) => {
+app.post('/requests', requireAuth, requireMongo, async (req, res) => {
     try {
-        const { studentName, userEmail, branch, resourceTitle, details } = req.body;
+        const { branch, resourceTitle, details } = req.body;
+        const studentName = req.userSession.name || 'Student';
+        const userEmail = req.userSession.email || '';
         if (!studentName || !branch || !resourceTitle) {
             return res.status(400).json({ message: 'Missing required request fields' });
         }
@@ -1025,21 +1121,44 @@ app.post('/requests', requireMongo, async (req, res) => {
 });
 
 // DELETE/RESOLVE REQUEST
-app.delete('/requests/:id', async (req, res) => {
+app.delete('/requests/:id', requireAuth, async (req, res) => {
     try {
         const { id } = req.params;
+        const session = req.userSession;
+        const isAdmin = session.role === 'admin';
+
+        let requestDoc = null;
         if (mongoose.connection.readyState === 1 && mongoose.Types.ObjectId.isValid(id)) {
-            await RequestModel.findByIdAndDelete(id);
-            return res.json({ message: 'Request resolved and removed successfully!' });
+            requestDoc = await RequestModel.findById(id).lean();
+        } else {
+            requestDoc = memoryRequests.find(r => r._id === id || r.id === id) || null;
         }
 
-        // In-memory fallback
-        memoryRequests = memoryRequests.filter(r => r._id !== id && r.id !== id);
-        res.json({ message: 'Request resolved and removed successfully!' });
+        if (!requestDoc) {
+            return res.status(404).json({ message: 'Request not found.' });
+        }
+
+        const ownerEmail = String(requestDoc.userEmail || '').toLowerCase().trim();
+        const requesterEmail = String(session.email || '').toLowerCase().trim();
+        const isOwner = ownerEmail && requesterEmail && ownerEmail === requesterEmail;
+
+        if (!isAdmin && !isOwner) {
+            return res.status(403).json({ message: 'You can only delete your own requests.' });
+        }
+
+        if (mongoose.connection.readyState === 1 && mongoose.Types.ObjectId.isValid(id)) {
+            await RequestModel.findByIdAndDelete(id);
+        } else {
+            memoryRequests = memoryRequests.filter(r => r._id !== id && r.id !== id);
+        }
+
+        return res.json({ message: isAdmin ? 'Request deleted successfully by admin.' : 'Your request was cancelled successfully.' });
     } catch (error) {
+        console.error('Delete Request Error:', error);
         res.status(500).json({ message: 'Failed to delete request', error: error.message });
     }
 });
+
 
 // Catch-all route to serve index.html for SPA / static pages navigation
 app.use((req, res) => {

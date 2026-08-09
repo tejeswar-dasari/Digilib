@@ -17,50 +17,46 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-
-    // DigiLib education context
-    educationLevel: {
-        type: String,
-        enum: ['School', 'Intermediate', 'Diploma', 'B.Tech'],
-        default: 'B.Tech'
-    },
-
-    // Kept optional because school/inter users may not have an engineering roll number.
     roll: {
         type: String,
-        trim: true,
-        default: ''
+        required: true,
+        trim: true
     },
-
-    // B.Tech / Diploma branch, or an optional branch supplied by another course.
     branch: {
         type: String,
-        trim: true,
-        default: ''
+        required: true,
+        trim: true
     },
-
-    // School class, e.g. Class 6; Intermediate stream, e.g. MPC.
+    role: {
+        type: String,
+        enum: ['student', 'admin'],
+        default: 'student',
+        index: true
+    },
+    educationLevel: {
+        type: String,
+        default: '',
+        trim: true
+    },
     schoolClass: {
         type: String,
-        trim: true,
-        default: ''
+        default: '',
+        trim: true
     },
     stream: {
         type: String,
-        trim: true,
-        default: ''
+        default: '',
+        trim: true
     },
-
-    // Optional institution/course information.
     course: {
         type: String,
-        trim: true,
-        default: ''
+        default: '',
+        trim: true
     },
     collegeName: {
         type: String,
-        trim: true,
-        default: ''
+        default: '',
+        trim: true
     }
 }, {
     timestamps: true

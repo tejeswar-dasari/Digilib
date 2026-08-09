@@ -10,164 +10,12 @@ function digilibApiUrl(path) {
     return `${base}/${cleanPath}`;
 }
 window.digilibApiUrl = digilibApiUrl;
-window.digilibApiFetch = function(path, options) {
-    return fetch(digilibApiUrl(path), options);
+window.digilibApiFetch = function(path, options = {}) {
+    const opts = { ...options, headers: { ...(options.headers || {}) } };
+    const token = localStorage.getItem('digilib_auth_token');
+    if (token) opts.headers.Authorization = `Bearer ${token}`;
+    return fetch(digilibApiUrl(path), opts);
 };
-
-// Central user-session helpers. All pages use the same profile record.
-function getDigiLibUser() {
-    try {
-        const raw = localStorage.getItem('student');
-        if (raw) {
-            const user = JSON.parse(raw);
-            if (user && typeof user === 'object') return user;
-        }
-    } catch (e) {
-        console.warn('DigiLib profile session could not be parsed.', e);
-    }
-
-    // Backward compatibility with older DigiLib sessions.
-    const name = localStorage.getItem('digilib_user_name');
-    const email = localStorage.getItem('digilib_user_email');
-    if (name || email) {
-        return {
-            name: name || 'Guest User',
-            email: email || '',
-            educationLevel: localStorage.getItem('digilib_education_level') || 'B.Tech',
-            roll: localStorage.getItem('digilib_user_roll') || '',
-            branch: localStorage.getItem('digilib_user_branch') || ''
-        };
-    }
-    return null;
-}
-
-function persistDigiLibUser(user) {
-    if (!user) return;
-    const safeUser = {
-        id: user.id || user._id || '',
-        name: user.name || '',
-        email: user.email || '',
-        educationLevel: user.educationLevel || 'B.Tech',
-        roll: user.roll || '',
-        branch: user.branch || '',
-        schoolClass: user.schoolClass || '',
-        stream: user.stream || '',
-        course: user.course || '',
-        collegeName: user.collegeName || ''
-    };
-    localStorage.setItem('student', JSON.stringify(safeUser));
-    localStorage.setItem('digilib_user_name', safeUser.name);
-    localStorage.setItem('digilib_user_email', safeUser.email);
-    localStorage.setItem('digilib_education_level', safeUser.educationLevel);
-    localStorage.setItem('digilib_user_roll', safeUser.roll);
-    localStorage.setItem('digilib_user_branch', safeUser.branch);
-}
-window.getDigiLibUser = getDigiLibUser;
-window.persistDigiLibUser = persistDigiLibUser;
-
-function setDigiLibSelectValue(id, value) {
-    const el = document.getElementById(id);
-    if (!el || value === undefined || value === null || value === '') return false;
-    const wanted = String(value).trim().toLowerCase();
-    const option = Array.from(el.options).find(opt => {
-        const ov = String(opt.value || '').trim().toLowerCase();
-        const ot = String(opt.textContent || '').trim().toLowerCase();
-        return ov === wanted || ot === wanted || ov.includes(wanted) || wanted.includes(ov);
-    });
-    if (option) {
-        el.value = option.value;
-        el.dispatchEvent(new Event('change', { bubbles: true }));
-        return true;
-    }
-    return false;
-}
-window.setDigiLibSelectValue = setDigiLibSelectValue;
-
-// Automatically carries the selected education context into every module.
-function applyDigiLibEducationContext() {
-    const user = getDigiLibUser();
-    if (!user) return;
-
-    const level = String(user.educationLevel || '').toLowerCase();
-    const branch = String(user.branch || '');
-    const stream = String(user.stream || '');
-    const schoolClass = String(user.schoolClass || '');
-
-    // Resource modules: open the user's relevant section and preselect its filter.
-    if (level === 'b.tech' || level === 'btech') {
-        if (typeof window.selectBtechBranch === 'function' && branch) {
-            window.selectBtechBranch(branch, false, true);
-        }
-    } else if (level === 'intermediate') {
-        if (typeof window.selectInterCategory === 'function') {
-            window.selectInterCategory('Intermediate', false, true);
-            setTimeout(() => {
-                setDigiLibSelectValue('inter-stream-filter', stream);
-            }, 0);
-        }
-    } else if (level === 'diploma') {
-        if (typeof window.selectInterCategory === 'function') {
-            window.selectInterCategory('Diploma', false, true);
-            setTimeout(() => {
-                setDigiLibSelectValue('inter-stream-filter', branch);
-            }, 0);
-        }
-    } else if (level === 'school') {
-        if (typeof window.selectSchoolClass === 'function' && schoolClass) {
-            window.selectSchoolClass(schoolClass, false, true);
-        }
-    }
-
-    // Request / contribution modules: automatically select the user's module.
-    if (typeof window.selectModule === 'function') {
-        if (level === 'school') {
-            window.selectModule('school');
-            setTimeout(() => setDigiLibSelectValue('sch-req-class', schoolClass), 0);
-        } else if (level === 'intermediate') {
-            window.selectModule('inter');
-            setTimeout(() => {
-                setDigiLibSelectValue('inter-req-module', 'Intermediate');
-                setDigiLibSelectValue('inter-req-stream', stream);
-            }, 0);
-        } else if (level === 'diploma') {
-            window.selectModule('inter');
-            setTimeout(() => {
-                setDigiLibSelectValue('inter-req-module', 'Polytechnic Diploma');
-                setDigiLibSelectValue('inter-req-stream', branch);
-            }, 0);
-        } else if (level === 'b.tech' || level === 'btech') {
-            window.selectModule('btech');
-            setTimeout(() => setDigiLibSelectValue('btech-req-branch', branch), 0);
-        }
-    }
-
-    // Contribution page has the same selectModule function but different IDs.
-    if (document.getElementById('sch-cnt-class') || document.getElementById('btech-cnt-branch')) {
-        if (typeof window.selectModule === 'function') {
-            if (level === 'school') {
-                window.selectModule('school');
-                setTimeout(() => setDigiLibSelectValue('sch-cnt-class', schoolClass), 0);
-            } else if (level === 'intermediate') {
-                window.selectModule('inter');
-                setTimeout(() => {
-                    setDigiLibSelectValue('inter-cnt-mod', 'Intermediate');
-                    setDigiLibSelectValue('inter-cnt-stream', stream);
-                }, 0);
-            } else if (level === 'diploma') {
-                window.selectModule('inter');
-                setTimeout(() => {
-                    setDigiLibSelectValue('inter-cnt-mod', 'Polytechnic Diploma');
-                    setDigiLibSelectValue('inter-cnt-stream', branch);
-                }, 0);
-            } else if (level === 'b.tech' || level === 'btech') {
-                window.selectModule('btech');
-                setTimeout(() => setDigiLibSelectValue('btech-cnt-branch', branch), 0);
-            }
-        }
-    }
-}
-window.applyDigiLibEducationContext = applyDigiLibEducationContext;
-
 
 // Reusable Global DigiLib Loading Component
 function showDigilibLoader(titleText = 'Opening Resources...', subtitleText = 'DIGITAL ACADEMIC LIBRARY') {
@@ -317,7 +165,6 @@ async function fetchFastResources(url) {
 window.fetchFastResources = fetchFastResources;
 
 function prefetchResources(url) {
-    const apiUrl = digilibApiUrl(url);
     if (!window.DigiLibResourceCache.has(apiUrl)) {
         fetchFastResources(url).catch(() => {});
     }
@@ -415,6 +262,50 @@ async function trackClick(id) {
     }
 }
 
+// Restore the signed-in profile from the backend on every page.
+// localStorage is only a display cache; the backend token is authoritative.
+async function syncAuthenticatedUser() {
+    const token = localStorage.getItem('digilib_auth_token');
+    if (!token) return null;
+
+    try {
+        const response = await window.digilibApiFetch('/me');
+        if (!response.ok) {
+            localStorage.removeItem('digilib_auth_token');
+            localStorage.removeItem('digilib_is_admin');
+            localStorage.removeItem('adminLoggedIn');
+            return null;
+        }
+
+        const user = await response.json();
+        localStorage.setItem('student', JSON.stringify(user));
+        localStorage.setItem('digilib_user_name', user.name || '');
+        localStorage.setItem('digilib_user_email', user.email || '');
+        localStorage.setItem('digilib_user_roll', user.roll || '');
+        localStorage.setItem('digilib_user_branch', user.branch || '');
+        localStorage.setItem('digilib_is_admin', user.role === 'admin' ? 'true' : 'false');
+
+        if (user.role === 'admin') {
+            localStorage.setItem('adminLoggedIn', 'true');
+            localStorage.setItem('adminEmail', user.email || '');
+        } else {
+            localStorage.removeItem('adminLoggedIn');
+            localStorage.removeItem('adminEmail');
+        }
+
+        if (typeof updateProfilePanelUI === 'function') {
+            updateProfilePanelUI(user);
+        }
+
+        checkAdminStatus();
+        return user;
+    } catch (error) {
+        console.warn('Profile sync failed:', error);
+        return null;
+    }
+}
+window.syncAuthenticatedUser = syncAuthenticatedUser;
+
 // Check admin status & update navbar
 function checkAdminStatus() {
     const isAdmin = localStorage.getItem('digilib_is_admin') === 'true';
@@ -436,20 +327,10 @@ function toggleProfileDropdown() {
         profileModal.id = 'profile-modal';
         profileModal.className = 'fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 transition-all duration-300 opacity-0 pointer-events-none';
         
-        const currentUser = getDigiLibUser();
-        const userName = currentUser?.name || 'Guest User';
-        const userEmail = currentUser?.email || 'Sign in to access your saved profile';
+        const savedStudent = (() => { try { return JSON.parse(localStorage.getItem('student') || 'null'); } catch (_) { return null; } })();
+        const userName = localStorage.getItem('digilib_user_name') || savedStudent?.name || 'Guest User';
+        const userEmail = localStorage.getItem('digilib_user_email') || savedStudent?.email || 'Sign in to access your saved profile';
         const isAdmin = localStorage.getItem('digilib_is_admin') === 'true';
-        const profileEducation = currentUser?.educationLevel || '';
-        const profileContext = profileEducation === 'School'
-            ? (currentUser?.schoolClass || 'School')
-            : profileEducation === 'Intermediate'
-                ? `Intermediate${currentUser?.stream ? ` • ${currentUser.stream}` : ''}`
-                : profileEducation === 'Diploma'
-                    ? `Diploma${currentUser?.branch ? ` • ${currentUser.branch}` : ''}`
-                    : profileEducation === 'B.Tech'
-                        ? `B.Tech${currentUser?.branch ? ` • ${currentUser.branch}` : ''}`
-                        : '';
 
         profileModal.innerHTML = `
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl relative transform scale-95 transition-transform duration-300">
@@ -462,10 +343,8 @@ function toggleProfileDropdown() {
                         ${userName.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                        <h3 id="shared-profile-user-name" class="text-lg font-bold text-slate-900 dark:text-white">${userName}</h3>
-                        <p id="shared-profile-user-email" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${userEmail}</p>
-                        ${profileContext ? `<p id="shared-profile-user-context" class="text-[11px] font-bold text-brand-600 dark:text-brand-400 mt-1">${profileContext}</p>` : ''}
-                        ${currentUser?.roll ? `<p id="shared-profile-user-roll" class="text-[10px] text-slate-400 mt-0.5">ID: ${currentUser.roll}</p>` : ''}
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">${userName}</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${userEmail}</p>
                     </div>
 
                     ${isAdmin ? `
@@ -494,30 +373,6 @@ function toggleProfileDropdown() {
         if (window.lucide) lucide.createIcons();
     }
 
-    // Refresh the existing modal so a guest modal opened before login never remains stale.
-    const latestUser = getDigiLibUser();
-    const latestName = latestUser?.name || 'Guest User';
-    const latestEmail = latestUser?.email || 'Sign in to access your saved profile';
-    const latestContext = latestUser?.educationLevel === 'School'
-        ? (latestUser.schoolClass || 'School')
-        : latestUser?.educationLevel === 'Intermediate'
-            ? `Intermediate${latestUser.stream ? ` • ${latestUser.stream}` : ''}`
-            : latestUser?.educationLevel === 'Diploma'
-                ? `Diploma${latestUser.branch ? ` • ${latestUser.branch}` : ''}`
-                : latestUser?.educationLevel === 'B.Tech'
-                    ? `B.Tech${latestUser.branch ? ` • ${latestUser.branch}` : ''}`
-                    : '';
-    const latestNameEl = profileModal.querySelector('#shared-profile-user-name');
-    const latestEmailEl = profileModal.querySelector('#shared-profile-user-email');
-    const latestContextEl = profileModal.querySelector('#shared-profile-user-context');
-    const latestRollEl = profileModal.querySelector('#shared-profile-user-roll');
-    if (latestNameEl) latestNameEl.textContent = latestName;
-    if (latestEmailEl) latestEmailEl.textContent = latestEmail;
-    if (latestContextEl) latestContextEl.textContent = latestContext;
-    if (latestRollEl) latestRollEl.textContent = latestUser?.roll ? `ID: ${latestUser.roll}` : '';
-    const avatarEl = profileModal.querySelector('.w-16.h-16');
-    if (avatarEl) avatarEl.textContent = latestName.charAt(0).toUpperCase();
-
     if (profileModal.classList.contains('opacity-0')) {
         profileModal.classList.remove('opacity-0', 'pointer-events-none');
         profileModal.querySelector('div').classList.remove('scale-95');
@@ -533,11 +388,6 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAdminStatus();
     setupPageTransitionListeners();
     hidePageLoader();
-
-    // Let page-specific module functions initialize first, then apply the saved profile context.
-    setTimeout(() => {
-        try { applyDigiLibEducationContext(); } catch (e) { console.warn('Profile context setup skipped:', e); }
-    }, 80);
 });
 
 window.addEventListener('load', () => {
@@ -1018,16 +868,11 @@ function canUserDeleteRequest(req) {
     const isAdmin = localStorage.getItem('digilib_is_admin') === 'true';
     if (isAdmin) return true;
 
-    const currentUser = getDigiLibUser() || {};
-    const userEmail = (currentUser.email || '').toLowerCase().trim();
-    const userName = (currentUser.name || '').toLowerCase().trim();
+    const userEmail = (localStorage.getItem('digilib_user_email') || '').toLowerCase().trim();
+    const userName = (localStorage.getItem('digilib_user_name') || '').toLowerCase().trim();
 
+    // Students may delete/cancel only requests that belong to their logged-in email.
     if (userEmail && req.userEmail && req.userEmail.toLowerCase().trim() === userEmail) return true;
-    if (userName && req.studentName && req.studentName.toLowerCase().trim() === userName) return true;
-    
-    // Default admin check for initial seed user
-    if (userEmail === 'tejeswartejeswar56@gmail.com' || userEmail === 'admin@digilib.com') return true;
-
     return false;
 }
 window.canUserDeleteRequest = canUserDeleteRequest;
@@ -1063,8 +908,9 @@ function fulfillRequest(reqId, resourceTitle, branch) {
 }
 window.fulfillRequest = fulfillRequest;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     checkAdminStatus();
+    await syncAuthenticatedUser();
     updateNavRequestCount();
 });
 

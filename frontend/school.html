@@ -307,7 +307,14 @@
                             </select>
                         </div>
 
-                        
+                        <!-- 2. Search Resources -->
+                        <div class="lg:col-span-6 relative">
+                            <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Search Resources</label>
+                            <div class="relative">
+                                <input type="text" id="school-search-input" placeholder="Search title, topic, subject..." class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Explicit Access Resources Button Row -->
@@ -337,14 +344,6 @@
                             </select>
                         </div>
                     </div>
-<div class="relative w-full sm:max-w-md mb-4">
-                                <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Search Unlocked Resources</label>
-                                <div class="relative">
-                                    <input type="text" id="school-search-input" oninput="renderSchoolResourcesIfLoaded()" placeholder="Search title, topic, subject..." class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-brand-500 outline-none transition-all">
-                                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-                                </div>
-                            </div>
-
 
                     <div id="school-resources-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         <div class="sm:col-span-2 lg:col-span-3 text-center py-16 px-6 bg-slate-50/60 dark:bg-slate-950/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 space-y-3">
@@ -354,11 +353,6 @@
                             <h3 class="text-base font-extrabold text-slate-800 dark:text-slate-200">Select your filters and click 'Access Resources' to view matching resources.</h3>
                             <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">Choose subject or material category above, then click the Access Resources button.</p>
                         </div>
-<div class="lg:col-span-6 relative">
-                            <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Search Resources</label>
-                            
-                        </div>
-
                     </div>
                 </div>
             </section>

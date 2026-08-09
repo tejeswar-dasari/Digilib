@@ -253,6 +253,12 @@
 
 <script>
 const BACKEND_URL = "https://digilib-backend-v0r2.onrender.com";
+function adminApiFetch(path, options = {}) {
+    const token = localStorage.getItem('digilib_auth_token');
+    const headers = { ...(options.headers || {}) };
+    if (token) headers.Authorization = `Bearer ${token}`;
+    return fetch(`${BACKEND_URL}${path}`, { ...options, headers });
+}
 let resources = [];
 let pendingDeleteId = null;
 
@@ -340,6 +346,13 @@ async function authenticateLockscreen() {
             errorLabel.classList.add('hidden');
             localStorage.setItem('adminLoggedIn', 'true');
             localStorage.setItem('adminEmail', email);
+            localStorage.setItem('digilib_is_admin', 'true');
+            if (data.token) localStorage.setItem('digilib_auth_token', data.token);
+            if (data.user) {
+                localStorage.setItem('student', JSON.stringify(data.user));
+                localStorage.setItem('digilib_user_name', data.user.name || 'Administrator');
+                localStorage.setItem('digilib_user_email', data.user.email || email);
+            }
             fetchResources();
         } else {
             errorLabel.textContent = data.message || "Wrong Email or Password. Verification failed.";
@@ -363,20 +376,40 @@ document.getElementById('lockscreen-email-input')?.addEventListener('keydown', (
     }
 });
 
-function logoutAdmin() {
+function logoutAdmin(showMessage = true) {
     localStorage.removeItem('adminLoggedIn');
-    showToast("Logged out successfully.", "info");
-    setTimeout(() => { location.reload(); }, 800);
+    localStorage.removeItem('adminEmail');
+    localStorage.removeItem('digilib_is_admin');
+    localStorage.removeItem('digilib_auth_token');
+    localStorage.removeItem('student');
+    if (showMessage) showToast("Logged out successfully.", "info");
+    if (showMessage) setTimeout(() => { location.reload(); }, 500);
 }
 
-window.onload = function() {
+window.onload = async function() {
     lucide.createIcons();
-    if (localStorage.getItem('adminLoggedIn') === 'true') {
-        document.getElementById('admin-lockscreen').classList.add('hidden');
-        document.getElementById('admin-content').classList.remove('hidden');
-        fetchResources();
-    }
     renderDynamicAdminFields();
+
+    // Never trust a localStorage "admin" flag. The backend token is the authority.
+    const token = localStorage.getItem('digilib_auth_token');
+    if (!token) return;
+
+    try {
+        const response = await adminApiFetch('/me');
+        const data = await response.json().catch(() => ({}));
+
+        if (response.ok && data.role === 'admin') {
+            localStorage.setItem('adminLoggedIn', 'true');
+            localStorage.setItem('digilib_is_admin', 'true');
+            document.getElementById('admin-lockscreen').classList.add('hidden');
+            document.getElementById('admin-content').classList.remove('hidden');
+            fetchResources();
+        } else {
+            logoutAdmin(false);
+        }
+    } catch (error) {
+        logoutAdmin(false);
+    }
 };
 
 // Modal handlers for Add Resource
@@ -616,7 +649,7 @@ async function handleAdminAddResource(e) {
     }
 
     try {
-        const response = await fetch(`${BACKEND_URL}/resources`, {
+        const response = await adminApiFetch('/resources', {
             method: 'POST',
             body: formData
         });
@@ -638,7 +671,7 @@ async function handleAdminAddResource(e) {
 
 async function fetchResources() {
     try {
-        const response = await fetch(`${BACKEND_URL}/resources`);
+        const response = await adminApiFetch('/resources');
         const contentType = response.headers.get('content-type') || '';
         if (!response.ok || !contentType.includes('application/json')) throw new Error();
         resources = await response.json();
@@ -774,7 +807,7 @@ function filterResources() {
 
 async function executeDeletion(id) {
     try {
-        const response = await fetch(`${BACKEND_URL}/resources/${id}`, {
+        const response = await adminApiFetch(`/resources/${id}`, {
             method: 'DELETE'
         });
         const data = await response.json();

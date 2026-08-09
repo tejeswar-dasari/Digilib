@@ -398,7 +398,14 @@
                         </select>
                     </div>
 
-                    
+                    <!-- 4. Search Input -->
+                    <div class="lg:col-span-3 relative">
+                        <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Search Resources</label>
+                        <div class="relative">
+                            <input type="text" id="btech-search-input" placeholder="Search title, subject..." class="w-full pl-8 pr-2.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3"></i>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Access Resources Button Row -->
@@ -427,14 +434,6 @@
                             </select>
                         </div>
                     </div>
-<div class="lg:col-span-3 relative">
-                        <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Search Unlocked Resources</label>
-                        <div class="relative">
-                            <input type="text" id="btech-search-input" oninput="renderBtechResourcesIfLoaded()" placeholder="Search title, subject..." class="w-full pl-8 pr-2.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3"></i>
-                        </div>
-                    </div>
-
 
                     <div id="btech-resources-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         <div class="sm:col-span-2 lg:col-span-3 text-center py-16 px-6 bg-slate-50/60 dark:bg-slate-950/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 space-y-3">
