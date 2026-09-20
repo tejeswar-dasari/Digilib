@@ -352,7 +352,7 @@
                     <!-- 1. Semester Filter -->
                     <div class="lg:col-span-3">
                         <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Semester</label>
-                        <select id="bt-sem-filter" class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                        <select id="bt-sem-filter" onchange="renderBtechResourcesIfLoaded()" class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                             <option value="All">All Semesters</option>
                             <option value="1-1">1-1 (1st Year Sem 1)</option>
                             <option value="1-2">1-2 (1st Year Sem 2)</option>
@@ -368,7 +368,7 @@
                     <!-- 2. Regulation Filter -->
                     <div class="lg:col-span-3">
                         <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Regulation</label>
-                        <select id="bt-reg-filter" class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                        <select id="bt-reg-filter" onchange="renderBtechResourcesIfLoaded()" class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                             <option value="All">All Regulations</option>
                             <option value="R23">R23 Regulation</option>
                             <option value="R20">R20 Regulation</option>
@@ -381,7 +381,7 @@
                     <!-- 3. Material Type Dropdown -->
                     <div class="lg:col-span-3">
                         <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Material Type</label>
-                        <select id="bt-type-filter" class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                        <select id="bt-type-filter" onchange="renderBtechResourcesIfLoaded()" class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                             <option value="All">All Resources</option>
                             <option value="Notes">Notes</option>
                             <option value="Mid Papers">Mid Papers</option>
@@ -402,7 +402,7 @@
                     <div class="lg:col-span-3 relative">
                         <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Search Resources</label>
                         <div class="relative">
-                            <input type="text" id="btech-search-input" placeholder="Search title, subject..." class="w-full pl-8 pr-2.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <input type="text" id="btech-search-input" oninput="renderBtechResourcesIfLoaded()" placeholder="Search title, subject..." class="w-full pl-8 pr-2.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                             <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3"></i>
                         </div>
                     </div>
@@ -594,7 +594,10 @@
 
             try {
                 if (window.fetchFastResources) {
-                    allBtechResources = await window.fetchFastResources('/resources?category=BTech');
+                    allBtechResources = await Promise.race([
+                        window.fetchFastResources('/resources?category=BTech'),
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('Resource request timed out')), 15000))
+                    ]);
                 } else {
                     const res = await window.digilibApiFetch('/resources?category=BTech');
                     allBtechResources = res.ok ? await res.json() : [];

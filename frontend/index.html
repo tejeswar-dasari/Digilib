@@ -190,12 +190,15 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
 </button>
 
                 <!-- Auth Buttons (Desktop Only) -->
-                <div class="hidden md:flex items-center gap-3">
-                    <button onclick="toggleAuthModal('login')" class="px-5 py-2.5 rounded-xl border border-brand-100 dark:border-slate-800 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-slate-900 text-sm font-bold transition-all">
+                <div id="desktop-auth-actions" class="hidden md:flex items-center gap-3">
+                    <button id="nav-login-btn" onclick="toggleAuthModal('login')" class="px-5 py-2.5 rounded-xl border border-brand-100 dark:border-slate-800 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-slate-900 text-sm font-bold transition-all">
                         Login
                     </button>
-                    <button onclick="toggleAuthModal('signup')" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-md shadow-brand-500/10 transition-all">
+                    <button id="nav-signup-btn" onclick="toggleAuthModal('signup')" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-md shadow-brand-500/10 transition-all">
                         Sign Up
+                    </button>
+                    <button id="nav-logout-btn" onclick="handleLogout()" class="hidden px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-bold shadow-md transition-all">
+                        Logout
                     </button>
                 </div>
 
@@ -244,12 +247,15 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             <a href="admin.html" class="text-amber-500 font-bold admin-only-link hidden" onclick="toggleMobileDrawer()">Admin Dashboard</a>
         </div>
 
-        <div class="flex flex-col gap-4 mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
-            <button onclick="toggleAuthModal('login')" class="w-full py-4 rounded-xl border border-brand-200 dark:border-slate-700 text-brand-600 dark:text-brand-400 font-bold hover:bg-brand-50 dark:hover:bg-slate-800 transition-all text-center">
+        <div id="mobile-auth-actions" class="flex flex-col gap-4 mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+            <button id="mobile-login-btn" onclick="toggleAuthModal('login')" class="w-full py-4 rounded-xl border border-brand-200 dark:border-slate-700 text-brand-600 dark:text-brand-400 font-bold hover:bg-brand-50 dark:hover:bg-slate-800 transition-all text-center">
                 Login
             </button>
-            <button onclick="toggleAuthModal('signup')" class="w-full py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition-all text-center shadow-lg shadow-brand-500/15">
+            <button id="mobile-signup-btn" onclick="toggleAuthModal('signup')" class="w-full py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition-all text-center shadow-lg shadow-brand-500/15">
                 Sign Up
+            </button>
+            <button id="mobile-logout-btn" onclick="handleLogout(); toggleMobileDrawer();" class="hidden w-full py-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition-all text-center">
+                Logout
             </button>
         </div>
     </div>
@@ -2190,6 +2196,22 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
         }
 
         // Updates user profile panel UI based on session status
+        function updateAuthNavigationUI(user) {
+            const loggedIn = !!user;
+            const pairs = [
+                ['nav-login-btn', !loggedIn],
+                ['nav-signup-btn', !loggedIn],
+                ['nav-logout-btn', loggedIn],
+                ['mobile-login-btn', !loggedIn],
+                ['mobile-signup-btn', !loggedIn],
+                ['mobile-logout-btn', loggedIn]
+            ];
+            pairs.forEach(([id, visible]) => {
+                const el = document.getElementById(id);
+                if (el) el.classList.toggle('hidden', !visible);
+            });
+        }
+
         function updateProfilePanelUI(user) {
             const nameEl = document.getElementById('profile-user-name');
             const emailEl = document.getElementById('profile-user-email');
@@ -2197,6 +2219,8 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             const rollEl = document.getElementById('profile-user-roll');
             const initialsEl = document.querySelector('#profile-dropdown .w-12.h-12');
             const actionContainer = document.getElementById('profile-actions-container');
+
+            updateAuthNavigationUI(user);
 
             if (user) {
                 nameEl.textContent = user.name;
