@@ -267,7 +267,18 @@ async function trackClick(id) {
 // localStorage is only a display cache; the backend token is authoritative.
 async function syncAuthenticatedUser() {
     const token = localStorage.getItem('digilib_auth_token');
-    if (!token) return null;
+    if (!token) {
+        localStorage.removeItem('student');
+        localStorage.removeItem('digilib_user_name');
+        localStorage.removeItem('digilib_user_email');
+        localStorage.removeItem('digilib_user_roll');
+        localStorage.removeItem('digilib_user_branch');
+        localStorage.removeItem('digilib_is_admin');
+        localStorage.removeItem('adminLoggedIn');
+        localStorage.removeItem('adminEmail');
+        if (typeof updateProfilePanelUI === 'function') updateProfilePanelUI(null);
+        return null;
+    }
 
     try {
         const response = await window.digilibApiFetch('/me');

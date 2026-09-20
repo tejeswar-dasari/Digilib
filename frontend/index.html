@@ -719,25 +719,29 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             }
         }
 
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", async function () {
             lucide.createIcons();
-
             hidePwaAppLoader();
 
-            const loggedInUser = localStorage.getItem("student");
-            if (!loggedInUser) {
-                // Disable background interactions and enable portal lockout blur mode
+            // The auth token is the source of truth. Do not trust a stale
+            // localStorage student object after logout or token expiry.
+            let authenticatedUser = null;
+            if (window.syncAuthenticatedUser) {
+                authenticatedUser = await window.syncAuthenticatedUser();
+            }
+
+            if (!authenticatedUser) {
                 document.body.style.overflow = "hidden";
-                toggleAuthModal('signup'); // Fixed to launch "Create Student Profile" directly for new users on load!
+                toggleAuthModal('signup');
             } else {
                 document.body.style.overflow = "auto";
-                checkLoggedInUser();
+                updateProfilePanelUI(authenticatedUser);
             }
 
             fetchResources();
-            fetchCampusRequests(); 
+            fetchCampusRequests();
             setupDynamicFormInputs();
-            setupRequestFormListener(); // Mount initialization handlers correctly
+            setupRequestFormListener();
         });
 
         
@@ -2252,13 +2256,13 @@ class="hidden px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white 
             localStorage.removeItem('digilib_user_branch');
             updateProfilePanelUI(null);
             toggleProfileDropdown();
-            showToast("Successfully logged out. DigiLib lock screen activated.", "info");
-
+            checkAdminStatus();
             document.body.style.overflow = "hidden";
+            showToast("Successfully logged out.", "info");
 
             setTimeout(() => {
-                toggleAuthModal('signup'); // Reset directly to signup form on logout
-            }, 500);
+                toggleAuthModal('login');
+            }, 300);
         }
 
         function handleSecureLoginClick() {
